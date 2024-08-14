@@ -13,6 +13,8 @@ const config = {
     "plugin:@typescript-eslint/stylistic-type-checked"
   ],
   "rules": {
+    "react/no-unescaped-entities": "off",
+    "@typescript-eslint/prefer-optional-chain": "warn",
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/consistent-type-imports": [
