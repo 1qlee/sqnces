@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { LatestPost } from "~/app/_components/post";
-import { auth, signIn } from "~/root/auth"
+import { auth } from "~/root/auth"
 import { api, HydrateClient } from "~/trpc/server";
 import styles from "./index.module.css";
 
