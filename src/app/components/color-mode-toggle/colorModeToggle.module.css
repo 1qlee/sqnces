@@ -1,0 +1,22 @@
+.toggle {
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  transition: border-color 0.2s;
+  padding: 0.25rem;
+
+  &:hover {
+    cursor: pointer;
+    background-color: var(--olive-3);
+  }
+}
+
+[data-theme='dark'] .toggle {
+
+  &:hover {
+    background-color: var(--olive-11);
+  }
+}
