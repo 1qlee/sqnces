@@ -16,12 +16,16 @@
   --olive-12: #1d211c;
   --background: var(--olive-1);
   --foreground: var(--olive-12);
+  --shadow-normal: rgba(0, 0, 0, 0.3);
+  --shadow-active: rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='dark'] {
   --background: var(--olive-12);
   --foreground: var(--olive-1);
   --border-color: var(--olive-1);
+  --shadow-normal: rgba(255, 255, 255, 0.3);
+  --shadow-active: rgba(255, 255, 255, 0.1);
 }
 
 /* Reset CSS */

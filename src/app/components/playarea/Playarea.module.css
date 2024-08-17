@@ -1,5 +1,6 @@
 .playarea {
-  min-height: calc(100vh - 60px);
+  min-height: 400px;
+  max-height: 800px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
