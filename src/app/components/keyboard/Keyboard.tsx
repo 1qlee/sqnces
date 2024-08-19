@@ -98,21 +98,20 @@ export default function Keyboard({
   // ***** EVENT HANDLERS ***** //
   // only to handle long press delete
   function handleKeyTouch(event: React.TouchEvent<HTMLButtonElement>, key: string) {
-    // detect long press
-    longPressTimer.current = setTimeout(() => {
-      repeatInterval.current = setInterval(() => {
-        deleteChar();
-      }, 100);
-    }, 500);
-
-    deleteChar();
+    if (key === "Backspace") {
+      longPressTimer.current = setTimeout(() => {
+        repeatInterval.current = setInterval(() => {
+          deleteChar();
+        }, 100);
+      }, 500);
+    }
   }
 
   function handleKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
     updateActiveKeys(key);
 
     // deleting
-    if (key === "Backspace" || key === "Delete") {
+    if (key === "Backspace") {
 
       // check for mouse event (not a keyboard event)
       if (!('key' in event)) {
