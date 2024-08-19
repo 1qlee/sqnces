@@ -94,24 +94,33 @@ export default function Keyboard({
   function updateActiveKeys(key: string) {
     setActiveKeys(prev => [...prev, key]);
   }
+
+  function handleDeleteKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent> | React.TouchEvent<HTMLButtonElement>, key: string) {
+    event.preventDefault();
+
+    if (key === "Backspace" || key === "Delete") {
+      // detect long press
+      longPressTimer.current = setTimeout(() => {
+        repeatInterval.current = setInterval(() => {
+          deleteChar();
+        }, 100);
+      }, 500);
+
+      deleteChar();
+    }
+
+  }
   
-  function handleKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent> | React.TouchEvent<HTMLButtonElement>, key: string) {
+  function handleKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
     updateActiveKeys(key);
 
     // deleting
     if (key === "Backspace" || key === "Delete") {
       // check for mouse event
+      
       if (!('key' in event)) {
         // detect long press when deleting
-        longPressTimer.current = setTimeout(() => {
-
-          repeatInterval.current = setInterval(() => {
-            deleteChar();
-          }, 100);
-
-        }, 500);
-
-        deleteChar();
+        handleDeleteKeyPress(event, key);
       }
       else {
         if (event.shiftKey || event.ctrlKey || event.metaKey) {
@@ -141,7 +150,7 @@ export default function Keyboard({
     }
   }
 
-  // when tabbing through keys, we need to handle inputting keys via the "Enter" key
+  // when keys are focused, we need to handle inputting keys via the "Enter" key
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, key: string) {
     const char = event.key;
 
@@ -180,12 +189,10 @@ export default function Keyboard({
             <button
               key={key + index}
               className={`${key.length > 0 ? styles.key : styles.keySpacer} ${isKeyActive(key) && styles.active}`}
-              onTouchStart={(event) => handleKeyPress(event, key)}
               onMouseDown={(event) => handleKeyPress(event, key)}
-              onTouchEnd={() => handleKeyUp(key)}
+              onTouchStart={(event) => handleDeleteKeyPress(event, key)}
               onMouseUp={() => handleKeyUp(key)}
               onMouseLeave={handleMouseLeave}
-              onTouchMove={handleMouseLeave}
               onKeyDown={(event) => handleKeyDown(event, key)}
               onKeyUp={() => handleKeyUp(key)}
             >
