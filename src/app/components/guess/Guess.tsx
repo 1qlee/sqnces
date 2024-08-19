@@ -11,7 +11,6 @@ interface GuessProps {
 export const Guess = React.memo(({
   guess,
 }: GuessProps) => {
-  console.log("guess")
   return (
     <div className={styles.guess}>
       {guess && <h1>{guess}</h1>}

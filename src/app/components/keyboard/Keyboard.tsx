@@ -29,7 +29,6 @@ export default function Keyboard({
 
   // Sync the ref with the state whenever it updates
   useEffect(() => {
-    console.log(guess)
     guessRef.current = guess;
   }, [guess]);
 
@@ -96,7 +95,7 @@ export default function Keyboard({
     setActiveKeys(prev => [...prev, key]);
   }
   
-  function handleKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
+  function handleKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent> | React.TouchEvent<HTMLButtonElement>, key: string) {
     updateActiveKeys(key);
 
     // deleting
@@ -142,10 +141,6 @@ export default function Keyboard({
     }
   }
 
-  function handleMouseDown(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
-    handleKeyPress(event, key)
-  }
-
   // when tabbing through keys, we need to handle inputting keys via the "Enter" key
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, key: string) {
     const char = event.key;
@@ -185,9 +180,12 @@ export default function Keyboard({
             <button
               key={key + index}
               className={`${key.length > 0 ? styles.key : styles.keySpacer} ${isKeyActive(key) && styles.active}`}
-              onMouseDown={(event) => handleMouseDown(event, key)}
+              onTouchStart={(event) => handleKeyPress(event, key)}
+              onMouseDown={(event) => handleKeyPress(event, key)}
+              onTouchEnd={() => handleKeyUp(key)}
               onMouseUp={() => handleKeyUp(key)}
               onMouseLeave={handleMouseLeave}
+              onTouchMove={handleMouseLeave}
               onKeyDown={(event) => handleKeyDown(event, key)}
               onKeyUp={() => handleKeyUp(key)}
             >
