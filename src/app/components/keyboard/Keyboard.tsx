@@ -95,32 +95,35 @@ export default function Keyboard({
     setActiveKeys(prev => [...prev, key]);
   }
 
-  function handleDeleteKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent> | React.TouchEvent<HTMLButtonElement>, key: string) {
-    event.preventDefault();
+  // ***** EVENT HANDLERS ***** //
+  // only to handle long press delete
+  function handleKeyTouch(event: React.TouchEvent<HTMLButtonElement>, key: string) {
+    // detect long press
+    longPressTimer.current = setTimeout(() => {
+      repeatInterval.current = setInterval(() => {
+        deleteChar();
+      }, 100);
+    }, 500);
 
-    if (key === "Backspace" || key === "Delete") {
-      // detect long press
-      longPressTimer.current = setTimeout(() => {
-        repeatInterval.current = setInterval(() => {
-          deleteChar();
-        }, 100);
-      }, 500);
-
-      deleteChar();
-    }
-
+    deleteChar();
   }
-  
+
   function handleKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
     updateActiveKeys(key);
 
     // deleting
     if (key === "Backspace" || key === "Delete") {
-      // check for mouse event
-      
+
+      // check for mouse event (not a keyboard event)
       if (!('key' in event)) {
-        // detect long press when deleting
-        handleDeleteKeyPress(event, key);
+        // detect long press
+        longPressTimer.current = setTimeout(() => {
+          repeatInterval.current = setInterval(() => {
+            deleteChar();
+          }, 100);
+        }, 500);
+
+        deleteChar();
       }
       else {
         if (event.shiftKey || event.ctrlKey || event.metaKey) {
@@ -142,7 +145,6 @@ export default function Keyboard({
     }
   }
 
-  // ***** EVENT HANDLERS ***** //
   function handleGuessSubmit() {
     if (guessRef.current.length > 0) {
       setSubmittedWords && setSubmittedWords(prev => [...prev, guessRef.current]);
@@ -188,13 +190,18 @@ export default function Keyboard({
           {row.map((key, index) => (
             <button
               key={key + index}
-              className={`${key.length > 0 ? styles.key : styles.keySpacer} ${isKeyActive(key) && styles.active}`}
+              className={`${key.length > 0 ? styles.key : styles.keySpacer} ${isKeyActive(key) ? styles.active : ""}`}
+              onTouchStart={(event) => handleKeyTouch(event, key)}
+              onTouchEnd={() => handleKeyUp(key)}
               onMouseDown={(event) => handleKeyPress(event, key)}
-              onTouchStart={(event) => handleDeleteKeyPress(event, key)}
               onMouseUp={() => handleKeyUp(key)}
               onMouseLeave={handleMouseLeave}
               onKeyDown={(event) => handleKeyDown(event, key)}
               onKeyUp={() => handleKeyUp(key)}
+              onContextMenu={(event) => {
+                event.preventDefault();
+                return false;
+              }}
             >
               {key === "Backspace" ? <Backspace /> : key === "Enter" ? <KeyReturn /> : key.toUpperCase()}
             </button>
