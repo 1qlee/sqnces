@@ -1,22 +1,28 @@
 "use client";
 
-import React from "react";
+import { memo } from "react";
+
+import styles from "./SubmittedWords.module.css";
 
 interface SubmittedWordsProps {
   words: string[];
 }
 
-export const SubmittedWords = React.memo(({
+export const SubmittedWords = memo(({
   words,
 }: SubmittedWordsProps) => {
-  console.log("🚀 ~ words:", words)
   return (
-    <div>
+    <div className={styles.wrapper}>
       {words.map((word, index) => (
-        <p key={index}>
+        <p 
+          key={index}
+          className={styles.word}  
+        >
           {word}
         </p>
       ))}
     </div>
   )
 });
+
+SubmittedWords.displayName = "SubmittedWords";

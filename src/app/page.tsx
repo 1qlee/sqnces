@@ -5,17 +5,19 @@ import styles from "./index.module.css";
 import Playarea from "./components/playarea/Playarea";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+  // const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
 
   void session?.user && api.post.getLatest.prefetch();
 
   return (
     <HydrateClient>
-      <Nav />
-      <main className={styles.main}>
-        <Playarea />
-      </main>
+      <div className={styles.wrapper}>
+        <div className={styles.container}>
+          <Nav />
+          <Playarea />
+        </div>
+      </div>
     </HydrateClient>
   );
 }

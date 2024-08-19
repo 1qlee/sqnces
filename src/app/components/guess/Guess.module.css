@@ -1,8 +1,11 @@
-.input {
+.guess {
   padding: 1rem;
   border: none;
   border-top: 2px solid;
   font-size: 2rem;
+  text-align: center;
+  height: 66px;
+  width: 100%;
 
   &:focus {
     outline: none;

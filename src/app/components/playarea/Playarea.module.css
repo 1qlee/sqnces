@@ -1,7 +1,7 @@
 .playarea {
-  min-height: 400px;
-  max-height: 800px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  height: 600px;
+  max-height: 100%;
 }

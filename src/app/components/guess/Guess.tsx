@@ -3,14 +3,20 @@
 import React from "react";
 
 import styles from "./Guess.module.css";
-import { GuessProps } from "../playarea/Playarea";
+
+interface GuessProps {
+  guess: string;
+}
 
 export const Guess = React.memo(({
   guess,
 }: GuessProps) => {
+  console.log("guess")
   return (
-    <div className={styles.input}>
+    <div className={styles.guess}>
       {guess && <h1>{guess}</h1>}
     </div>
   )
 })
+
+Guess.displayName = "Guess";

@@ -1,30 +1,68 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 
 import styles from "./Keyboard.module.css";
 import { Backspace, KeyReturn } from "@phosphor-icons/react/dist/ssr";
-import { GuessProps, validateAlpha } from "../playarea/Playarea";
+import { validateAlpha } from "../playarea/Playarea";
 import { useRef } from "react";
+import { Guess } from "../guess/Guess";
 
 const KeyboardRows = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', "Backspace"],
-  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', "Enter"],
-  ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+  ['', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', "Enter", ''],
+  ['', '', '', '', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '', '', '', '']
 ]
 
+interface KeyboardProps {
+  setSubmittedWords?: Dispatch<SetStateAction<string[]>>;
+}
+
 export default function Keyboard({ 
-  guess, 
-  activeKeys, 
-  setGuess, 
-  setActiveKeys,
   setSubmittedWords,
-}: GuessProps) {
+}: KeyboardProps) {
+  const [guess, setGuess] = useState("");
+  const guessRef = useRef(guess); // Create a ref to store the guess value
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const repeatInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+
+  // Sync the ref with the state whenever it updates
+  useEffect(() => {
+    console.log(guess)
+    guessRef.current = guess;
+  }, [guess]);
 
   useEffect(() => {
-    console.log("yo")
+    function handleKeyTyping(event: KeyboardEvent) {
+      // unfocus any keys
+      if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
+        document.activeElement.blur();
+      }
+
+      const key = event.key;
+      updateActiveKeys(key);
+
+      if (key === 'Backspace' || key === 'Delete') {
+        const modifierPressed = event.shiftKey || event.ctrlKey || event.metaKey;
+
+        if (modifierPressed) {
+          setGuess("");
+        } else {
+          deleteChar();
+        }
+      } else if (key !== 'Tab') {
+        if (validateAlpha(key)) {
+          setGuess(prev => prev + key.toUpperCase());
+        } else if (key === "Enter") {
+          console.log("ENTER: ", guessRef.current);
+          handleGuessSubmit();
+        } else {
+          event.preventDefault();
+        }
+      }
+    }
+
     document.addEventListener('keydown', handleKeyTyping);
     document.addEventListener('keyup', () => setActiveKeys([]));
 
@@ -32,10 +70,14 @@ export default function Keyboard({
       document.removeEventListener('keydown', handleKeyTyping);
       document.removeEventListener('keyup', () => setActiveKeys([]));
     }
-  }, [guess])
+  }, [])
   
   // ***** HELPERS ***** //
-  const isKeyActive = (key: string) => activeKeys.includes(key);
+  const isKeyActive = (key: string) => {
+    if (key.length > 0) {
+      return activeKeys.includes(key);
+    }
+  };
 
   function clearTimers() {
     if (longPressTimer.current) {
@@ -94,41 +136,9 @@ export default function Keyboard({
 
   // ***** EVENT HANDLERS ***** //
   function handleGuessSubmit() {
-    if (guess.length > 0) {
-      setSubmittedWords && setSubmittedWords(prev => [...prev, guess]);
+    if (guessRef.current.length > 0) {
+      setSubmittedWords && setSubmittedWords(prev => [...prev, guessRef.current]);
       setGuess("");
-    }
-  }
-
-  function handleKeyTyping(event: KeyboardEvent) {
-
-    // unfocus any keys
-    if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
-      document.activeElement.blur();
-    }
-
-    const key = event.key;
-    updateActiveKeys(key);
-
-    if (key === 'Backspace' || key === 'Delete') {
-      const modifierPressed = event.shiftKey || event.ctrlKey || event.metaKey;
-
-      if (modifierPressed) {
-        setGuess("");
-      } else {
-        deleteChar();
-      }
-    }
-    else if (key !== 'Tab') {
-      if (validateAlpha(key)) {
-        setGuess(prev => prev + key.toUpperCase())
-      }
-      else if (key === "Enter") {
-        handleGuessSubmit();
-      }
-      else {
-        event.preventDefault();
-      }
     }
   }
 
@@ -163,25 +173,25 @@ export default function Keyboard({
     <div 
       className={styles.keyboard}
     >
+      <Guess 
+        guess={guess}
+      />
       {KeyboardRows.map((row, i) => (
         <div 
           className={styles.row}
           key={i}
         >
-          {row.map((key) => (
+          {row.map((key, index) => (
             <button
-              key={key}
-              className={styles.key + (isKeyActive(key) ? ` ${styles.active}` : "")}
-              aria-label={key}
-              onKeyDown={e => handleKeyDown(e, key)}
-              onKeyUp={() => handleKeyUp(key)}
-              onMouseDown={e => handleMouseDown(e, key)}
+              key={key + index}
+              className={`${key.length > 0 ? styles.key : styles.keySpacer} ${isKeyActive(key) && styles.active}`}
+              onMouseDown={(event) => handleMouseDown(event, key)}
               onMouseUp={() => handleKeyUp(key)}
-              onMouseLeave={() => handleMouseLeave()}
+              onMouseLeave={handleMouseLeave}
+              onKeyDown={(event) => handleKeyDown(event, key)}
+              onKeyUp={() => handleKeyUp(key)}
             >
-              {key !== "Backspace" && key !== "Enter" && key.toUpperCase()}
-              {key === "Backspace" && <Backspace size={20} />}
-              {key === "Enter" && <KeyReturn size={20} />}
+              {key === "Backspace" ? <Backspace /> : key === "Enter" ? <KeyReturn /> : key.toUpperCase()}
             </button>
           ))}
         </div>
