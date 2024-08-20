@@ -12,12 +12,8 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <div className={styles.wrapper}>
-        <div className={styles.container}>
-          <Nav />
-          <Playarea />
-        </div>
-      </div>
+      <Nav />
+      <Playarea />
     </HydrateClient>
   );
 }

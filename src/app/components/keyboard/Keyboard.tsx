@@ -97,7 +97,9 @@ export default function Keyboard({
 
   // ***** EVENT HANDLERS ***** //
   // only to handle long press delete
-  function handleKeyTouch(event: React.TouchEvent<HTMLButtonElement>, key: string) {
+  function handleKeyTouch(key: string) {
+    handleKeyUp(key);
+    
     if (key === "Backspace") {
       longPressTimer.current = setTimeout(() => {
         repeatInterval.current = setInterval(() => {
@@ -138,6 +140,7 @@ export default function Keyboard({
     }
     // inputting
     else {
+      
       if (validateAlpha(key)) {
         setGuess(prev => prev + key.toUpperCase());
       }
@@ -174,6 +177,13 @@ export default function Keyboard({
     }
   }
 
+  // handle long press
+  function handleContextMenu(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
+    event.preventDefault();
+    handleKeyTouch(key);
+  }
+
+
   return (
     <div 
       className={styles.keyboard}
@@ -190,19 +200,16 @@ export default function Keyboard({
             <button
               key={key + index}
               className={`${key.length > 0 ? styles.key : styles.keySpacer} ${isKeyActive(key) ? styles.active : ""}`}
-              onTouchStart={(event) => handleKeyTouch(event, key)}
+              onTouchStart={() => handleKeyTouch(key)}
               onTouchEnd={() => handleKeyUp(key)}
-              onMouseDown={(event) => handleKeyPress(event, key)}
+              onMouseDown={(event) => event.button === 0 && handleKeyPress(event, key)}
               onMouseUp={() => handleKeyUp(key)}
               onMouseLeave={handleMouseLeave}
               onKeyDown={(event) => handleKeyDown(event, key)}
               onKeyUp={() => handleKeyUp(key)}
-              onContextMenu={(event) => {
-                event.preventDefault();
-                return false;
-              }}
+              onContextMenu={(event) => handleContextMenu(event, key)}
             >
-              {key === "Backspace" ? <Backspace /> : key === "Enter" ? <KeyReturn /> : key.toUpperCase()}
+              {key === "Backspace" ? <Backspace size={20} /> : key === "Enter" ? <KeyReturn size={20} /> : key.toUpperCase()}
             </button>
           ))}
         </div>
