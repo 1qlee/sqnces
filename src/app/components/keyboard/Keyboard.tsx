@@ -95,27 +95,22 @@ export default function Keyboard({
     setActiveKeys(prev => [...prev, key]);
   }
 
-  // ***** EVENT HANDLERS ***** //
-  // only to handle long press delete
-  function handleKeyTouch(key: string) {
-    updateActiveKeys(key);
-    
-    if (key === "Backspace") {
-      longPressTimer.current = setTimeout(() => {
-        repeatInterval.current = setInterval(() => {
-          deleteChar();
-        }, 100);
-      }, 500);
+  function handleGuessSubmit() {
+    if (guessRef.current.length > 0) {
+      setSubmittedWords && setSubmittedWords(prev => [...prev, guessRef.current]);
+      setGuess("");
     }
   }
 
-  function handleKeyPress(event: React.KeyboardEvent<HTMLButtonElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
+  // ***** EVENT HANDLERS ***** //
+  function handleKeyPress(event: React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>, key: string) {
+    console.log(event)
     updateActiveKeys(key);
 
     // deleting
     if (key === "Backspace") {
 
-      // check for mouse event (not a keyboard event)
+      // check for non-keyboard event
       if (!('key' in event)) {
         // detect long press
         longPressTimer.current = setTimeout(() => {
@@ -147,13 +142,6 @@ export default function Keyboard({
     }
   }
 
-  function handleGuessSubmit() {
-    if (guessRef.current.length > 0) {
-      setSubmittedWords && setSubmittedWords(prev => [...prev, guessRef.current]);
-      setGuess("");
-    }
-  }
-
   // when keys are focused, we need to handle inputting keys via the "Enter" key
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, key: string) {
     const char = event.key;
@@ -169,7 +157,7 @@ export default function Keyboard({
     setActiveKeys(prev => prev.filter(k => k !== key));
   }
 
-  function handleMouseLeave() {
+  function handlePointerLeave() {
     clearTimers()
 
     if (activeKeys.length > 0) {
@@ -180,7 +168,7 @@ export default function Keyboard({
   // handle long press
   function handleContextMenu(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
     event.preventDefault();
-    handleKeyTouch(key);
+    return false;
   }
 
 
@@ -204,11 +192,9 @@ export default function Keyboard({
                 ${isKeyActive(key) ? styles.active : ""}
                 ${key === "Enter" || key === "Backspace" ? styles.largeKey : ""}
               `}
-              onTouchStart={() => handleKeyTouch(key)}
-              onTouchEnd={() => handleKeyUp(key)}
-              onMouseDown={(event) => event.button === 0 && handleKeyPress(event, key)}
-              onMouseUp={() => handleKeyUp(key)}
-              onMouseLeave={handleMouseLeave}
+              onPointerDown={(event) => handleKeyPress(event, key)}
+              onPointerUp={() => handleKeyUp(key)}
+              onPointerLeave={handlePointerLeave}
               onKeyDown={(event) => handleKeyDown(event, key)}
               onKeyUp={() => handleKeyUp(key)}
               onContextMenu={(event) => handleContextMenu(event, key)}
