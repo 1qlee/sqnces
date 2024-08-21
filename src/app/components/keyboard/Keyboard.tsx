@@ -98,7 +98,7 @@ export default function Keyboard({
   // ***** EVENT HANDLERS ***** //
   // only to handle long press delete
   function handleKeyTouch(key: string) {
-    handleKeyUp(key);
+    updateActiveKeys(key);
     
     if (key === "Backspace") {
       longPressTimer.current = setTimeout(() => {

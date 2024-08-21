@@ -6,6 +6,7 @@
 .row {
   display: flex;
   touch-action: manipulation;
+  padding: 0 8px;
   width: 100%;
   margin: 0 auto;
 }
@@ -22,7 +23,7 @@
   flex: 1;
   font-size: 1.25rem;
   height: 54px;
-  min-width: 36px;
+  min-width: 32px;
   justify-content: center;
   margin: 2px;
   text-transform: uppercase;
