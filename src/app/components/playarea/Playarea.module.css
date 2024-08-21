@@ -6,8 +6,10 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
 
-  @media screen and (max-height: 900px) {
+@media screen and (max-height: 960px) and (max-width: 660px) {
+  .playarea {
     max-height: calc(100vh - 60px);
   }
 }

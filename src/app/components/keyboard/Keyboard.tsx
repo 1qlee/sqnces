@@ -9,9 +9,9 @@ import { useRef } from "react";
 import { Guess } from "../guess/Guess";
 
 const KeyboardRows = [
-  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', "Backspace"],
-  ['', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', "Enter", ''],
-  ['', '', '', '', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '', '', '', '']
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',],
+  ['', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ''],
+  ["Enter", 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace']
 ]
 
 interface KeyboardProps {
@@ -199,7 +199,11 @@ export default function Keyboard({
           {row.map((key, index) => (
             <button
               key={key + index}
-              className={`${key.length > 0 ? styles.key : styles.keySpacer} ${isKeyActive(key) ? styles.active : ""}`}
+              className={`
+                ${key.length > 0 ? styles.key : styles.keySpacer} 
+                ${isKeyActive(key) ? styles.active : ""}
+                ${key === "Enter" || key === "Backspace" ? styles.largeKey : ""}
+              `}
               onTouchStart={() => handleKeyTouch(key)}
               onTouchEnd={() => handleKeyUp(key)}
               onMouseDown={(event) => event.button === 0 && handleKeyPress(event, key)}

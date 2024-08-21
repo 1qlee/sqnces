@@ -6,6 +6,7 @@
   border-bottom: 2px solid;
   background-color: var(--background);
   color: var(--foreground);
+  min-width: 400px;
   width: 100%;
   margin: 0 auto;
 }
