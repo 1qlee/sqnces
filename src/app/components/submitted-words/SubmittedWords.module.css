@@ -1,6 +1,9 @@
 .wrapper {
   overflow-y: auto;
-  min-height: 250px;
+  max-height: calc(100vh - 260px);
+  min-width: 400px;
+  margin: 0 auto;
+  padding: 1rem 0;
 }
 
 .word {

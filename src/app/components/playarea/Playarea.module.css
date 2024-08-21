@@ -10,6 +10,6 @@
 
 @media screen and (max-height: 960px) and (max-width: 660px) {
   .playarea {
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 76px);
   }
 }

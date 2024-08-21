@@ -13,7 +13,7 @@ export const Guess = React.memo(({
 }: GuessProps) => {
   return (
     <div className={styles.guess}>
-      {guess && <h1>{guess}</h1>}
+      {guess && <p>{guess}</p>}
     </div>
   )
 })
