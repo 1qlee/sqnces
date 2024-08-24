@@ -6,6 +6,7 @@
   height: 66px;
   overflow-x: clip;
   min-width: 400px;
+  letter-spacing: 1px;
 
   &:focus {
     outline: none;

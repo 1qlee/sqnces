@@ -4,7 +4,7 @@ import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 
 import styles from "./Keyboard.module.css";
 import { Backspace, KeyReturn } from "@phosphor-icons/react/dist/ssr";
-import { validateAlpha } from "../playarea/Playarea";
+import { validateAlpha } from "../game/Game";
 import { useRef } from "react";
 import { Guess } from "../guess/Guess";
 
@@ -15,11 +15,11 @@ const KeyboardRows = [
 ]
 
 interface KeyboardProps {
-  setSubmittedWords?: Dispatch<SetStateAction<string[]>>;
+  setSubmittedGuesses?: Dispatch<SetStateAction<string[]>>;
 }
 
 export default function Keyboard({ 
-  setSubmittedWords,
+  setSubmittedGuesses,
 }: KeyboardProps) {
   const [guess, setGuess] = useState("");
   const guessRef = useRef(guess); // Create a ref to store the guess value
@@ -97,7 +97,7 @@ export default function Keyboard({
 
   function handleGuessSubmit() {
     if (guessRef.current.length > 0) {
-      setSubmittedWords && setSubmittedWords(prev => [...prev, guessRef.current]);
+      setSubmittedGuesses && setSubmittedGuesses(prev => [...prev, guessRef.current]);
       setGuess("");
     }
   }

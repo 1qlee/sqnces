@@ -1,8 +1,7 @@
 import { auth } from "~/root/auth"
 import { api, HydrateClient } from "~/trpc/server";
 import Nav from "./components/nav/Nav";
-import styles from "./index.module.css";
-import Playarea from "./components/playarea/Playarea";
+import Game from "./components/game/Game";
 
 export default async function Home() {
   // const hello = await api.post.hello({ text: "from tRPC" });
@@ -13,7 +12,7 @@ export default async function Home() {
   return (
     <HydrateClient>
       <Nav />
-      <Playarea />
+      <Game />
     </HydrateClient>
   );
 }

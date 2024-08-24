@@ -1,4 +1,4 @@
-.playarea {
+.game {
   width: 100%;
   max-width: 632px;
   margin: 0 auto;
@@ -9,7 +9,7 @@
 }
 
 @media screen and (max-height: 960px) and (max-width: 660px) {
-  .playarea {
+  .game {
     max-height: calc(100vh - 142px);
   }
 }
