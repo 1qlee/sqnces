@@ -1,6 +1,6 @@
 import styles from "./Sequence.module.css";
 
-async function getWord() {
+async function getWord(): Promise<string[]> {
   const res = await fetch(
     `https://random-word-api.herokuapp.com/word?length=${Math.floor(Math.random() * 11) + 5}`,
     {
@@ -36,7 +36,7 @@ function generateSequence(str: string) {
 
 export default async function Sequence() {
   const data = await getWord();
-  const sqnce = generateSequence(data[0]);
+  const sqnce = data[0] ? generateSequence(data[0]) : '';
 
   return (
     <div className={styles.sequence}>
