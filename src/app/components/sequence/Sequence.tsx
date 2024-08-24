@@ -1,16 +1,18 @@
 import styles from "./Sequence.module.css";
 
-async function getWord(): Promise<string[]> {
-  const res = await fetch(
-    `https://random-word-api.herokuapp.com/word?length=${Math.floor(Math.random() * 11) + 5}`,
-    {
-      next: {
-        revalidate: 15,
+  async function getWord(): Promise<string[]> {
+    const res = await fetch(
+      `https://random-word-api.herokuapp.com/word?length=${Math.floor(Math.random() * 11) + 5}`,
+      {
+        next: {
+          revalidate: 15,
+        }
       }
-    }
-  );
-  return res.json();
-}
+    );
+    const data = (await res.json()) as string[];
+
+    return data;
+  }
 
 function generateSequence(str: string) {
   const substrings = [];
