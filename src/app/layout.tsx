@@ -5,6 +5,9 @@ import { type Metadata, type Viewport } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "react-hot-toast";
+import "~/styles/toast.css";
+
 
 export const metadata: Metadata = {
   title: "sqnces",
@@ -30,6 +33,36 @@ export default function RootLayout({
         <ThemeProvider enableSystem={false}>
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </ThemeProvider>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          gutter={8}
+          containerClassName=""
+          containerStyle={{
+            top: 128,
+          }}
+          toastOptions={{
+            // Define default options
+            className: '',
+            duration: 3000,
+            style: {
+              background: 'var(--background)',
+              color: 'var(--foreground)',
+            },
+            error: {
+              style: {
+                background: '#dc2626',
+                color: '#fee2e2',
+                animation: "headShake 0.5s",
+              },
+              icon: null,
+              iconTheme: {
+                primary: "#fee2e2",
+                secondary: "#dc2626",
+              }
+            }
+          }}
+        />
       </body>
     </html>
   );

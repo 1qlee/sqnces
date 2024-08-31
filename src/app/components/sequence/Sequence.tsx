@@ -1,48 +1,15 @@
 import styles from "./Sequence.module.css";
+import type { WordData } from "~/app/components/game/Game";
 
-  async function getWord(): Promise<string[]> {
-    const res = await fetch(
-      `https://random-word-api.herokuapp.com/word?length=${Math.floor(Math.random() * 11) + 5}`,
-      {
-        next: {
-          revalidate: 15,
-        }
-      }
-    );
-    const data = (await res.json()) as string[];
-
-    return data;
-  }
-
-function generateSequence(str: string) {
-  const substrings = [];
-
-  // Loop through the string and extract 3-letter substrings
-  for (let i = 0; i <= str.length - 3; i++) {
-    const substring = str.substring(i, i + 3);
-
-    // Check if the substring contains any spaces
-    if (!substring.includes(' ')) {
-      substrings.push(substring);
-    }
-  }
-
-  // Return a random substring from the list, if any are found
-  if (substrings.length > 0) {
-    const randomIndex = Math.floor(Math.random() * substrings.length);
-    return substrings[randomIndex];
-  } else {
-    return null; // Return null if no valid substrings are found
-  }
-}
-
-export default async function Sequence() {
-  const data = await getWord();
-  const sqnce = data[0] ? generateSequence(data[0]) : '';
+export default async function Sequence({
+  data
+}: WordData) {
 
   return (
     <div className={styles.sequence}>
-      <h1>{sqnce}</h1>
+      {data.sequence}
+      <p>{data.word}</p>
     </div>
   )
 }
+

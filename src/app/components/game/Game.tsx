@@ -1,24 +1,31 @@
+"use server"
+
+import { api } from "~/trpc/server";
+
 import styles from "./Game.module.css";
 import Sequence from "../sequence/Sequence";
 import GuessArea from "../guess-area/GuessArea";
 
-export function validateAlpha(char: string) {
-  // if char is not an alpha character
-  if (!/^[a-zA-Z]$/.test(char)) {
-    return false;
+export interface WordData {
+  data: {
+    sequence: string;
+    word: string;
   }
-
-  return true;
 }
 
 export default async function Game() {
+  const data = await api.word.get();
 
   return (
     <main 
       className={styles.game}
     >
-      <Sequence />
-      <GuessArea />
+      <Sequence 
+        data={data}
+      />
+      <GuessArea 
+        data={data}
+      />
     </main>
   )
 }
