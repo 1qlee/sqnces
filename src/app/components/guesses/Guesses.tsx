@@ -30,7 +30,7 @@ export const Guesses = memo(({
   wordData,
 }: GuessesProps) => {
   const { word } = wordData;
-  const { guesses } = gameState;
+  const { guesses, currentGuessIndex } = gameState;
 
   return (
     <div className={styles.wrapper}>
@@ -59,6 +59,19 @@ export const Guesses = memo(({
           </span>
         </div>
       ))}
+      {currentGuessIndex === 1 && (
+        <div className={styles.word}>
+          {word.split("").map((char, i) => (
+            <p
+              key={i}
+              className={`${styles.letter} ${styles.isBlank}`}
+              style={{ animationDelay: `${i * 50 + guesses[0]!.length * 60}ms` }}
+            >
+              
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   )
 });

@@ -4,7 +4,7 @@ import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { validateGuess } from "~/app/actions/validateGuess";
 
 import styles from "./Keyboard.module.css";
-import { Backspace, KeyReturn } from "@phosphor-icons/react";
+import { Backspace, ArrowSquareRight } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { Guess } from "../guess/Guess";
 import type { GameState } from "../guess-area/GuessArea";
@@ -14,7 +14,7 @@ import "~/styles/toast.css";
 const KeyboardRows = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',],
   ['', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ''],
-  ["Enter", 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace']
+  ['', '', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace', '']
 ]
 
 interface KeyboardProps {
@@ -245,7 +245,7 @@ export default function Keyboard({
               className={`
                 ${key.length > 0 ? styles.key : styles.keySpacer} 
                 ${isKeyActive(key) ? styles.active : ""}
-                ${key === "Enter" || key === "Backspace" ? styles.largeKey : ""}
+                ${key === "Backspace" ? styles.largeKey : ""}
               `}
               {...(!isGameOver && { 
                 onPointerDown: (event) => handleKeyPress(event, key),
@@ -256,11 +256,29 @@ export default function Keyboard({
                 onContextMenu: (event) => handleContextMenu(event, key),
               })}
             >
-              {key === "Backspace" ? <Backspace size={20} /> : key === "Enter" ? <KeyReturn size={20} /> : key.toUpperCase()}
+              {key === "Backspace" ? <Backspace size={20} /> : key.toUpperCase()}
             </button>
           ))}
         </div>
       ))}
+      <div
+        className={styles.buttonWrapper}
+      >
+        <button
+          className={styles.submitButton}
+          {...(!isGameOver && {
+            onPointerDown: (event) => handleKeyPress(event, "Enter"),
+            onPointerUp: () => handleKeyUp("Enter"),
+            onPointerLeave: handlePointerLeave,
+            onKeyDown: (event) => handleKeyDown(event, "Enter"),
+            onKeyUp: () => handleKeyUp("Enter"),
+            onContextMenu: (event) => handleContextMenu(event, "Enter"),
+          })}
+        >
+          <span>Enter</span>
+          <ArrowSquareRight size={20} color="var(--foreground)" weight="fill" />
+        </button>
+      </div>
     </div>
   )
 }

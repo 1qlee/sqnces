@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { WordData } from "~/app/components/game/Game";
+import styles from "./GuessArea.module.css";
 
 import { Guesses } from "../guesses/Guesses";
 import Keyboard from "../keyboard/Keyboard";
@@ -43,7 +44,7 @@ export default function GuessArea({
   }, [gameState])
   
   return (
-    <div>
+    <div className={styles.guessArea}>
       <Guesses 
         gameState={gameState}
         wordData={data}
