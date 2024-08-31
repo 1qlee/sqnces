@@ -8,8 +8,6 @@ export default async function Sequence({
   return (
     <div className={styles.sequence}>
       {data.sequence}
-      <p>{data.word}</p>
     </div>
   )
 }
-

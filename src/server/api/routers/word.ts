@@ -6,7 +6,7 @@ import {
 import type { WordEntry } from "~/server/types/definition";
 
 let cachedWord: { data: { word: string, sequence: string }, timestamp: number } | null = null;
-const CACHE_DURATION = 3600; // seconds
+const CACHE_DURATION = 60; // seconds
 const CACHE_DURATION_FACTORED = CACHE_DURATION * 1000;
 
 function generateSequence(str: string) {

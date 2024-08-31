@@ -45,27 +45,18 @@ export const Guesses = memo(({
               {char}
             </p>
           ))}
-          {(index === 0 || index === 1 || index === 2) && (
-            <span 
-              className={styles.icon}
-              style={{ animationDelay: `${guess.length * 50 + 300}ms` }}
-            >
-              {word.length === guess.length ? (
-                <>
-                  {index === 0 && (
-                    <CheckFat size={16} weight="fill" color="var(--foreground)" />
-                  )}
-                  {index > 1 && (
-                    <span style={{color: "red", fontSize:"0.75rem"}}>{countUnmatchedCharacters(guess, word)}</span>
-                  )}
-                </>
-              ) : word.length > guess.length ? (
-                <ArrowFatUp size={16} weight="fill" color="var(--foreground)" />
-              ) : (
-                <ArrowFatDown size={16} weight="fill" color="var(--foreground)" />
-              )}
-            </span>
-          )}
+          <span
+            className={styles.icon}
+            style={{ animationDelay: `${guess.length * 50 + 300}ms` }}
+          >
+            {word.length === guess.length ? (
+              <span style={{ color: "red", fontSize: "0.75rem" }}>{countUnmatchedCharacters(guess, word)}</span>
+            ) : word.length > guess.length ? (
+              <ArrowFatUp size={16} weight="fill" color="var(--foreground)" />
+            ) : (
+              <ArrowFatDown size={16} weight="fill" color="var(--foreground)" />
+            )}
+          </span>
         </div>
       ))}
     </div>
