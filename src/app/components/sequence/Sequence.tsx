@@ -6,8 +6,17 @@ export default async function Sequence({
 }: WordData) {
 
   return (
-    <div className={styles.sequence}>
-      {data.sequence}
+    <div className={styles.wrapper}>
+      <div className={styles.sequence}>
+        {data.sequence.split("").map((char, i) => (
+          <span 
+            key={i}
+            className={styles.letter}
+          >
+            {char}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }

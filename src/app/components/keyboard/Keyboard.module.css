@@ -9,7 +9,6 @@
   touch-action: manipulation;
   padding: 0 8px;
   width: 100%;
-  overflow-x: hidden;
 }
 
 .key {
@@ -21,7 +20,7 @@
   cursor: pointer;
   display: flex;
   flex: 1;
-  font-size: 1.25rem;
+  font-size: 1rem;
   min-width: 27px;
   height: 54px;
   justify-content: center;
@@ -43,6 +42,8 @@
   visibility: hidden;
   user-select: none;
   pointer-events: none;
+  margin: 0;
+  padding: 0;
 }
 
 .largeKey {
@@ -52,6 +53,8 @@
 
 .buttonWrapper {
   padding: 0.5rem;
+  display: flex;
+  justify-content: center;
 }
 
 .submitButton {
@@ -65,7 +68,7 @@
   justify-content: center;
   align-items: center;
   gap: 0.25rem;
-  width: 100%;
+  width: 70%;
 
   &:hover {
     cursor: pointer;

@@ -39,12 +39,12 @@ export default function RootLayout({
           gutter={8}
           containerClassName=""
           containerStyle={{
-            top: 128,
+            top: 24,
           }}
           toastOptions={{
             // Define default options
             className: '',
-            duration: 3000,
+            duration: 500,
             style: {
               background: 'var(--background)',
               color: 'var(--foreground)',

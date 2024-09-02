@@ -10,6 +10,6 @@
 
 @media screen and (max-height: 960px) and (max-width: 660px) {
   .game {
-    max-height: calc(100vh - 142px);
+    max-height: calc(100vh - 124px);
   }
 }

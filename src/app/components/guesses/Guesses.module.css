@@ -1,13 +1,12 @@
 .wrapper {
-  max-height: calc(100vh - 260px);
   margin: 1rem auto 0;
   padding: 0 1rem;
-  min-height: 320px;
-  overflow: hidden;
+  overflow-y: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
 }
 
 .word {
@@ -32,7 +31,6 @@
   height: 2rem;
   align-items: center;
   justify-content: center;
-  opacity: 0;
   box-shadow: 2px 2px 0 var(--foreground);
 
   &.isBlank {
@@ -42,9 +40,16 @@
     box-shadow: 2px 2px 0 var(--foreground);
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    animation: dropIn 0.2s;
-    animation-fill-mode: forwards;
+  &.noAnimation {
+    animation: none;
+  }
+
+  &:not(.noAnimation) {
+    @media (prefers-reduced-motion: no-preference) {
+      opacity: 0;
+      animation: dropIn 0.2s;
+      animation-fill-mode: forwards;
+    }
   }
   
   &:not(:last-child) {

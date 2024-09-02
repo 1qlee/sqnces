@@ -1,6 +1,26 @@
-.sequence {
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 1rem 0;
+}
+
+.sequence {
   text-align: center;
-  font-size: 2rem;
-  width: 100%;
+  background-color: var(--background);
+  color: var(--foreground);
+  border-radius: 0.25rem;
+}
+
+.letter {
+  display: inline-block;
+  font-size: 1.5rem;
+  color: var(--foreground);
+  padding: 0.5rem;
+  width: 2rem;
+  flex: 1;
+
+  &:not(:last-child) {
+    margin-right: 4px;
+  }
 }

@@ -4,10 +4,10 @@ import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { validateGuess } from "~/app/actions/validateGuess";
 
 import styles from "./Keyboard.module.css";
-import { Backspace, ArrowSquareRight } from "@phosphor-icons/react";
+import { Backspace } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { Guess } from "../guess/Guess";
-import type { GameState } from "../guess-area/GuessArea";
+import { type LetterData, type GameState, type GuessData } from "../guess-area/GuessArea";
 import toast from "react-hot-toast";
 import "~/styles/toast.css";
 
@@ -20,6 +20,8 @@ const KeyboardRows = [
 interface KeyboardProps {
   gameState: GameState;
   setGameState: Dispatch<SetStateAction<GameState>>;
+  guess: string;
+  setGuess: Dispatch<SetStateAction<string>>;
   wordData: {
     word: string;
     sequence: string;
@@ -28,12 +30,13 @@ interface KeyboardProps {
 
 export default function Keyboard({ 
   gameState,
+  guess,
   setGameState,
+  setGuess,
   wordData,
 }: KeyboardProps) {
   const isGameOver = gameState.status === "won" || gameState.status === "lost";
   const [loading, setLoading] = useState(false);
-  const [guess, setGuess] = useState("");
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const guessRef = useRef(guess); // Create a ref to store the guess value
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -119,12 +122,38 @@ export default function Keyboard({
     setActiveKeys(prev => [...prev, key]);
   }
 
+  function createValidationMap(word: string) {
+    const wordArray = word.split("");
+    const guessArray = guess.split("");
+    const validationMap: LetterData[] = wordArray.map((char, i) => {
+      if (char === guessArray[i]) {
+        return {
+          type: "correct",
+          letter: char,
+        };
+      } else if (guessArray.includes(char)) {
+        return {
+          type: "misplaced",
+          letter: char,
+        };
+      } else {
+        return {
+          type: "incorrect",
+          letter: char,
+        };
+      }
+    });
+
+    return validationMap
+  }
+
   async function handleGuessSubmit() {
     if (guessRef.current.length > 3) {
       const word = guessRef.current;
       
       // if the guess doesn't include the sequence
       if (wordData.sequence && !word.includes(wordData.sequence)) {
+        toast.dismiss();
         toast.error("Word must include the sequence");
       }
       else {
@@ -132,13 +161,18 @@ export default function Keyboard({
         // check if guess is a valid word
         const validateData = await validateGuess(word);
         const newGuessIndex = gameState.currentGuessIndex + 1
+        const newGuess: GuessData = {
+          number: newGuessIndex,
+          validationMap: createValidationMap(word),
+          word: word,
+        }
 
         if (validateData.isValid) {
           setGameState({
             ...gameState,
             guesses: [
-              ...gameState.guesses,
-              word,
+              ...gameState?.guesses,
+              newGuess,
             ],
             currentGuessIndex: newGuessIndex,
           })
@@ -147,11 +181,13 @@ export default function Keyboard({
         }
         else {
           setLoading(false);
+          toast.dismiss();
           return toast.error("Invalid word");
         }
       }
     }
     else {
+      toast.dismiss();
       return toast.error("Word is 4 letters or more.")
     }
   }
@@ -256,7 +292,7 @@ export default function Keyboard({
                 onContextMenu: (event) => handleContextMenu(event, key),
               })}
             >
-              {key === "Backspace" ? <Backspace size={20} /> : key.toUpperCase()}
+              {key === "Backspace" ? <Backspace size={16} /> : key.toUpperCase()}
             </button>
           ))}
         </div>
@@ -276,7 +312,6 @@ export default function Keyboard({
           })}
         >
           <span>Enter</span>
-          <ArrowSquareRight size={20} color="var(--foreground)" weight="fill" />
         </button>
       </div>
     </div>

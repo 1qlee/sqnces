@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 
 import styles from "./Guesses.module.css";
 import { ArrowFatDown, ArrowFatUp, CheckFat } from "@phosphor-icons/react";
@@ -6,27 +6,34 @@ import type { GameState } from "../guess-area/GuessArea";
 
 type GuessesProps = {
   gameState: GameState;
+  guess: string;
   wordData: {
     word: string;
     sequence: string;
   };
 }
 
-function countUnmatchedCharacters(string1: string, string2: string) {
-  let unmatchedCount = 0;
+const BlankWord = memo(({ word, guess }: { word: string, guess: string }) => {
+  const splitWord = word.split("");
 
-  // Compare characters at each position
-  for (let i = 0; i < string1.length; i++) {
-    if (string1[i] !== string2[i]) {
-      unmatchedCount++;
-    }
-  }
-
-  return unmatchedCount;
-}
+  return (
+    <div className={styles.word}>
+      {splitWord.map((char, i) => (
+        <span
+          key={i}
+          className={styles.letter}
+          style={{ animationDelay: `${i * 50}ms` }}
+        >
+          {guess[i]}
+        </span>
+      ))}
+    </div>
+  )
+})
 
 export const Guesses = memo(({
   gameState,
+  guess,
   wordData,
 }: GuessesProps) => {
   const { word } = wordData;
@@ -36,39 +43,31 @@ export const Guesses = memo(({
     <div className={styles.wrapper}>
       {guesses.map((guess, index) => (
         <div className={styles.word} key={index}>
-          {guess?.split("").map((char, i) => (
-            <p
+          {guess?.validationMap.map((char, i) => (
+            <span
               key={i}
-              className={styles.letter}
-              style={{ animationDelay: `${i * 50}ms` }}
+              className={`${styles.letter} ${styles.noAnimation}`}
+
             >
-              {char}
-            </p>
+              {char.letter}
+            </span>
           ))}
-          <span
-            className={styles.icon}
-            style={{ animationDelay: `${guess.length * 50 + 300}ms` }}
-          >
-            {word.length === guess.length ? (
-              <span style={{ color: "red", fontSize: "0.75rem" }}>{countUnmatchedCharacters(guess, word)}</span>
-            ) : word.length > guess.length ? (
-              <ArrowFatUp size={16} weight="fill" color="var(--foreground)" />
-            ) : (
-              <ArrowFatDown size={16} weight="fill" color="var(--foreground)" />
-            )}
-          </span>
         </div>
       ))}
-      {currentGuessIndex === 1 && (
+      {gameState.status === "playing" && currentGuessIndex > 0 ? (
+        <BlankWord 
+          word={word} 
+          guess={guess}
+        />
+      ) : (
         <div className={styles.word}>
-          {word.split("").map((char, i) => (
-            <p
+          {guess?.split("").map((char, i) => (
+            <span
               key={i}
-              className={`${styles.letter} ${styles.isBlank}`}
-              style={{ animationDelay: `${i * 50 + guesses[0]!.length * 60}ms` }}
+              className={styles.letter}
             >
-              
-            </p>
+              {char}
+            </span>
           ))}
         </div>
       )}
@@ -77,3 +76,4 @@ export const Guesses = memo(({
 });
 
 Guesses.displayName = "Guesses";
+BlankWord.displayName = "BlankWord";
