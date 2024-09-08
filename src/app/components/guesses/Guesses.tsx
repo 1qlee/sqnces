@@ -1,8 +1,8 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 
 import styles from "./Guesses.module.css";
-import { ArrowFatDown, ArrowFatUp, CheckFat } from "@phosphor-icons/react";
-import type { GameState } from "../guess-area/GuessArea";
+import { type GameState } from "~/app/types/gameTypes";
+import { X, Empty, Check, Square } from "@phosphor-icons/react";
 
 type GuessesProps = {
   gameState: GameState;
@@ -13,31 +13,47 @@ type GuessesProps = {
   };
 }
 
-const BlankWord = memo(({ word, guess }: { word: string, guess: string }) => {
-  const splitWord = word.split("");
+function parseLetterStyle(type: string) {
+  switch (type) {
+    case "correct":
+      return styles.isCorrect;
+    case "incorrect":
+      return styles.isIncorrect;
+    case "misplaced":
+      return styles.isMisplaced;
+    case "empty":
+      return styles.isEmpty;
+    default:
+      return null;
+  }
+}
 
-  return (
-    <div className={styles.word}>
-      {splitWord.map((char, i) => (
-        <span
-          key={i}
-          className={styles.letter}
-          style={{ animationDelay: `${i * 50}ms` }}
-        >
-          {guess[i]}
-        </span>
-      ))}
-    </div>
-  )
-})
+function parseLetterIcon(type: string) {
+  switch (type) {
+    case "correct":
+      return <Check size={10} weight="bold" />;
+    case "incorrect":
+      return <X size={10} weight="bold" />;
+    case "misplaced":
+      return <Square size={10} weight="bold" />;
+    case "empty":
+      return <Empty size={10} weight="bold" />;
+    default:
+      return null;
+  }
+}
 
 export const Guesses = memo(({
   gameState,
   guess,
-  wordData,
 }: GuessesProps) => {
-  const { word } = wordData;
-  const { guesses, currentGuessIndex } = gameState;
+  const { guesses, status } = gameState;
+
+  if (guesses.length === 0 && guess.length === 0) {
+    return (
+      <p className={styles.helperText}>Start typing to enter your first guess</p>
+    )
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -46,20 +62,15 @@ export const Guesses = memo(({
           {guess?.validationMap.map((char, i) => (
             <span
               key={i}
-              className={`${styles.letter} ${styles.noAnimation}`}
-
+              className={`${styles.letter} ${styles.noAnimation} ${parseLetterStyle(char.type)}`}
             >
               {char.letter}
+              <span className={styles.icon}>{parseLetterIcon(char.type)}</span>
             </span>
           ))}
         </div>
       ))}
-      {gameState.status === "playing" && currentGuessIndex > 0 ? (
-        <BlankWord 
-          word={word} 
-          guess={guess}
-        />
-      ) : (
+      {status === "playing" && (
         <div className={styles.word}>
           {guess?.split("").map((char, i) => (
             <span
@@ -76,4 +87,3 @@ export const Guesses = memo(({
 });
 
 Guesses.displayName = "Guesses";
-BlankWord.displayName = "BlankWord";

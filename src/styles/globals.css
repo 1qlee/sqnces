@@ -19,6 +19,11 @@
   --grayed: var(--olive-3);
   --shadow-normal: rgba(0, 0, 0, 0.3);
   --shadow-active: rgba(0, 0, 0, 0.1);
+  --red: #dc2626;
+  --correct: #bbf7d0;
+  --misplaced: #fef08a;
+  --incorrect: #fecaca;
+  --empty: var(--olive-6);
 }
 
 [data-theme='dark'] {

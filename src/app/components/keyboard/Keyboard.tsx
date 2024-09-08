@@ -4,10 +4,9 @@ import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { validateGuess } from "~/app/actions/validateGuess";
 
 import styles from "./Keyboard.module.css";
-import { Backspace } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { Guess } from "../guess/Guess";
-import { type LetterData, type GameState, type GuessData } from "../guess-area/GuessArea";
+import { type LetterData, type GameState, type GuessData } from "~/app/types/gameTypes";
 import toast from "react-hot-toast";
 import "~/styles/toast.css";
 
@@ -49,12 +48,11 @@ export default function Keyboard({
 
   useEffect(() => {
     function handleKeyTyping(event: KeyboardEvent) {
-      if (!loading) {
-        // unfocus any keys
-        if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
-          document.activeElement.blur();
-        }
+      if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
+        return;
+      }
 
+      if (!loading) {
         const key = event.key;
         updateActiveKeys(key);
 
@@ -67,7 +65,7 @@ export default function Keyboard({
             deleteChar();
           }
         } else if (key !== 'Tab') {
-          if (validateAlpha(key)) {
+          if (validateAlpha(key) && guessRef.current.length < 8) {
             setGuess(prev => prev + key.toUpperCase());
           } else if (key === "Enter") {
             void handleGuessSubmit();
@@ -122,79 +120,111 @@ export default function Keyboard({
     setActiveKeys(prev => [...prev, key]);
   }
 
-  function createValidationMap(word: string) {
-    const wordArray = word.split("");
-    const guessArray = guess.split("");
-    const validationMap: LetterData[] = wordArray.map((char, i) => {
-      if (char === guessArray[i]) {
-        return {
-          type: "correct",
-          letter: char,
-        };
-      } else if (guessArray.includes(char)) {
-        return {
-          type: "misplaced",
-          letter: char,
-        };
-      } else {
-        return {
-          type: "incorrect",
-          letter: char,
-        };
-      }
-    });
+  function createValidationMap(guessedWord: string) {
+    const { word, sequence } = wordData;
+    const splitWord: { letter: string, sequence: boolean}[] = [];
+    const result: LetterData[] = []; // returned variable
+    // guess variables
+    const guessLength = guessedWord.length; // length of the guess
+    const charsBefore = guessedWord.indexOf(sequence); // number of characters before the sequence begins 4
+    const charsAfter = guessLength - charsBefore - 3; // number of characters after the sequence ends 1
+    // word variables
+    const wordLength = word.length; // length of the word 8
+    const startIndex = word.indexOf(sequence) - charsBefore; // can be a negative number 4
+    const endIndex = word.indexOf(sequence) + 3 + charsAfter; // 8
 
-    return validationMap
+    // create an array of letters for the word
+    for (let n = startIndex; n < endIndex; n++) {
+      // if the index is out of bounds (aka the guess has more characters on either side of the sequence than the word)
+      if (n < 0 || n > wordLength) {
+        splitWord.push({ letter: "", sequence: false });
+      }
+      else if (n >= word.indexOf(sequence) && n < word.indexOf(sequence) + 3) {
+        splitWord.push({ letter: word.charAt(n), sequence: true });
+      }
+      else {
+        splitWord.push({ letter: word.charAt(n), sequence: false });
+      }
+    }
+
+    for (let i = 0; i < guessLength; i++) {
+      const wordWithoutSequence = word.replace(sequence, "");
+      const letter = guessedWord.charAt(i);
+
+      if (splitWord[i]!.sequence) {
+        result.push({ letter, type: "sequence" });
+      }
+      else if (splitWord[i]!.letter === letter) {
+        wordWithoutSequence.replace(letter, "");
+        result.push({ letter, type: "correct" });
+      }
+      else if (splitWord[i]!.letter === "") {
+        result.push({ letter, type: "empty" });
+      }
+      else if (wordWithoutSequence.includes(letter)) {
+        wordWithoutSequence.replace(letter, "");
+        result.push({ letter, type: "misplaced" });
+      }
+      else {
+        result.push({ letter, type: "incorrect" });
+      }
+    }
+
+    return result
   }
 
   async function handleGuessSubmit() {
-    if (guessRef.current.length > 3) {
-      const word = guessRef.current;
-      
-      // if the guess doesn't include the sequence
-      if (wordData.sequence && !word.includes(wordData.sequence)) {
-        toast.dismiss();
-        toast.error("Word must include the sequence");
-      }
-      else {
-        setLoading(true);
-        // check if guess is a valid word
-        const validateData = await validateGuess(word);
-        const newGuessIndex = gameState.currentGuessIndex + 1
-        const newGuess: GuessData = {
-          number: newGuessIndex,
-          validationMap: createValidationMap(word),
-          word: word,
-        }
+    const guessedWord = guessRef.current;
 
-        if (validateData.isValid) {
-          setGameState({
-            ...gameState,
-            guesses: [
-              ...gameState?.guesses,
-              newGuess,
-            ],
-            currentGuessIndex: newGuessIndex,
-          })
-          setGuess("");
-          return setLoading(false);;
-        }
-        else {
-          setLoading(false);
-          toast.dismiss();
-          return toast.error("Invalid word");
-        }
-      }
+    if (guessedWord.length < 4) {
+      toast.dismiss();
+      return toast.error("Minimum 4-letter word.");
+    }
+
+    // if the guess doesn't include the sequence
+    if (!guessedWord.includes(wordData.sequence)) {
+      toast.dismiss();
+      toast.error("Word must include the sequence");
     }
     else {
-      toast.dismiss();
-      return toast.error("Word is 4 letters or more.")
+      setLoading(true);
+      // check if guess is a valid word
+      const validateData = await validateGuess(guessedWord);
+      const newGuessIndex = gameState.currentGuessIndex + 1
+      const newGuess: GuessData = {
+        number: newGuessIndex,
+        validationMap: createValidationMap(guessedWord),
+        word: guessedWord,
+      }
+
+      if (validateData.isValid) {
+        setGameState({
+          ...gameState,
+          guesses: [
+            ...gameState?.guesses,
+            newGuess,
+          ],
+          currentGuessIndex: newGuessIndex,
+        })
+        setGuess("");
+        return setLoading(false);;
+      }
+      else {
+        setLoading(false);
+        toast.dismiss();
+        return toast.error("Invalid word");
+      }
     }
   }
 
   // ***** EVENT HANDLERS ***** //
   function handleKeyPress(event: React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>, key: string) {
+    if ("pointerType" in event && event.button !== 0) {
+      return 
+    }
+
     if (!loading && !isGameOver) {
+      event.preventDefault();
       updateActiveKeys(key);
 
       // deleting
@@ -225,7 +255,7 @@ export default function Keyboard({
       }
       // inputting
       else {
-        if (validateAlpha(key)) {
+        if (validateAlpha(key) && guessRef.current.length < 8) {
           setGuess(prev => prev + key.toUpperCase());
         }
       }
@@ -234,6 +264,7 @@ export default function Keyboard({
 
   // when keys are focused, we need to handle inputting keys via the "Enter" key
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, key: string) {
+    event.currentTarget.focus();
     const char = event.key;
 
     if (char === "Enter") {
@@ -292,7 +323,7 @@ export default function Keyboard({
                 onContextMenu: (event) => handleContextMenu(event, key),
               })}
             >
-              {key === "Backspace" ? <Backspace size={16} /> : key.toUpperCase()}
+              {key === "Backspace" ? "⌫" : key.toUpperCase()}
             </button>
           ))}
         </div>

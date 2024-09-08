@@ -6,13 +6,6 @@ import styles from "./Game.module.css";
 import Sequence from "../sequence/Sequence";
 import GuessArea from "../guess-area/GuessArea";
 
-export interface WordData {
-  data: {
-    sequence: string;
-    word: string;
-  }
-}
-
 export default async function Game() {
   const data = await api.word.get();
 

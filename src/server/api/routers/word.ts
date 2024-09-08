@@ -36,13 +36,14 @@ export const wordRouter = createTRPCRouter({
         return cachedWord.data;
       }
 
+      // const random = Math.floor(Math.random() * 5) + 4
       const wordRes = await fetch(
-        `https://random-word-api.vercel.app/api?words=1&length=${Math.floor(Math.random() * 5) + 5}`,
+        `https://random-word-api.vercel.app/api?words=1&length=8`,
       );
 
       const wordData = (await wordRes.json()) as string[]; // response will be an array with one word in it
-      const word: string = (wordData[0] ?? "DEFAULT").toUpperCase(); // the word
-      const sequence: string = generateSequence(word) ?? generateSequence("DEFAULT") ?? "DEF"; // random 3-letter sequence with a default value of an empty string
+      const word: string = (wordData[0] ?? "DEFAULTS").toUpperCase(); // the word
+      const sequence: string = generateSequence(word) ?? generateSequence("DEFAULTS") ?? "DEF"; // random 3-letter sequence with a default value of an empty string
 
       cachedWord = { 
         data: {

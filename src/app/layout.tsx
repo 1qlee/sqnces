@@ -44,21 +44,21 @@ export default function RootLayout({
           toastOptions={{
             // Define default options
             className: '',
-            duration: 500,
+            duration: 1500,
             style: {
               background: 'var(--background)',
               color: 'var(--foreground)',
             },
             error: {
               style: {
-                background: '#dc2626',
+                background: 'var(--red)',
                 color: '#fee2e2',
                 animation: "headShake 0.5s",
               },
               icon: null,
               iconTheme: {
                 primary: "#fee2e2",
-                secondary: "#dc2626",
+                secondary: "var(--red)",
               }
             }
           }}

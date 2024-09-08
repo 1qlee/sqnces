@@ -1,28 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { WordData } from "~/app/components/game/Game";
+import { type WordData, type GameState } from "~/app/types/gameTypes";
 
 import { Guesses } from "../guesses/Guesses";
 import Keyboard from "../keyboard/Keyboard";
 import toast from "react-hot-toast";
-
-export type GameState = {
-  guesses: GuessData[];
-  currentGuessIndex: number;
-  status: "won" | "lost" | "playing";
-}
-
-export type LetterData = {
-  letter: string;
-  type: "correct" | "incorrect" | "misplaced";
-}
-
-export type GuessData = {
-  number: number;
-  validationMap: LetterData[];
-  word: string;
-}
 
 export default function GuessArea({
   data

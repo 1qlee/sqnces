@@ -1,9 +1,8 @@
 .guess {
   padding: 1rem 0;
   border: none;
-  font-size: 2rem;
+  font-size: 1rem;
   text-align: center;
-  height: 66px;
   overflow-x: clip;
   letter-spacing: 1px;
   transition: opacity 0.2s;
