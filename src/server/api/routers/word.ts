@@ -5,7 +5,7 @@ import {
 } from "~/server/api/trpc";
 import type { WordEntry } from "~/server/types/definition";
 
-let cachedWord: { data: { word: string, sequence: string }, timestamp: number } | null = null;
+let cachedWord: { data: { word: string, sequence: string, letters: string[] }, timestamp: number } | null = null;
 const CACHE_DURATION = 60; // seconds
 const CACHE_DURATION_FACTORED = CACHE_DURATION * 1000;
 
@@ -22,11 +22,13 @@ function generateSequence(str: string) {
     }
   }
 
-  // Return a random substring from the list, if any are found
-  if (substrings.length > 0) {
-    const randomIndex = Math.floor(Math.random() * substrings.length);
-    return substrings[randomIndex];
-  }
+  // Return a random substring from the list
+  const randomIndex = Math.floor(Math.random() * substrings.length);
+
+  return {
+    sequence: substrings[randomIndex] ?? str.substring(0,3),
+    index: randomIndex,
+  };
 }
 
 export const wordRouter = createTRPCRouter({
@@ -36,19 +38,25 @@ export const wordRouter = createTRPCRouter({
         return cachedWord.data;
       }
 
-      // const random = Math.floor(Math.random() * 5) + 4
+      const DEFAULT_WORD = "DUCKLING";
+      const DEFAULT_LETTERS = ["D", "U", "C", "K", "", "", "", "G"];
+      const DEFAULT_SEQUENCE = "LIN";
       const wordRes = await fetch(
-        `https://random-word-api.vercel.app/api?words=1&length=8`,
+        `https://random-word-api.vercel.app/api?words=1&length=6`,
       );
 
       const wordData = (await wordRes.json()) as string[]; // response will be an array with one word in it
-      const word: string = (wordData[0] ?? "DEFAULTS").toUpperCase(); // the word
-      const sequence: string = generateSequence(word) ?? generateSequence("DEFAULTS") ?? "DEF"; // random 3-letter sequence with a default value of an empty string
+      const word: string = (wordData[0] ?? DEFAULT_WORD).toUpperCase(); // the word
+      const sequence: { sequence: string, index: number } = generateSequence(word) // random 3-letter sequence with a default value of an empty string
+      const wordWithoutSequence = word.substring(0, sequence.index) + word.substring(sequence.index + 3); // remove the sequence from the word
+      const letters = wordWithoutSequence.split("");
+      letters.splice(sequence.index, 0, "", "", "");
 
       cachedWord = { 
         data: {
-          word,
-          sequence,
+          letters: letters ?? DEFAULT_LETTERS,
+          word: word ?? DEFAULT_WORD,
+          sequence: sequence.sequence ?? DEFAULT_SEQUENCE,
         }, 
         timestamp: Date.now() 
       };

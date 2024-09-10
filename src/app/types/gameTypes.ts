@@ -9,6 +9,12 @@ export type LetterData = {
   type: "sequence" | "correct" | "incorrect" | "misplaced" | "empty";
 }
 
+export type SplitWordLetter = { 
+  letter: string;
+  sequence: boolean;
+  index: number;
+}
+
 export type GuessData = {
   number: number;
   validationMap: LetterData[];
@@ -17,6 +23,7 @@ export type GuessData = {
 
 export interface WordData {
   data: {
+    letters: string[];
     sequence: string;
     word: string;
   }

@@ -28,7 +28,7 @@ export default function GuessArea({
         })
       }
       else if (gameState.currentGuessIndex === 6) {
-        toast.error("You lost!");
+        toast.error(`You lost! The word was: ${word}`);
         setGameState({
           ...gameState,
           status: "lost",

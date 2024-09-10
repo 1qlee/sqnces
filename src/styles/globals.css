@@ -33,6 +33,10 @@
   --grayed: var(--olive-10);
   --shadow-normal: rgba(255, 255, 255, 0.3);
   --shadow-active: rgba(255, 255, 255, 0.1);
+  --correct: #15803d;
+  --misplaced: #ca8a04;
+  --incorrect: #dc2626;
+  --empty: var(--olive-11);
 }
 
 /* Reset CSS */

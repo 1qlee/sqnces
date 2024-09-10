@@ -6,7 +6,7 @@ import { validateGuess } from "~/app/actions/validateGuess";
 import styles from "./Keyboard.module.css";
 import { useRef } from "react";
 import { Guess } from "../guess/Guess";
-import { type LetterData, type GameState, type GuessData } from "~/app/types/gameTypes";
+import { type LetterData, type GameState, type GuessData, type SplitWordLetter } from "~/app/types/gameTypes";
 import toast from "react-hot-toast";
 import "~/styles/toast.css";
 
@@ -15,6 +15,7 @@ const KeyboardRows = [
   ['', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ''],
   ['', '', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace', '']
 ]
+const WORD_LENGTH = 6;
 
 interface KeyboardProps {
   gameState: GameState;
@@ -24,6 +25,7 @@ interface KeyboardProps {
   wordData: {
     word: string;
     sequence: string;
+    letters: string[];
   };
 }
 
@@ -65,7 +67,7 @@ export default function Keyboard({
             deleteChar();
           }
         } else if (key !== 'Tab') {
-          if (validateAlpha(key) && guessRef.current.length < 8) {
+          if (validateAlpha(key) && guessRef.current.length < WORD_LENGTH) {
             setGuess(prev => prev + key.toUpperCase());
           } else if (key === "Enter") {
             void handleGuessSubmit();
@@ -121,52 +123,67 @@ export default function Keyboard({
   }
 
   function createValidationMap(guessedWord: string) {
-    const { word, sequence } = wordData;
-    const splitWord: { letter: string, sequence: boolean}[] = [];
+    const { word, sequence, letters } = wordData;
+    const fullWord: { letter: string, used: boolean }[] = letters.map((letter) => ({ letter, used: false }));
+    const splitWord: SplitWordLetter[] = [];
     const result: LetterData[] = []; // returned variable
     // guess variables
     const guessLength = guessedWord.length; // length of the guess
-    const charsBefore = guessedWord.indexOf(sequence); // number of characters before the sequence begins 4
-    const charsAfter = guessLength - charsBefore - 3; // number of characters after the sequence ends 1
+    const charsBefore = guessedWord.indexOf(sequence); // number of characters before the sequence begins 
+    const charsAfter = guessLength - charsBefore - 3; // number of characters after the sequence ends 
     // word variables
-    const wordLength = word.length; // length of the word 8
-    const startIndex = word.indexOf(sequence) - charsBefore; // can be a negative number 4
-    const endIndex = word.indexOf(sequence) + 3 + charsAfter; // 8
+    const wordLength = word.length; // length of the word 
+    const startIndex = word.indexOf(sequence) - charsBefore; // can be a negative number 
+    const endIndex = word.indexOf(sequence) + 3 + charsAfter; // 
 
-    // create an array of letters for the word
+    // we need to generate an array of letters that compares respectively to the letters in guess
     for (let n = startIndex; n < endIndex; n++) {
       // if the index is out of bounds (aka the guess has more characters on either side of the sequence than the word)
       if (n < 0 || n > wordLength) {
-        splitWord.push({ letter: "", sequence: false });
-      }
+        splitWord.push({ 
+          letter: "",
+          sequence: false,
+          index: n,
+        });
+     }
+      // ignore the sequence's letters
       else if (n >= word.indexOf(sequence) && n < word.indexOf(sequence) + 3) {
-        splitWord.push({ letter: word.charAt(n), sequence: true });
+        splitWord.push({ 
+          letter: word.charAt(n),
+          sequence: true,
+          index: n,
+        });
       }
       else {
-        splitWord.push({ letter: word.charAt(n), sequence: false });
+        splitWord.push({ 
+          letter: word.charAt(n),
+          sequence: false,
+          index: n,
+        });
       }
     }
 
-    for (let i = 0; i < guessLength; i++) {
-      const wordWithoutSequence = word.replace(sequence, "");
+    for (let i = guessLength - 1; i >= 0; i--) {
       const letter = guessedWord.charAt(i);
+      const misplacedLetter = fullWord.find((l) => l.letter === letter && !l.used);
+      const currentLetter = splitWord[i];
 
-      if (splitWord[i]!.sequence) {
-        result.push({ letter, type: "sequence" });
+      if (currentLetter!.sequence) {
+        result.unshift({ letter, type: "sequence" });
       }
-      else if (splitWord[i]!.letter === letter) {
-        wordWithoutSequence.replace(letter, "");
-        result.push({ letter, type: "correct" });
+      else if (currentLetter!.letter === letter) {
+        fullWord[currentLetter!.index]!.used = true;
+        result.unshift({ letter, type: "correct" });
       }
       else if (splitWord[i]!.letter === "") {
-        result.push({ letter, type: "empty" });
+        result.unshift({ letter, type: "empty" });
       }
-      else if (wordWithoutSequence.includes(letter)) {
-        wordWithoutSequence.replace(letter, "");
-        result.push({ letter, type: "misplaced" });
+      else if (misplacedLetter) {
+        misplacedLetter.used = true;
+        result.unshift({ letter, type: "misplaced" });
       }
       else {
-        result.push({ letter, type: "incorrect" });
+        result.unshift({ letter, type: "incorrect" });
       }
     }
 
@@ -255,7 +272,7 @@ export default function Keyboard({
       }
       // inputting
       else {
-        if (validateAlpha(key) && guessRef.current.length < 8) {
+        if (validateAlpha(key) && guessRef.current.length < WORD_LENGTH) {
           setGuess(prev => prev + key.toUpperCase());
         }
       }
