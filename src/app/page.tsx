@@ -3,7 +3,12 @@ import { api, HydrateClient } from "~/trpc/server";
 import Nav from "./components/nav/Nav";
 import Game from "./components/game/Game";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Record<string, number | undefined>;
+}) {
+  const wordLength = Number(searchParams.length) || 6;
   // const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
 
@@ -12,7 +17,9 @@ export default async function Home() {
   return (
     <HydrateClient>
       <Nav />
-      <Game />
+      <Game 
+        wordLength={wordLength}
+      />
     </HydrateClient>
   );
 }

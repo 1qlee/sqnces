@@ -6,18 +6,22 @@ import styles from "./Game.module.css";
 import Sequence from "../sequence/Sequence";
 import GuessArea from "../guess-area/GuessArea";
 
-export default async function Game() {
-  const data = await api.word.get();
+export default async function Game({
+  wordLength,
+}: {
+  wordLength: number;
+}) {
+  const wordData = await api.word.get({ length: wordLength });
 
   return (
     <main 
       className={styles.game}
     >
       <Sequence 
-        data={data}
+        wordData={wordData}
       />
       <GuessArea 
-        data={data}
+        wordData={wordData}
       />
     </main>
   )

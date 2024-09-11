@@ -7,16 +7,14 @@ import { Guesses } from "../guesses/Guesses";
 import Keyboard from "../keyboard/Keyboard";
 import toast from "react-hot-toast";
 
-export default function GuessArea({
-  data
-}: WordData) {
+export default function GuessArea({ wordData }: { wordData: WordData }) {
   const [guess, setGuess] = useState("");
   const [gameState, setGameState] = useState<GameState>({
     guesses: [],
     currentGuessIndex: 0,
     status: "playing",
   })
-  const { word } = data
+  const { word } = wordData;
 
   useEffect(() => {
     if (gameState.status === "playing") {
@@ -41,13 +39,13 @@ export default function GuessArea({
     <>
       <Guesses 
         gameState={gameState}
-        wordData={data}
+        wordData={wordData}
         guess={guess}
       />
       <Keyboard
         gameState={gameState}
         setGameState={setGameState}
-        wordData={data}
+        wordData={wordData}
         guess={guess}
         setGuess={setGuess}
       />

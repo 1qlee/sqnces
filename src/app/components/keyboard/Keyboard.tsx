@@ -7,7 +7,7 @@ import { X, Check, Square } from "@phosphor-icons/react";
 import styles from "./Keyboard.module.css";
 import { useRef } from "react";
 import { Guess } from "../guess/Guess";
-import { type LetterData, type GameState, type GuessData, type SplitWordLetter } from "~/app/types/gameTypes";
+import { type LetterData, type GameState, type GuessData, type SplitWordLetter, type WordData } from "~/app/types/gameTypes";
 import toast from "react-hot-toast";
 import "~/styles/toast.css";
 
@@ -16,18 +16,13 @@ const KeyboardRows = [
   ['', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ''],
   ['', '', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Backspace', '']
 ]
-const WORD_LENGTH = 6;
 
 interface KeyboardProps {
   gameState: GameState;
   setGameState: Dispatch<SetStateAction<GameState>>;
   guess: string;
   setGuess: Dispatch<SetStateAction<string>>;
-  wordData: {
-    word: string;
-    sequence: string;
-    letters: string[];
-  };
+  wordData: WordData;
 }
 
 type KeyStatus = "misplaced" | "incorrect" | "correct" | "sequence";
@@ -73,7 +68,7 @@ export default function Keyboard({
             deleteChar();
           }
         } else if (key !== 'Tab') {
-          if (validateAlpha(key) && guessRef.current.length < WORD_LENGTH) {
+          if (validateAlpha(key) && guessRef.current.length < wordData.length) {
             setGuess(prev => prev + key.toUpperCase());
           } else if (key === "Enter") {
             void handleGuessSubmit();
@@ -271,6 +266,7 @@ export default function Keyboard({
           number: newGuessIndex,
           validationMap: createValidationMap(guessedWord),
           word: guessedWord,
+          length: guessedWord.length,
         }
 
         setGameState({
@@ -330,7 +326,7 @@ export default function Keyboard({
       }
       // inputting
       else {
-        if (validateAlpha(key) && guessRef.current.length < WORD_LENGTH) {
+        if (validateAlpha(key) && guessRef.current.length < wordData.length) {
           setGuess(prev => prev + key.toUpperCase());
         }
       }

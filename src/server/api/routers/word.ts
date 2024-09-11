@@ -4,8 +4,9 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import type { WordEntry } from "~/server/types/definition";
+import type { CachedWord } from "~/server/types/word";
 
-let cachedWord: { data: { word: string, sequence: string, letters: string[] }, timestamp: number } | null = null;
+let cachedWord: CachedWord | null = null;
 const CACHE_DURATION = 60; // seconds
 const CACHE_DURATION_FACTORED = CACHE_DURATION * 1000;
 
@@ -33,16 +34,18 @@ function generateSequence(str: string) {
 
 export const wordRouter = createTRPCRouter({
   get: publicProcedure
-    .query(async () => {
+    .input(z.object({ length: z.number() }))
+    .query(async ({ input }) => {
       if (cachedWord && Date.now() - cachedWord.timestamp < CACHE_DURATION_FACTORED) {
         return cachedWord.data;
       }
+      console.log("Word length: ", input.length);
 
       const DEFAULT_WORD = "DUCKLING";
       const DEFAULT_LETTERS = ["D", "U", "C", "K", "", "", "", "G"];
       const DEFAULT_SEQUENCE = "LIN";
       const wordRes = await fetch(
-        `https://random-word-api.vercel.app/api?words=1&length=6`,
+        `https://random-word-api.vercel.app/api?words=1&length=${input.length}`,
       );
 
       const wordData = (await wordRes.json()) as string[]; // response will be an array with one word in it
@@ -57,6 +60,7 @@ export const wordRouter = createTRPCRouter({
           letters: letters ?? DEFAULT_LETTERS,
           word: word ?? DEFAULT_WORD,
           sequence: sequence.sequence ?? DEFAULT_SEQUENCE,
+          length: input.length,
         }, 
         timestamp: Date.now() 
       };

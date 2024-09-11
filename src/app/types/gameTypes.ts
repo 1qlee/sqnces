@@ -19,12 +19,12 @@ export type GuessData = {
   number: number;
   validationMap: LetterData[];
   word: string;
+  length: number;
 }
 
-export interface WordData {
-  data: {
-    letters: string[];
-    sequence: string;
-    word: string;
-  }
+export type WordData = {
+  letters: string[];
+  sequence: string;
+  word: string;
+  length: number;
 }
