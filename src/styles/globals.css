@@ -23,6 +23,7 @@
   --correct: #bbf7d0;
   --misplaced: #fef08a;
   --incorrect: #fecaca;
+  --sequence: #dcfce7;
   --empty: var(--olive-6);
 }
 
@@ -36,6 +37,7 @@
   --correct: #15803d;
   --misplaced: #ca8a04;
   --incorrect: #dc2626;
+  --sequence: #22c55e;
   --empty: var(--olive-11);
 }
 

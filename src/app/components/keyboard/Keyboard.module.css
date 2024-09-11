@@ -26,6 +26,7 @@
   justify-content: center;
   margin: 0.125rem;
   text-transform: uppercase;
+  position: relative;
   transition: box-shadow 100ms cubic-bezier(0.075, 0.82, 0.165, 1);
   user-select: none;
   -webkit-user-select: none !important;
@@ -35,6 +36,12 @@
     box-shadow: inset 0 0 4px var(--shadow-active);
     transform: translate(1px,1px);
   }
+}
+
+.icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
 }
 
 .isCorrect {
@@ -47,6 +54,10 @@
 
 .isMisplaced {
   background-color: var(--misplaced);
+}
+
+.isSequence {
+  background-color: var(--sequence);
 }
 
 .keySpacer {

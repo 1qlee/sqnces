@@ -2,6 +2,7 @@
 
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { validateGuess } from "~/app/actions/validateGuess";
+import { X, Check, Square } from "@phosphor-icons/react";
 
 import styles from "./Keyboard.module.css";
 import { useRef } from "react";
@@ -29,7 +30,7 @@ interface KeyboardProps {
   };
 }
 
-type KeyStatus = "misplaced" | "incorrect" | "correct";
+type KeyStatus = "misplaced" | "incorrect" | "correct" | "sequence";
 
 type Keys = Record<string, KeyStatus>;
 
@@ -110,17 +111,27 @@ export default function Keyboard({
     }
   };
 
-  function getKeyClass(status: string) {
-    switch(status) {
-      case "correct":
-        return styles.isCorrect;
-      case "incorrect":
-        return styles.isIncorrect;
-      case "misplaced":
-        return styles.isMisplaced;
-      default:
-        return "";
+  function getKeyStyleOrIcon(
+    status: "misplaced" | "incorrect" | "correct" | "sequence" | "" = "",
+    type: "style" | "icon",
+  ) {
+    type StatusMap = Record<string, { style: string | undefined; component: JSX.Element }>;
+
+    const statusMap: StatusMap = {
+      "": { style: "", component: <></> },
+      correct: { style: styles.isCorrect, component: <Check /> },
+      incorrect: { style: styles.isIncorrect, component: <X /> },
+      misplaced: { style: styles.isMisplaced, component: <Square /> },
+      sequence: { style: styles.isSequence, component: <Check /> },
+    };
+
+    const result = statusMap[status];
+
+    if (result) {
+      return type === "style" ? result.style : result.component;
     }
+
+    return "";
   }
 
   function clearTimers() {
@@ -203,6 +214,10 @@ export default function Keyboard({
 
       if (comparedLetter && !result[i]) {
         if (comparedLetter.sequence) {
+          setKeysStatus(prev => ({
+            ...prev,
+            [guessedLetter]: "sequence",
+          }));
           result[i] = { letter: guessedLetter, type: "sequence" };
         }
         else if (comparedLetter.letter === "") {
@@ -372,7 +387,7 @@ export default function Keyboard({
                 key.length > 0 ? styles.key : styles.keySpacer,
                 isKeyActive(key) ? styles.active : "",
                 key === "Backspace" ? styles.largeKey : "",
-                getKeyClass(keysStatus[key] ?? "")
+                getKeyStyleOrIcon(keysStatus[key], "style")
               ].filter(Boolean).join(" ")}
               {...(!isGameOver && { 
                 onPointerDown: (event) => handleKeyPress(event, key),
@@ -384,6 +399,7 @@ export default function Keyboard({
               })}
             >
               {key === "Backspace" ? "⌫" : key.toUpperCase()}
+              <span className={styles.icon}>{getKeyStyleOrIcon(keysStatus[key], "icon")}</span>
             </button>
           ))}
         </div>
