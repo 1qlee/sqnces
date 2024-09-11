@@ -37,6 +37,18 @@
   }
 }
 
+.isCorrect {
+  background-color: var(--correct);
+}
+
+.isIncorrect {
+  background-color: var(--incorrect);
+}
+
+.isMisplaced {
+  background-color: var(--misplaced);
+}
+
 .keySpacer {
   flex: 0.5;
   visibility: hidden;

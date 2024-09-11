@@ -24,7 +24,7 @@ function parseLetterStyle(type: string) {
     case "empty":
       return styles.isEmpty;
     default:
-      return null;
+      return "";
   }
 }
 
