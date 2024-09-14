@@ -8,7 +8,6 @@ export default async function Home({
 }: {
   searchParams: Record<string, number | undefined>;
 }) {
-  const wordLength = Number(searchParams.length) || 6;
   // const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
 
@@ -17,9 +16,7 @@ export default async function Home({
   return (
     <HydrateClient>
       <Nav />
-      <Game 
-        wordLength={wordLength}
-      />
+      <Game />
     </HydrateClient>
   );
 }

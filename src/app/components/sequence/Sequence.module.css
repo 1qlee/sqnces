@@ -7,20 +7,21 @@
 
 .sequence {
   text-align: center;
-  background-color: var(--background);
   color: var(--foreground);
-  border-radius: 0.25rem;
 }
 
 .letter {
-  display: inline-block;
-  font-size: 1.5rem;
+  display: inline-flex;
+  font-size: 1.25rem;
+  background-color: var(--grayed);
   color: var(--foreground);
   padding: 0.5rem;
-  width: 2rem;
+  width: 3rem;
+  justify-content: center;
   flex: 1;
+  border-radius: 0.25rem;
 
   &:not(:last-child) {
-    margin-right: 4px;
+    margin-right: 0.25rem;
   }
 }

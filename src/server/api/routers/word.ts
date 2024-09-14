@@ -39,7 +39,6 @@ export const wordRouter = createTRPCRouter({
       if (cachedWord && Date.now() - cachedWord.timestamp < CACHE_DURATION_FACTORED) {
         return cachedWord.data;
       }
-      console.log("Word length: ", input.length);
 
       const DEFAULT_WORD = "DUCKLING";
       const DEFAULT_LETTERS = ["D", "U", "C", "K", "", "", "", "G"];
