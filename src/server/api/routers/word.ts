@@ -40,9 +40,9 @@ export const wordRouter = createTRPCRouter({
         return cachedWord.data;
       }
 
-      const DEFAULT_WORD = "DUCKLING";
-      const DEFAULT_LETTERS = ["D", "U", "C", "K", "", "", "", "G"];
-      const DEFAULT_SEQUENCE = "LIN";
+      const DEFAULT_WORD = "FAMILY";
+      const DEFAULT_LETTERS = ["F", "", "", "", "L", "Y"];
+      const DEFAULT_SEQUENCE = "AMI";
       const wordRes = await fetch(
         `https://random-word-api.vercel.app/api?words=1&length=${input.length}`,
       );

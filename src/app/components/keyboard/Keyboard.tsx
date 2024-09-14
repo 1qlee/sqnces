@@ -4,7 +4,7 @@ import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon, LettersMap } from "~/app/components/keyboard/Keyboard.types";
-import { X, Check, ArrowsLeftRight, LinkSimpleHorizontalBreak } from "@phosphor-icons/react";
+import { X, Check, ArrowsLeftRight, BracketsSquare } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { type LetterData, type GameState, type GuessData, type SplitWordLetter, type WordData } from "~/app/types/gameTypes";
 import { useRef } from "react";
@@ -116,7 +116,7 @@ export default function Keyboard({
       correct: { style: styles.isCorrect, component: <Check /> },
       incorrect: { style: styles.isIncorrect, component: <X /> },
       misplaced: { style: styles.isMisplaced, component: <ArrowsLeftRight /> },
-      sequence: { style: styles.isSequence, component: <LinkSimpleHorizontalBreak /> },
+      sequence: { style: styles.isSequence, component: <BracketsSquare /> },
     };
 
     const result = keyStyleOrIcon[status];
@@ -149,7 +149,7 @@ export default function Keyboard({
     const { word, sequence, letters } = wordData;
     const lettersMap: LettersMap = letters.map((letter) => ({ letter, used: false }));
     const splitWord: SplitWordLetter[] = [];
-    const result: LetterData[] = []; // returned variable
+    const validationMap: LetterData[] = []; // returned variable
     const keys: KeysStatus = {};
     // guess variables
     const guessLength = guessedWord.length; // length of the guess
@@ -186,41 +186,47 @@ export default function Keyboard({
           used: true,
         };
         keys[letterGuessed] = "correct";
-        result[i] = { letter: letterGuessed, type: "correct" };
+        validationMap[i] = { letter: letterGuessed, type: "correct" };
       }
     }
 
+    // compare the guess to the split word (the word that accurately corresponds to the same letter positions as the guess)
     for (let i = 0; i < guessLength; i++) {
       const letterGuessed = guessedWord.charAt(i);
       const letterToCompare = splitWord[i]!.letter;
       // check to see if the guessed letter is already marked as correct
-      const correctLetterExists = result.length > 0 && result.find(l => l?.letter === letterGuessed && l.type === "correct");
+      const correctLetterExists = validationMap.length > 0 && validationMap.find(l => l?.letter === letterGuessed && l.type === "correct");
       const misplacedLetterExists = lettersMap.find(l => l.letter === letterGuessed && !l.used);
 
-      // never override a correct letter
-      if (correctLetterExists) continue;
+      // never override an existing letter
+      if (validationMap[i]) continue;
 
       if (splitWord[i]!.sequence) {
-        keys[letterGuessed] = "sequence";
-        result[i] = { letter: letterGuessed, type: "sequence" };
+        validationMap[i] = { letter: letterGuessed, type: "sequence" };
       }
       else if (letterToCompare === "") {
-        result[i] = { letter: letterGuessed, type: "empty" };
+        validationMap[i] = { letter: letterGuessed, type: "empty" };
       }
       else if (misplacedLetterExists) {
-        keys[letterGuessed] = "misplaced";
-        result[i] = { letter: letterGuessed, type: "misplaced" };
+        if (!correctLetterExists) {
+          keys[letterGuessed] = "misplaced";
+        };
+
+        validationMap[i] = { letter: letterGuessed, type: "misplaced" };
         misplacedLetterExists.used = true;
       }
       else {
-        keys[letterGuessed] = "incorrect";
-        result[i] = { letter: letterGuessed, type: "incorrect" };
+        if (!correctLetterExists) {
+          keys[letterGuessed] = "incorrect";
+        };
+
+        validationMap[i] = { letter: letterGuessed, type: "incorrect" };
       }
     }
 
     setKeysStatus(prev => ({ ...prev, ...keys }));
 
-    return result
+    return validationMap
   }
 
   async function handleGuessSubmit() {

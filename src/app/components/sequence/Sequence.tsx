@@ -6,19 +6,17 @@ export default async function Sequence({
 }: { wordData: WordData }) {
 
   return (
-    <>
-      <div className={styles.wrapper}>
-        <div className={styles.sequence}>
-          {wordData.sequence.split("").map((char, i) => (
-            <span 
-              key={i}
-              className={styles.letter}
-            >
-              {char}
-            </span>
-          ))}
-        </div>
+    <div className={styles.wrapper}>
+      <div className={styles.sequence}>
+        {wordData.sequence.split("").map((char, i) => (
+          <span 
+            key={i}
+            className={styles.letter}
+          >
+            {char}
+          </span>
+        ))}
       </div>
-    </>
+    </div>
   )
 }

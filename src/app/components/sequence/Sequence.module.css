@@ -6,20 +6,43 @@
 }
 
 .sequence {
+  display: flex;
   text-align: center;
   color: var(--foreground);
 }
 
 .letter {
-  display: inline-flex;
+  display: flex;
   font-size: 1.25rem;
-  background-color: var(--grayed);
   color: var(--foreground);
   padding: 0.5rem;
   width: 3rem;
+  height: 2rem;
   justify-content: center;
   flex: 1;
   border-radius: 0.25rem;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    border-color: var(--foreground);
+    border-style: solid;
+    top: 0;
+    width: 12.5%;
+    height: 100%;
+  }
+
+  &::before {
+    left: 0;
+    border-width: 2px 0 2px 2px;
+  }
+
+  &::after {
+    right: 0;
+    border-width: 2px 2px 2px 0;
+  }
 
   &:not(:last-child) {
     margin-right: 0.25rem;
