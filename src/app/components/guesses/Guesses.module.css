@@ -88,7 +88,7 @@
 }
 
 .helperText {
-  color: gray;
+  color: var(--olive-9);
   text-align: center;
 }
 

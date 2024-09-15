@@ -4,7 +4,7 @@ import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon, LettersMap } from "~/app/components/keyboard/Keyboard.types";
-import { X, Check, ArrowsLeftRight, BracketsSquare } from "@phosphor-icons/react";
+import { X, Check, ArrowsLeftRight, Square } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { type LetterData, type GameState, type GuessData, type SplitWordLetter, type WordData } from "~/app/types/gameTypes";
 import { useRef } from "react";
@@ -35,9 +35,9 @@ export default function Keyboard({
   const sequence = wordData.sequence.split("");
   const isGameOver = gameState.status === "won" || gameState.status === "lost";
   const [keysStatus, setKeysStatus] = useState<KeysStatus>({
-    [String(sequence[0])]: "sequence",
-    [String(sequence[1])]: "sequence",
-    [String(sequence[2])]: "sequence",
+    [String(sequence[0])]: "",
+    [String(sequence[1])]: "",
+    [String(sequence[2])]: "",
   });
   const [loading, setLoading] = useState(false);
   const [activeKeys, setActiveKeys] = useState<Key[]>([]);
@@ -112,11 +112,10 @@ export default function Keyboard({
     type: "style" | "icon",
   ) {
     const keyStyleOrIcon: KeyStyleOrIcon = {
-      "": { style: "", component: <></> },
-      correct: { style: styles.isCorrect, component: <Check /> },
-      incorrect: { style: styles.isIncorrect, component: <X /> },
-      misplaced: { style: styles.isMisplaced, component: <ArrowsLeftRight /> },
-      sequence: { style: styles.isSequence, component: <BracketsSquare /> },
+      "": { style: "" },
+      correct: { style: styles.isCorrect, component: <Check size={12} weight="bold" /> },
+      incorrect: { style: styles.isIncorrect, component: <X size={12} weight="bold" /> },
+      misplaced: { style: styles.isMisplaced, component: <ArrowsLeftRight size={12} weight="bold" /> },
     };
 
     const result = keyStyleOrIcon[status];
@@ -178,15 +177,15 @@ export default function Keyboard({
     // pass through the guess once first to check for correct letters
     for (let i = 0; i < guessLength; i++) {
       const letterGuessed = guessedWord.charAt(i);
-      const letterToCompare = splitWord[i];
+      const letterToCompare = splitWord[i] ?? { letter: "", sequence: false, index: i };
 
-      if (letterToCompare && letterToCompare.letter === letterGuessed && !letterToCompare.sequence) {
+      if (letterToCompare.letter === letterGuessed && !letterToCompare.sequence) {
         lettersMap[letterToCompare.index] = {
           letter: letterGuessed,
           used: true,
         };
         keys[letterGuessed] = "correct";
-        validationMap[i] = { letter: letterGuessed, type: "correct" };
+        validationMap[i] = { letter: letterGuessed, type: "correct", sequence: false };
       }
     }
 
@@ -194,25 +193,27 @@ export default function Keyboard({
     for (let i = 0; i < guessLength; i++) {
       const letterGuessed = guessedWord.charAt(i);
       const letterToCompare = splitWord[i]!.letter;
+      const letterIsSequence = splitWord[i]!.sequence;
       // check to see if the guessed letter is already marked as correct
+      const sequenceLetterExists = validationMap.length > 0 && validationMap.find(l => l?.letter === letterGuessed && l.type === "sequence");
       const correctLetterExists = validationMap.length > 0 && validationMap.find(l => l?.letter === letterGuessed && l.type === "correct");
       const misplacedLetterExists = lettersMap.find(l => l.letter === letterGuessed && !l.used);
 
       // never override an existing letter
       if (validationMap[i]) continue;
 
-      if (splitWord[i]!.sequence) {
-        validationMap[i] = { letter: letterGuessed, type: "sequence" };
+      if (letterIsSequence) {
+        validationMap[i] = { letter: letterGuessed, type: "sequence", sequence: true };
       }
       else if (letterToCompare === "") {
-        validationMap[i] = { letter: letterGuessed, type: "empty" };
+        validationMap[i] = { letter: letterGuessed, type: "empty", sequence: false };
       }
       else if (misplacedLetterExists) {
         if (!correctLetterExists) {
           keys[letterGuessed] = "misplaced";
         };
 
-        validationMap[i] = { letter: letterGuessed, type: "misplaced" };
+        validationMap[i] = { letter: letterGuessed, type: "misplaced", sequence: false };
         misplacedLetterExists.used = true;
       }
       else {
@@ -220,7 +221,7 @@ export default function Keyboard({
           keys[letterGuessed] = "incorrect";
         };
 
-        validationMap[i] = { letter: letterGuessed, type: "incorrect" };
+        validationMap[i] = { letter: letterGuessed, type: "incorrect", sequence: false };
       }
     }
 
@@ -367,7 +368,8 @@ export default function Keyboard({
                 key.length > 0 ? styles.key : styles.keySpacer,
                 isKeyActive(key) ? styles.active : "",
                 key === "Backspace" ? styles.largeKey : "",
-                getKeyStyleOrIcon(keysStatus[key], "style")
+                getKeyStyleOrIcon(keysStatus[key], "style"),
+                sequence.includes(key) ? styles.isSequence : "",
               ].filter(Boolean).join(" ")}
               {...(!isGameOver && { 
                 onPointerDown: (event) => handleKeyPress(event, key),
@@ -389,7 +391,13 @@ export default function Keyboard({
       >
         <button
           disabled={loading}
-          className={styles.submitButton}
+          className={styles.button}
+        >
+          <span>Blank</span>
+        </button>
+        <button
+          disabled={loading}
+          className={styles.button}
           {...(!isGameOver && {
             onPointerDown: (event) => handleKeyPress(event, "Enter"),
             onPointerUp: () => handleKeyUp("Enter"),

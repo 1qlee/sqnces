@@ -6,7 +6,8 @@ export type GameState = {
 
 export type LetterData = {
   letter: string;
-  type: "sequence" | "correct" | "incorrect" | "misplaced" | "empty";
+  type: "correct" | "incorrect" | "misplaced" | "empty" | "sequence";
+  sequence: boolean;
 }
 
 export type SplitWordLetter = { 
