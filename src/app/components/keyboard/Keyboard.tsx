@@ -52,7 +52,6 @@ export default function Keyboard({
 
   function handleKeyInput(key: Key) {
     const capitalizedKey = key !== "Blank" ? key.toUpperCase() as Key : key;
-    console.log("🚀 ~ handleKeyInput ~ capitalizedKey:", capitalizedKey)
 
     if (validateAlpha(key)) {
       if (guessRef.current.letters.includes("Blank") && guessRef.current.letters.length === wordData.data.length) {
@@ -81,10 +80,12 @@ export default function Keyboard({
       }
     }
     else if (key === ' ' || key === "Blank") {
-      setGuess(prev => ({
-        string: prev.string + " ",
-        letters: [...prev.letters, "Blank"],
-      }));
+      if (guessRef.current.letters.length < wordData.data.length) {
+        setGuess(prev => ({
+          string: prev.string + " ",
+          letters: [...prev.letters, "Blank"],
+        }));
+      }
     }
   }
 
