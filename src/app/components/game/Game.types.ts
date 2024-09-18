@@ -1,3 +1,5 @@
+import { GuessData } from "../guess-area/Guess.types";
+
 export type GameState = {
   guesses: GuessData[];
   currentGuessIndex: number;
@@ -14,18 +16,4 @@ export type SplitWordLetter = {
   letter: string;
   sequence: boolean;
   index: number;
-}
-
-export type GuessData = {
-  number: number;
-  validationMap: LetterData[];
-  word: string;
-  length: number;
-}
-
-export type WordData = {
-  letters: string[];
-  sequence: string;
-  word: string;
-  length: number;
 }

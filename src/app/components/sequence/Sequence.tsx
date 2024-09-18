@@ -1,14 +1,14 @@
 import styles from "./Sequence.module.css";
-import { type WordData } from "~/app/types/gameTypes";
+import { Word } from "~/server/types/word";
 
 export default async function Sequence({
   wordData
-}: { wordData: WordData }) {
+}: { wordData: Word }) {
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.sequence}>
-        {wordData.sequence.split("").map((char, i) => (
+        {wordData.data.sequence.letters.map((char, i) => (
           <span 
             key={i}
             className={styles.letter}

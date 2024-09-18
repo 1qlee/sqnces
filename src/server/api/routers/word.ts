@@ -4,9 +4,9 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import type { WordEntry } from "~/server/types/definition";
-import type { CachedWord } from "~/server/types/word";
+import type { Word } from "~/server/types/word";
 
-let cachedWord: CachedWord | null = null;
+let cachedWord: Word | null = null;
 const CACHE_DURATION = 60; // seconds
 const CACHE_DURATION_FACTORED = CACHE_DURATION * 1000;
 
@@ -27,8 +27,9 @@ function generateSequence(str: string) {
   const randomIndex = Math.floor(Math.random() * substrings.length);
 
   return {
-    sequence: substrings[randomIndex] ?? str.substring(0,3),
-    index: randomIndex,
+    string: substrings[randomIndex] ?? str.substring(0,3),
+    index: randomIndex ?? 0,
+    letters: substrings[randomIndex]!.split('') ?? str.substring(0,3).split(''),
   };
 }
 
@@ -37,19 +38,23 @@ export const wordRouter = createTRPCRouter({
     .input(z.object({ length: z.number() }))
     .query(async ({ input }) => {
       if (cachedWord && Date.now() - cachedWord.timestamp < CACHE_DURATION_FACTORED) {
-        return cachedWord.data;
+        return cachedWord;
       }
 
       const DEFAULT_WORD = "FAMILY";
       const DEFAULT_LETTERS = ["F", "", "", "", "L", "Y"];
-      const DEFAULT_SEQUENCE = "AMI";
+      const DEFAULT_SEQUENCE = {
+        string: "AMI",
+        index: 1,
+        letters: ["A", "M", "I"],
+      };
       const wordRes = await fetch(
         `https://random-word-api.vercel.app/api?words=1&length=${input.length}`,
       );
 
       const wordData = (await wordRes.json()) as string[]; // response will be an array with one word in it
       const word: string = (wordData[0] ?? DEFAULT_WORD).toUpperCase(); // the word
-      const sequence: { sequence: string, index: number } = generateSequence(word) // random 3-letter sequence with a default value of an empty string
+      const sequence: { string: string, index: number, letters: string[] } = generateSequence(word) // random 3-letter sequence with a default value of an empty string
       const wordWithoutSequence = word.substring(0, sequence.index) + word.substring(sequence.index + 3); // remove the sequence from the word
       const letters = wordWithoutSequence.split("");
       letters.splice(sequence.index, 0, "", "", "");
@@ -58,13 +63,13 @@ export const wordRouter = createTRPCRouter({
         data: {
           letters: letters ?? DEFAULT_LETTERS,
           word: word ?? DEFAULT_WORD,
-          sequence: sequence.sequence ?? DEFAULT_SEQUENCE,
+          sequence: sequence ?? DEFAULT_SEQUENCE,
           length: input.length,
         }, 
         timestamp: Date.now() 
       };
 
-      return cachedWord.data;
+      return cachedWord;
     }),
 
   validate: publicProcedure

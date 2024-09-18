@@ -1,16 +1,15 @@
 import { memo } from "react";
 
 import styles from "./Guesses.module.css";
-import { type GameState } from "~/app/types/gameTypes";
+import type { Word } from "~/server/types/word";
+import { type GameState } from "~/app/components/game/Game.types";
 import { X, Empty, Check, ArrowsLeftRight } from "@phosphor-icons/react";
+import { Guess } from "../guess-area/Guess.types";
 
 type GuessesProps = {
   gameState: GameState;
-  guess: string;
-  wordData: {
-    word: string;
-    sequence: string;
-  };
+  guess: Guess;
+  wordData: Word;
 }
 
 function parseLetterStyle(type: string) {
@@ -49,7 +48,7 @@ export const Guesses = memo(({
 }: GuessesProps) => {
   const { guesses, status } = gameState;
 
-  if (guesses.length === 0 && guess.length === 0) {
+  if (guesses.length === 0 && guess.letters.length === 0) {
     return (
       <p className={styles.helperText}>Start typing to enter your first guess</p>
     )
@@ -72,12 +71,12 @@ export const Guesses = memo(({
       ))}
       {status === "playing" && (
         <div className={styles.word}>
-          {guess?.split("").map((char, i) => (
+          {guess?.letters.map((char, i) => (
             <span
               key={i}
-              className={styles.letter}
+              className={`${styles.letter} ${styles.isCurrentGuess}`}
             >
-              {char}
+              {char === "Blank" ? "" : char}
             </span>
           ))}
         </div>

@@ -1,20 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { type WordData, type GameState } from "~/app/types/gameTypes";
+import type { Word } from "~/server/types/word";
+import type { GameState } from "~/app/components/game/Game.types";
+import type { Guess } from "./Guess.types";
 
 import { Guesses } from "../guesses/Guesses";
 import Keyboard from "../keyboard/Keyboard";
 import toast from "react-hot-toast";
 
-export default function GuessArea({ wordData }: { wordData: WordData }) {
-  const [guess, setGuess] = useState("");
+export default function GuessArea({ wordData }: { wordData: Word }) {
+  const [guess, setGuess] = useState<Guess>({
+    string: "",
+    letters: [],
+  });
   const [gameState, setGameState] = useState<GameState>({
     guesses: [],
     currentGuessIndex: 0,
     status: "playing",
   })
-  const { word } = wordData;
+  const { data } = wordData;
+  const { word } = data;
 
   useEffect(() => {
     if (gameState.status === "playing") {
