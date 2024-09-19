@@ -58,13 +58,24 @@ export const Guesses = memo(({
   }
 
   function handlePointerDown(event: React.PointerEvent<HTMLSpanElement>, index: number) {
-    setGameState({
-      ...gameState,
-      editing: {
-        toggled: !gameState.editing.toggled,
-        key: index,
-      }
-    })
+    if (gameState.editing.key === index) {
+      setGameState({
+        ...gameState,
+        editing: {
+          toggled: !gameState.editing.toggled,
+          key: index,
+        },
+      });
+    }
+    else {
+      setGameState({
+        ...gameState,
+        editing: {
+          toggled: true,
+          key: index,
+        }
+      });
+    }
   }
 
   return (
