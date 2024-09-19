@@ -54,7 +54,20 @@ export default function Keyboard({
     const capitalizedKey = key !== "Blank" ? key.toUpperCase() as Key : key;
 
     if (validateAlpha(key)) {
-      if (guessRef.current.letters.includes("Blank") && guessRef.current.letters.length === wordData.data.length) {
+      if (gameState.editing.toggled) {
+        setGuess(prev => ({
+          string: prev.string.slice(0, gameState.editing.key) + capitalizedKey + prev.string.slice(gameState.editing.key + 1),
+          letters: prev.letters.map((letter, i) => (i === gameState.editing.key ? capitalizedKey : letter)),
+        }));
+        setGameState({
+          ...gameState,
+          editing: {
+            toggled: false,
+            key: 0,
+          }
+        });
+      }
+      else if (guessRef.current.letters.includes("Blank") && guessRef.current.letters.length === wordData.data.length) {
         const newString = guessRef.current.string.replace(" ", capitalizedKey);
         const blankIndex = guessRef.current.letters.indexOf("Blank");
         const newLetters = [
@@ -70,22 +83,61 @@ export default function Keyboard({
       }
       else {
         if (guessRef.current.letters.length < wordData.data.length) {
-          if (validateAlpha(key)) {
-            setGuess(prev => ({
-              string: prev.string + key.toUpperCase(),
-              letters: [...prev.letters, capitalizedKey],
-            }));
-          }
+          setGuess(prev => ({
+            string: prev.string + key.toUpperCase(),
+            letters: [...prev.letters, capitalizedKey],
+          }));
         }
       }
     }
     else if (key === ' ' || key === "Blank") {
-      if (guessRef.current.letters.length < wordData.data.length) {
+      if (gameState.editing.toggled) {
         setGuess(prev => ({
-          string: prev.string + " ",
-          letters: [...prev.letters, "Blank"],
+          string: prev.string.slice(0, gameState.editing.key) + " " + prev.string.slice(gameState.editing.key + 1),
+          letters: prev.letters.map((letter, i) => (i === gameState.editing.key ? "Blank" : letter)),
         }));
+        setGameState({
+          ...gameState,
+          editing: {
+            toggled: false,
+            key: 0,
+          }
+        });
       }
+      else {
+        if (guessRef.current.letters.length < wordData.data.length) {
+          setGuess(prev => ({
+            string: prev.string + " ",
+            letters: [...prev.letters, "Blank"],
+          }));
+        }
+      }
+    }
+  }
+
+  function handleBackspace(event: KeyboardEvent | React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) {
+    const modifierPressed = event.shiftKey || event.ctrlKey || event.metaKey;
+
+    if (gameState.editing.toggled) {
+      setGuess(prev => ({
+        string: prev.string.slice(0, gameState.editing.key) + prev.string.slice(gameState.editing.key + 1),
+        letters: prev.letters.filter((_, i) => i !== gameState.editing.key),
+      }));
+      setGameState({
+        ...gameState,
+        editing: {
+          toggled: false,
+          key: 0,
+        }
+      });
+    }
+    else if (modifierPressed) {
+      setGuess({
+        string: "",
+        letters: [],
+      });
+    } else {
+      deleteChar();
     }
   }
 
@@ -101,27 +153,29 @@ export default function Keyboard({
       }
 
       if (!loading) {
-        const key = event.key === "Enter" || event.key === "Backspace" ? event.key : event.key.toUpperCase() as Key;
+        const specialKeys = ['Backspace', 'Enter', 'Tab', 'Escape'];
+        const key = specialKeys.includes(event.key) ? event.key as Key : event.key.toUpperCase() as Key;
         updateActiveKeys(key);
 
         if (key === 'Backspace') {
-          const modifierPressed = event.shiftKey || event.ctrlKey || event.metaKey;
-
-          if (modifierPressed) {
-            setGuess({
-              string: "",
-              letters: [],
-            });
-          } else {
-            deleteChar();
-          }
+          handleBackspace(event);
         } 
+        else if (key === 'Escape') {
+          setGameState({
+            ...gameState,
+            editing: {
+              toggled: false,
+              key: 0,
+            }
+          })
+        }
         else if (key !== 'Tab' && key !== 'Enter') {
           handleKeyInput(key);
         }
-        else if (key === "Enter") {
+        else if (key === 'Enter') {
           void handleGuessSubmit();
-        } else {
+        } 
+        else {
           event.preventDefault();
         }
       }
@@ -136,7 +190,7 @@ export default function Keyboard({
       document.removeEventListener('keydown', handleKeyTyping);
       document.removeEventListener('keyup', () => setActiveKeys([]));
     }
-  }, [loading, gameState.status])
+  }, [loading, gameState.status, gameState.editing])
   
   // ***** HELPERS ***** //\
   function validateAlpha(char: string) {
@@ -282,6 +336,16 @@ export default function Keyboard({
   async function handleGuessSubmit() {
     const guessedWord = guessRef.current.string;
 
+    if (gameState.editing.toggled) {
+      return setGameState({
+        ...gameState,
+        editing: {
+          toggled: false,
+          key: 0,
+        }
+      });
+    }
+
     if (guessRef.current.letters.includes("Blank")) {
       toast.dismiss();
       return toast.error("Remove blank tiles.");
@@ -344,7 +408,7 @@ export default function Keyboard({
       updateActiveKeys(key);
 
       // deleting
-      if (key === "Backspace") {
+      if (key === 'Backspace') {
 
         // check for non-keyboard event
         if (!('key' in event)) {
@@ -355,21 +419,15 @@ export default function Keyboard({
             }, 100);
           }, 500);
 
-          deleteChar();
+          handleBackspace(event);
         }
         else {
-          if (event.shiftKey || event.ctrlKey || event.metaKey) {
-            setGuess({
-              string: "",
-              letters: [],
-            });
-          } else {
-            deleteChar();
-          }
+          console.log("GISOY")
+          handleBackspace(event);
         }
       }
       // submitting
-      else if (key === "Enter") {
+      else if (key === 'Enter') {
         void handleGuessSubmit();
       }
       // inputting

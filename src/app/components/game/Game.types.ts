@@ -1,9 +1,15 @@
 import { GuessData } from "../guess-area/Guess.types";
 
+export type Editing = {
+  toggled: boolean;
+  key: number;
+}
+
 export type GameState = {
   guesses: GuessData[];
   currentGuessIndex: number;
   status: "won" | "lost" | "playing";
+  editing: Editing;
 }
 
 export type LetterData = {

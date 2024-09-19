@@ -18,6 +18,10 @@ export default function GuessArea({ wordData }: { wordData: Word }) {
     guesses: [],
     currentGuessIndex: 0,
     status: "playing",
+    editing: {
+      toggled: false,
+      key: 0,
+    },
   })
   const { data } = wordData;
   const { word } = data;
@@ -47,6 +51,8 @@ export default function GuessArea({ wordData }: { wordData: Word }) {
         gameState={gameState}
         wordData={wordData}
         guess={guess}
+        setGuess={setGuess}
+        setGameState={setGameState}
       />
       <Keyboard
         gameState={gameState}

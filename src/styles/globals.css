@@ -25,6 +25,7 @@
   --incorrect: #fecaca;
   --sequence: #dcfce7;
   --empty: var(--olive-6);
+  --highlight: #a5f3fc;
 }
 
 [data-theme='dark'] {
@@ -39,6 +40,7 @@
   --incorrect: #dc2626;
   --sequence: #22c55e;
   --empty: var(--olive-11);
+  --highlight: #0891b2;
 }
 
 /* Reset CSS */

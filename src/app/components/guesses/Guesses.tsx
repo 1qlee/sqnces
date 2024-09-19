@@ -1,15 +1,17 @@
-import { memo } from "react";
+import { Dispatch, memo, SetStateAction, useState } from "react";
 
 import styles from "./Guesses.module.css";
 import type { Word } from "~/server/types/word";
 import { type GameState } from "~/app/components/game/Game.types";
-import { X, Empty, Check, ArrowsLeftRight } from "@phosphor-icons/react";
+import { X, Empty, Check, Swap, Pen } from "@phosphor-icons/react";
 import { Guess } from "../guess-area/Guess.types";
 
 type GuessesProps = {
   gameState: GameState;
   guess: Guess;
   wordData: Word;
+  setGuess: Dispatch<SetStateAction<Guess>>;
+  setGameState: Dispatch<SetStateAction<GameState>>;
 }
 
 function parseLetterStyle(type: string) {
@@ -34,7 +36,7 @@ function parseLetterIcon(type: string) {
     case "incorrect":
       return <X size={10} weight="bold" />;
     case "misplaced":
-      return <ArrowsLeftRight size={10} weight="bold" />;
+      return <Swap size={10} weight="bold" />;
     case "empty":
       return <Empty size={10} weight="bold" />;
     default:
@@ -45,6 +47,7 @@ function parseLetterIcon(type: string) {
 export const Guesses = memo(({
   gameState,
   guess,
+  setGameState,
 }: GuessesProps) => {
   const { guesses, status } = gameState;
 
@@ -52,6 +55,16 @@ export const Guesses = memo(({
     return (
       <p className={styles.helperText}>Start typing to enter your first guess</p>
     )
+  }
+
+  function handlePointerDown(event: React.PointerEvent<HTMLSpanElement>, index: number) {
+    setGameState({
+      ...gameState,
+      editing: {
+        toggled: !gameState.editing.toggled,
+        key: index,
+      }
+    })
   }
 
   return (
@@ -74,9 +87,15 @@ export const Guesses = memo(({
           {guess?.letters.map((char, i) => (
             <span
               key={i}
-              className={`${styles.letter} ${styles.isCurrentGuess}`}
+              className={[
+                styles.letter,
+                styles.isCurrentGuess,
+                gameState.editing.toggled && gameState.editing.key === i ? styles.isEditing : "",
+              ].filter(Boolean).join(" ")}
+              onPointerDown={event => handlePointerDown(event, i)}
             >
-              {char === "Blank" ? "" : char}
+              <span>{char === "Blank" ? "" : char}</span>
+              <span className={styles.icon}>{gameState.editing.toggled && gameState.editing.key === i && <Pen size={10} />}</span>
             </span>
           ))}
         </div>
