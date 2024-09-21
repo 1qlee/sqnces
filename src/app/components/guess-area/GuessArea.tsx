@@ -22,6 +22,7 @@ export default function GuessArea({ wordData }: { wordData: Word }) {
       toggled: false,
       key: 0,
     },
+    showHelp: false,
   })
   const { data } = wordData;
   const { word } = data;

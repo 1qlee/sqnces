@@ -1,0 +1,96 @@
+.modalOverlay {
+  background-color: var(--overlay);
+  position: fixed;
+  inset: 0;
+}
+
+.title {
+  color: var(--foreground);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: var(--foreground);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1rem 0;
+  letter-spacing: 1px;
+}
+
+.sequence {
+  color: var(--background);
+  border-radius: 0.25rem;
+  background-color: var(--foreground);
+  padding: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-align: center;
+  margin: 1rem 0;
+  font-size: 1.5rem;
+}
+
+.rules {
+  color: var(--foreground);
+  font-size: 1rem;
+  margin: 1rem 0;
+  list-style: circle;
+}
+
+.rule {
+  font-size: 0.875rem;
+  margin-left: 1rem;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.guessText {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  color: var(--foreground);
+}
+
+.modalContent {
+  background-color: var(--background);
+  border-radius: 6px;
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+  color: var(--foreground);
+  position: fixed;
+  line-height: 1.2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 450px;
+  max-height: 85vh;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.button {
+  background-color: var(--background);
+  border-radius: 0.25rem;
+  border: none;
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: 1rem;
+  position: absolute;
+  padding: 0;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.example {
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}
+
+.footer {
+  padding: 1rem 0;
+  border-top: 2px solid var(--foreground);
+}

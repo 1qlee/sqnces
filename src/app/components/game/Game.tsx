@@ -1,19 +1,21 @@
-"use server"
+"use client";
 
-import { api } from "~/trpc/server";
+import { Word } from "~/server/types/word";
 
 import styles from "./Game.module.css";
 import Sequence from "../sequence/Sequence";
 import GuessArea from "../guess-area/GuessArea";
+import Modal from "../modal/Modal";
 
-export default async function Game() {
-  const WORD_LENGTH = 6;
-  const wordData = await api.word.get({ length: WORD_LENGTH });
+export default function Game({
+  wordData
+}: { wordData: Word }) {
 
   return (
     <main 
       className={styles.game}
     >
+      <Modal />
       <Sequence 
         wordData={wordData}
       />

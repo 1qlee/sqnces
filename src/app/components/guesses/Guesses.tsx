@@ -3,7 +3,7 @@ import { Dispatch, memo, SetStateAction, useState } from "react";
 import styles from "./Guesses.module.css";
 import type { Word } from "~/server/types/word";
 import { type GameState } from "~/app/components/game/Game.types";
-import { X, Empty, Check, Swap, Pen } from "@phosphor-icons/react";
+import { X, Empty, Check, ArrowsLeftRight, Pen } from "@phosphor-icons/react";
 import { Guess } from "../guess-area/Guess.types";
 
 type GuessesProps = {
@@ -36,7 +36,7 @@ function parseLetterIcon(type: string) {
     case "incorrect":
       return <X size={10} weight="bold" />;
     case "misplaced":
-      return <Swap size={10} weight="bold" />;
+      return <ArrowsLeftRight size={10} weight="bold" />;
     case "empty":
       return <Empty size={10} weight="bold" />;
     default:

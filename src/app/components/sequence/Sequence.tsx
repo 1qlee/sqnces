@@ -1,7 +1,9 @@
+"use client";
+
 import styles from "./Sequence.module.css";
 import { Word } from "~/server/types/word";
 
-export default async function Sequence({
+export default function Sequence({
   wordData
 }: { wordData: Word }) {
 

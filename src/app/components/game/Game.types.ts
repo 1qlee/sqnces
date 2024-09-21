@@ -10,6 +10,7 @@ export type GameState = {
   currentGuessIndex: number;
   status: "won" | "lost" | "playing";
   editing: Editing;
+  showHelp: boolean;
 }
 
 export type LetterData = {

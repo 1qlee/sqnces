@@ -4,7 +4,7 @@ import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon, LettersMap } from "../keyboard/Keyboard.types";
-import { X, Check, Swap, KeyReturn, Square } from "@phosphor-icons/react";
+import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { type LetterData, type GameState, type SplitWordLetter } from "../game/Game.types";
 import type { Guess, GuessData } from "../guess-area/Guess.types";
@@ -216,7 +216,7 @@ export default function Keyboard({
       "": { style: "" },
       correct: { style: styles.isCorrect, component: <Check size={12} weight="bold" /> },
       incorrect: { style: styles.isIncorrect, component: <X size={12} weight="bold" /> },
-      misplaced: { style: styles.isMisplaced, component: <Swap size={12} weight="bold" /> },
+      misplaced: { style: styles.isMisplaced, component: <ArrowsLeftRight size={12} weight="bold" /> },
     };
 
     const result = keyStyleOrIcon[status];

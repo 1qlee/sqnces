@@ -27,7 +27,11 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "~/root/*": ["./*"]
+      "~/root/*": ["./*"],
+      "~/hooks/*": ["./src/app/hooks/*"],
+      "~/components/*": ["./src/app/components/*"],
+      "~/api/*": ["./src/app/api/*"],
+      "~/actions/*": ["./src/app/actions/*"],
     }
   },
   "include": [
