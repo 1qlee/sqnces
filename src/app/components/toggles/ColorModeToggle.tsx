@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 
-import styles from "./colorModeToggle.module.css";
-import * as Toggle from "@radix-ui/react-toggle";
+import Toggle from "../toggle/Toggle";
 import { Sun, Moon, Dot } from "@phosphor-icons/react";
 
 export default function ColorModeToggle({ className }: { className?: string }) {
@@ -17,8 +16,8 @@ export default function ColorModeToggle({ className }: { className?: string }) {
   }, [])
 
   return (
-    <Toggle.Root
-      className={styles.toggle + (className ? ` ${className}` : "")}
+    <Toggle
+      className={className ? ` ${className}` : ""}
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
       {!mounted ? (
@@ -32,6 +31,6 @@ export default function ColorModeToggle({ className }: { className?: string }) {
           )}
         </>
       )}
-    </Toggle.Root>
+    </Toggle>
   )
 }

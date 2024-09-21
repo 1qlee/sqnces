@@ -60,22 +60,21 @@
     animation: none;
   }
 
-  &.isCurrentGuess {
-    &:hover {
-      cursor: pointer;
-      background-color: var(--grayed);
-    }
-  }
-
   &:not(.noAnimation) {
     @media (prefers-reduced-motion: no-preference) {
       opacity: 0;
       animation: dropIn 0.2s forwards;
 
       &.isEditing {
+        box-shadow: 0 2px 0 var(--foreground), inset 0 2px 4px 0 var(--shadow-normal), inset -1px -1px 2px 0 var(--shadow-active);
         animation: dropIn 0.2s forwards, wiggle 1s cubic-bezier(0.5, 0, 0.75, 1) alternate infinite;
       }
     }
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: var(--grayed);
   }
   
   &:not(:last-child) {
@@ -105,23 +104,18 @@
 @keyframes wiggle {
   0%{ 
     transform: rotate(2deg) translateY(0);
-    box-shadow: 0 2px 0 var(--foreground), 0 2px 2px 0px var(--highlight);
   }
   25% {
     transform: rotate(-2deg);
-    box-shadow: 0 2px 0 var(--foreground), 0 2px 2px 1px var(--highlight);
   }
   50% {
     transform: rotate(2deg);
-    box-shadow: 0 2px 0 var(--foreground), 0 2px 3px 2px var(--highlight);
   }
   75% {
     transform: rotate(-2deg);
-    box-shadow: 0 2px 0 var(--foreground), 0 2px 3px 3px var(--highlight);
   }
   100% {
     transform: rotate(2deg) translateY(-4px);
-    box-shadow: 0 2px 0 var(--foreground), 0 2px 3px 3px var(--highlight);
   }
 }
 

@@ -10,6 +10,7 @@
   margin-bottom: 1rem;
   font-weight: 700;
   letter-spacing: 1px;
+  padding: 2rem 2rem 0;
 }
 
 .subtitle {
@@ -66,9 +67,13 @@
   transform: translate(-50%, -50%);
   width: 90vw;
   max-width: 450px;
-  max-height: 85vh;
-  padding: 2rem;
+  z-index: 99;
+}
+
+.modalInner {
   overflow-y: auto;
+  max-height: 85vh;
+  padding: 0 2rem 2rem;
 }
 
 .button {

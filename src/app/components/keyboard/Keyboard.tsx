@@ -59,13 +59,6 @@ export default function Keyboard({
           string: prev.string.slice(0, gameState.editing.key) + capitalizedKey + prev.string.slice(gameState.editing.key + 1),
           letters: prev.letters.map((letter, i) => (i === gameState.editing.key ? capitalizedKey : letter)),
         }));
-        setGameState({
-          ...gameState,
-          editing: {
-            toggled: false,
-            key: 0,
-          }
-        });
       }
       else if (guessRef.current.letters.includes("Blank") && guessRef.current.letters.length === wordData.data.length) {
         const newString = guessRef.current.string.replace(" ", capitalizedKey);
@@ -271,10 +264,10 @@ export default function Keyboard({
      }
       // mark the sequence letters
       else if (n >= sequence.index && n < sequence.index + 3) {
-        splitWord.push({ letter: word.charAt(n), sequence: true, index: n });
+        splitWord.push({ letter: word.charAt(n) as Key, sequence: true, index: n });
       }
       else {
-        splitWord.push({ letter: word.charAt(n), sequence: false, index: n });
+        splitWord.push({ letter: word.charAt(n) as Key, sequence: false, index: n });
       }
     }
 
@@ -295,7 +288,7 @@ export default function Keyboard({
 
     // compare the guess to the split word (the word that accurately corresponds to the same letter positions as the guess)
     for (let i = 0; i < guessLength; i++) {
-      const letterGuessed = guessedWord.charAt(i);
+      const letterGuessed = guessedWord.charAt(i) as Key;
       const letterToCompare = splitWord[i]!.letter;
       const letterIsSequence = splitWord[i]!.sequence;
       // check to see if the guessed letter is already marked as correct
@@ -538,7 +531,9 @@ export default function Keyboard({
             onContextMenu: (event) => handleContextMenu(event, "Enter"),
           })}
         >
-          <span>Enter</span>
+          <span>
+            {gameState.editing.toggled ? "Change" : "Enter"}
+          </span>
           <KeyReturn size={18} />
         </button>
       </div>

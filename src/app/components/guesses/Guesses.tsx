@@ -3,6 +3,8 @@ import { Dispatch, memo, SetStateAction, useState } from "react";
 import styles from "./Guesses.module.css";
 import type { Word } from "~/server/types/word";
 import { type GameState } from "~/app/components/game/Game.types";
+import type { Key } from "../keyboard/Keyboard.types";
+import type { GuessData } from "../guess-area/Guess.types";
 import { X, Empty, Check, ArrowsLeftRight, Pen } from "@phosphor-icons/react";
 import { Guess } from "../guess-area/Guess.types";
 
@@ -48,6 +50,7 @@ export const Guesses = memo(({
   gameState,
   guess,
   setGameState,
+  setGuess,
 }: GuessesProps) => {
   const { guesses, status } = gameState;
 
@@ -57,7 +60,7 @@ export const Guesses = memo(({
     )
   }
 
-  function handlePointerDown(event: React.PointerEvent<HTMLSpanElement>, index: number) {
+  function handleEditCurrGuess(index: number) {
     if (gameState.editing.key === index) {
       setGameState({
         ...gameState,
@@ -78,6 +81,22 @@ export const Guesses = memo(({
     }
   }
 
+  function handleEditPrevGuess(guess: GuessData, index: number) {
+    const letters = guess.validationMap.map(char => char.letter);
+
+    setGuess({
+      string: guess.word,
+      letters: letters,
+    })
+    setGameState({
+      ...gameState,
+      editing: {
+        toggled: true,
+        key: index,
+      },
+    });
+  }
+
   return (
     <div className={styles.wrapper}>
       {guesses.map((guess, index) => (
@@ -86,6 +105,7 @@ export const Guesses = memo(({
             <span
               key={i}
               className={`${styles.letter} ${styles.noAnimation} ${parseLetterStyle(char.type)}`}
+              onPointerDown={() => handleEditPrevGuess(guess, i)}
             >
               {char.letter}
               <span className={styles.icon}>{parseLetterIcon(char.type)}</span>
@@ -103,7 +123,7 @@ export const Guesses = memo(({
                 styles.isCurrentGuess,
                 gameState.editing.toggled && gameState.editing.key === i ? styles.isEditing : "",
               ].filter(Boolean).join(" ")}
-              onPointerDown={event => handlePointerDown(event, i)}
+              onPointerDown={() => handleEditCurrGuess(i)}
             >
               <span>{char === "Blank" ? "" : char}</span>
               <span className={styles.icon}>{gameState.editing.toggled && gameState.editing.key === i && <Pen size={10} />}</span>

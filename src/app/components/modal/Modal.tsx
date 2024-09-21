@@ -197,61 +197,63 @@ const Modal = () => {
           >
             How to play
           </Dialog.Title>
-          <Dialog.Description>
-            You are given a 3-letter sequence like the one below.
-          </Dialog.Description>
-          <div className={styles.sequence}>
-            <span>
-              E
-            </span>
-            <span>
-              N
-            </span>
-            <span>
-              T
-            </span>
-          </div>
-          <Dialog.Description>
-            Use the sequence to form guess-words and figure out what the hidden <b>6-letter</b> word is.
-          </Dialog.Description>
-          <ul
-            className={styles.rules}
-          >
-            {rules.map((rule, index) => (
-              <Rule 
-                key={index}
-                text={rule}
-              />
-            ))}
-          </ul>
-          <h3 className={styles.subtitle}>Example Guesses</h3>
-          {exampleGuesses.map((guess, index) => (
-            <div className={styles.example} key={index}>
-              <div
-                key={index}
-                className={guessStyles.word}
-              >
-                {guess.letters.map((l, i) => (
-                  <span
-                    key={i}
-                    className={`
+          <div className={styles.modalInner}>
+            <Dialog.Description>
+              You are given a 3-letter sequence like the one below.
+            </Dialog.Description>
+            <div className={styles.sequence}>
+              <span>
+                E
+              </span>
+              <span>
+                N
+              </span>
+              <span>
+                T
+              </span>
+            </div>
+            <Dialog.Description>
+              Use the sequence to form guess-words and figure out what the hidden <b>6-letter</b> word is.
+            </Dialog.Description>
+            <ul
+              className={styles.rules}
+            >
+              {rules.map((rule, index) => (
+                <Rule
+                  key={index}
+                  text={rule}
+                />
+              ))}
+            </ul>
+            <h3 className={styles.subtitle}>Example Guesses</h3>
+            {exampleGuesses.map((guess, index) => (
+              <div className={styles.example} key={index}>
+                <div
+                  key={index}
+                  className={guessStyles.word}
+                >
+                  {guess.letters.map((l, i) => (
+                    <span
+                      key={i}
+                      className={`
                     ${guessStyles.letter}
                     ${guessStyles.noAnimation}
                     ${guessStyles[l.type]}
                   `}
-                  >
-                    {l.letter}
-                    <span className={guessStyles.icon}>{l.icon}</span>
-                  </span>
-                ))}
+                    >
+                      {l.letter}
+                      <span className={guessStyles.icon}>{l.icon}</span>
+                    </span>
+                  ))}
+                </div>
+                {guess.text}
               </div>
-              {guess.text}
+            ))}
+            <div className={styles.footer}>
+              <Dialog.Description>
+                sqnces is currently in beta. There is a new word to guess every 60 seconds.
+              </Dialog.Description>
             </div>
-          ))}
-          <div className={styles.footer}>
-            <Dialog.Description>
-              sqnces is currently in beta. There is a new word to guess every 60 seconds.
-            </Dialog.Description>
           </div>
           <Dialog.Close asChild>
             <button 

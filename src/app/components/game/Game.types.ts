@@ -1,4 +1,5 @@
 import { GuessData } from "../guess-area/Guess.types";
+import { Key } from "../keyboard/Keyboard.types";
 
 export type Editing = {
   toggled: boolean;
@@ -14,13 +15,13 @@ export type GameState = {
 }
 
 export type LetterData = {
-  letter: string;
+  letter: Key;
   type: "correct" | "incorrect" | "misplaced" | "empty" | "sequence";
   sequence: boolean;
 }
 
 export type SplitWordLetter = { 
-  letter: string;
+  letter: Key;
   sequence: boolean;
   index: number;
 }
