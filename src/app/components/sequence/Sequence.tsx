@@ -1,16 +1,19 @@
 "use client";
 
 import styles from "./Sequence.module.css";
-import { Word } from "~/server/types/word";
+import type { ClientWord } from "~/server/types/word";
+
+type SequenceProps = {
+  wordData: ClientWord;
+}
 
 export default function Sequence({
-  wordData
-}: { wordData: Word }) {
-
+  wordData,
+}: SequenceProps) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.sequence}>
-        {wordData.data.sequence.letters.map((char, i) => (
+        {wordData.sequence.letters.map((char, i) => (
           <span 
             key={i}
             className={styles.letter}

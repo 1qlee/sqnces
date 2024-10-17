@@ -1,15 +1,25 @@
 import { useSyncExternalStore, useRef } from "react";
-import { GameState } from "../components/game/Game.types";
+import type { GameState } from "../components/game/Game.types";
 
 const defaultGameState: GameState = {
-  guesses: [],
-  currentGuessIndex: 0,
-  status: "playing",
-  editing: {
-    toggled: false,
-    key: 0,
+  games: {
+    6: {
+      guesses: [],
+      status: "notStarted",
+    },
+    7: {
+      guesses: [],
+      status: "notStarted",
+    },
+    8: {
+      guesses: [],
+      status: "notStarted",
+    },
   },
   showHelp: true,
+  wordLength: 6,
+  puzzle: undefined,
+  loading: true,
 };
 
 export default function useGameState() {
@@ -42,7 +52,10 @@ export default function useGameState() {
     }
     else {
       cachedGameState.current = defaultGameState;
-      setGameState(defaultGameState);
+      setGameState({
+        ...defaultGameState,
+        loading: false,
+      });
 
       return defaultGameState;
     }

@@ -1,27 +1,23 @@
-import { GuessData } from "../guess-area/Guess.types";
-import { Key } from "../keyboard/Keyboard.types";
+import type { GuessData } from "../guess-area/Guess.types";
 
 export type Editing = {
   toggled: boolean;
   key: number;
 }
 
+export type WordLength = 6 | 7 | 8;
+
 export type GameState = {
-  guesses: GuessData[];
-  currentGuessIndex: number;
-  status: "won" | "lost" | "playing";
-  editing: Editing;
+  games: {
+    [key in WordLength]: Game;
+  };
+  wordLength: WordLength;
   showHelp: boolean;
+  puzzle: number | undefined;
+  loading?: boolean;
 }
 
-export type LetterData = {
-  letter: Key;
-  type: "correct" | "incorrect" | "misplaced" | "empty" | "sequence";
-  sequence: boolean;
-}
-
-export type SplitWordLetter = { 
-  letter: Key;
-  sequence: boolean;
-  index: number;
+export type Game = {
+  guesses: GuessData[];
+  status: "won" | "lost" | "playing" | "notStarted" | undefined;
 }

@@ -14,16 +14,69 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Category {
+  Easy
+  Medium
+  Hard
+}
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String
+model Puzzle {
+  id         Int        @id @default(autoincrement())
 
-  @@index([name])
+  words      Word[]     @relation("WordPuzzles") // Many-to-many relationship with Word
+  sequences  Sequence[] @relation("SequencePuzzles") // Many-to-many relationship with Sequence
+
+  lettersUsed  Int      @default(0) // The number of total letters used to solve the puzzle
+  timesGuessed Int      @default(0) // The number of times the puzzle has been guessed
+  timesFailed  Int      @default(0) // The number of times the puzzle has been failed
+  timesSolved  Int      @default(0) // The number of times the puzzle has been solved
+
+  createdAt  DateTime   @default(now())
+  lastPlayed String?  // The last time the puzzle was played
+
+  @@index([id])
+}
+
+model Word {
+  id         Int        @id @default(autoincrement())
+  word       String     @unique
+  length     Int        // The length of the word
+  sequences  Sequence[] @relation("WordSequences") // Many-to-many relationship with Sequence
+  puzzles    Puzzle[]   @relation("WordPuzzles") // Many-to-many relationship with Puzzle
+
+  lastUsed   DateTime?  // The last time the word was used
+  timesUsed  Int        @default(0) // The number of times the word has been used
+  createdAt  DateTime   @default(now())
+
+  @@index([length])
+  @@index([length, timesUsed]) // WHERE length = x and timesUsed = y
+}
+
+model Sequence {
+  id        Int        @id @default(autoincrement())
+  letters   String     @unique // The sequence of letters
+  word      Word[]     @relation("WordSequences") // Many-to-many relationship with Word
+  scores    Score[]    // One-to-many relationship with Score
+  puzzles   Puzzle[]   @relation("SequencePuzzles") // One-to-many relationship with Puzzle
+
+  lastUsed   DateTime?  // The last time the sequence was used
+  timesUsed  Int        @default(0) // The number of times the sequence has been used
+  createdAt  DateTime   @default(now())
+
+  @@index([letters])
+}
+
+model Score {
+  id         Int      @id @default(autoincrement())
+  wordLength Int      // Represents the length of the word the sequence was found in
+  score      Int      // The score for the sequence
+  category   Category // The category of the word the sequence was found in
+
+  sequenceId Int      // Foreign key to the Sequence model
+  sequence   Sequence @relation(fields: [sequenceId], references: [id])
+
+  @@index([sequenceId, wordLength])
+  @@unique([sequenceId, wordLength]) // Ensures no duplicate score for the same sequence and word length
 }
 
 model User {
@@ -34,7 +87,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  Post Post[]
+
   // Optional for WebAuthn support
   Authenticator Authenticator[]
  

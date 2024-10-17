@@ -1,0 +1,18 @@
+.flex {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.statHeading {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--olive-9);
+  margin-bottom: 0.5rem;
+}
+
+.button {
+  margin: 1rem 0;
+}

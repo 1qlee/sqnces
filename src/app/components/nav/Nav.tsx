@@ -1,10 +1,19 @@
+"use client";
 // import { auth } from "~/root/auth";
 import Link from "next/link";
 import styles from "./Nav.module.css";
 import ColorModeToggle from "../toggles/ColorModeToggle";
 import HowToPlayToggle from "../toggles/HowToPlayToggle";
+import EndgameToggle from "../toggles/EndgameToggle";
+import type { Dispatch, SetStateAction } from "react";
 
-export default async function Nav() {
+type NavProps = {
+  setShowEndgameModal: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function Nav({
+  setShowEndgameModal,
+}: NavProps) {
   // const session = await auth();
 
   return (
@@ -13,6 +22,10 @@ export default async function Nav() {
         sqnces
       </Link>
       <div className={styles.section}>
+        <EndgameToggle
+          className={styles.item}
+          setShowEndgameModal={setShowEndgameModal}
+        />
         <HowToPlayToggle 
           className={styles.item}
         />

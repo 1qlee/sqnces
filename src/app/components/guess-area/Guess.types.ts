@@ -1,5 +1,5 @@
-import { LetterData } from '../game/Game.types';
-import { Key } from '../keyboard/Keyboard.types';
+import type { LetterData } from "../../../server/types/word";
+import type { Key } from '../keyboard/Keyboard.types';
 
 export type Guess = { 
   string: string; 
@@ -7,7 +7,6 @@ export type Guess = {
 }
 
 export type GuessData = {
-  number: number;
   validationMap: LetterData[];
   word: string;
   length: number;

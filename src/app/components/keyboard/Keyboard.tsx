@@ -3,15 +3,15 @@
 import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
-import type { Status, KeysStatus, Key, KeyStyleOrIcon, LettersMap } from "../keyboard/Keyboard.types";
+import type { ClientWord } from "~/server/types/word";
+import type { Editing, Game, WordLength } from "../game/Game.types";
+import type { Guess, GuessData } from "../guess-area/Guess.types";
+import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
+import useGameState from "~/app/hooks/useGameState";
 import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
-import { type LetterData, type GameState, type SplitWordLetter } from "../game/Game.types";
-import type { Guess, GuessData } from "../guess-area/Guess.types";
-import type { Word } from "~/server/types/word";
 import { useRef } from "react";
-import { validateGuess } from "~/app/actions/validateGuess";
-
+import { checkGuess } from "~/app/actions/checkGuess";
 
 const KeyboardRows: Key[][] = [
   ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -20,29 +20,31 @@ const KeyboardRows: Key[][] = [
 ]
 
 interface KeyboardProps {
-  gameState: GameState;
-  setGameState: Dispatch<SetStateAction<GameState>>;
+  editing: Editing;
+  currentGame: Game;
+  setEditing: Dispatch<SetStateAction<Editing>>;
   guess: Guess;
   setGuess: Dispatch<SetStateAction<{
     string: string;
     letters: Key[];
   }>>;
-  wordData: Word;
+  wordData: ClientWord;
 }
 
 export default function Keyboard({ 
-  gameState,
   guess,
-  setGameState,
+  currentGame,
+  editing,
+  setEditing,
   setGuess,
   wordData,
 }: KeyboardProps) {
-  const { data } = wordData;
-  const isGameOver = gameState.status === "won" || gameState.status === "lost";
+  const [gameState, setGameState] = useGameState();
+  const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const [keysStatus, setKeysStatus] = useState<KeysStatus>({
-    [String(data.sequence.letters[0])]: "",
-    [String(data.sequence.letters[1])]: "",
-    [String(data.sequence.letters[2])]: "",
+    [String(wordData.sequence.letters[0])]: "",
+    [String(wordData.sequence.letters[1])]: "",
+    [String(wordData.sequence.letters[2])]: "",
   });
   const [loading, setLoading] = useState(false);
   const [activeKeys, setActiveKeys] = useState<Key[]>([]);
@@ -54,13 +56,13 @@ export default function Keyboard({
     const capitalizedKey = key !== "Blank" ? key.toUpperCase() as Key : key;
 
     if (validateAlpha(key)) {
-      if (gameState.editing.toggled) {
+      if (editing.toggled) {
         setGuess(prev => ({
-          string: prev.string.slice(0, gameState.editing.key) + capitalizedKey + prev.string.slice(gameState.editing.key + 1),
-          letters: prev.letters.map((letter, i) => (i === gameState.editing.key ? capitalizedKey : letter)),
+          string: prev.string.slice(0, editing.key) + capitalizedKey + prev.string.slice(editing.key + 1),
+          letters: prev.letters.map((letter, i) => (i === editing.key ? capitalizedKey : letter)),
         }));
       }
-      else if (guessRef.current.letters.includes("Blank") && guessRef.current.letters.length === wordData.data.length) {
+      else if (guessRef.current.letters.includes("Blank") && guessRef.current.letters.length === wordData.length) {
         const newString = guessRef.current.string.replace(" ", capitalizedKey);
         const blankIndex = guessRef.current.letters.indexOf("Blank");
         const newLetters = [
@@ -75,7 +77,7 @@ export default function Keyboard({
         });
       }
       else {
-        if (guessRef.current.letters.length < wordData.data.length) {
+        if (guessRef.current.letters.length < wordData.length) {
           setGuess(prev => ({
             string: prev.string + key.toUpperCase(),
             letters: [...prev.letters, capitalizedKey],
@@ -84,21 +86,18 @@ export default function Keyboard({
       }
     }
     else if (key === ' ' || key === "Blank") {
-      if (gameState.editing.toggled) {
+      if (editing.toggled) {
         setGuess(prev => ({
-          string: prev.string.slice(0, gameState.editing.key) + " " + prev.string.slice(gameState.editing.key + 1),
-          letters: prev.letters.map((letter, i) => (i === gameState.editing.key ? "Blank" : letter)),
+          string: prev.string.slice(0, editing.key) + " " + prev.string.slice(editing.key + 1),
+          letters: prev.letters.map((letter, i) => (i === editing.key ? "Blank" : letter)),
         }));
-        setGameState({
-          ...gameState,
-          editing: {
-            toggled: false,
-            key: 0,
-          }
+        setEditing({
+          toggled: false,
+          key: 0,
         });
       }
       else {
-        if (guessRef.current.letters.length < wordData.data.length) {
+        if (guessRef.current.letters.length < wordData.length) {
           setGuess(prev => ({
             string: prev.string + " ",
             letters: [...prev.letters, "Blank"],
@@ -111,17 +110,14 @@ export default function Keyboard({
   function handleBackspace(event: KeyboardEvent | React.PointerEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>) {
     const modifierPressed = event.shiftKey || event.ctrlKey || event.metaKey;
 
-    if (gameState.editing.toggled) {
+    if (editing.toggled) {
       setGuess(prev => ({
-        string: prev.string.slice(0, gameState.editing.key) + prev.string.slice(gameState.editing.key + 1),
-        letters: prev.letters.filter((_, i) => i !== gameState.editing.key),
+        string: prev.string.slice(0, editing.key) + prev.string.slice(editing.key + 1),
+        letters: prev.letters.filter((_, i) => i !== editing.key),
       }));
-      setGameState({
-        ...gameState,
-        editing: {
-          toggled: false,
-          key: 0,
-        }
+      setEditing({
+        toggled: false,
+        key: 0,
       });
     }
     else if (modifierPressed) {
@@ -154,12 +150,9 @@ export default function Keyboard({
           handleBackspace(event);
         } 
         else if (key === 'Escape') {
-          setGameState({
-            ...gameState,
-            editing: {
-              toggled: false,
-              key: 0,
-            }
+          setEditing({
+            toggled: false,
+            key: 0,
           })
         }
         else if (key !== 'Tab' && key !== 'Enter') {
@@ -183,7 +176,7 @@ export default function Keyboard({
       document.removeEventListener('keydown', handleKeyTyping);
       document.removeEventListener('keyup', () => setActiveKeys([]));
     }
-  }, [loading, gameState.status, gameState.editing])
+  }, [loading, gameState, editing])
   
   // ***** HELPERS ***** //\
   function validateAlpha(char: string) {
@@ -241,101 +234,13 @@ export default function Keyboard({
     setActiveKeys(prev => [...prev, key]);
   }
 
-  function createValidationMap(guessedWord: string) {
-    const { word, sequence, letters } = data;
-    const lettersMap: LettersMap = letters.map((letter) => ({ letter, used: false }));
-    const splitWord: SplitWordLetter[] = [];
-    const validationMap: LetterData[] = []; // returned variable
-    const keys: KeysStatus = {};
-    // guess variables
-    const guessLength = guessedWord.length; // length of the guess
-    const charsBefore = guessedWord.indexOf(sequence.string); // number of characters before the sequence begins 
-    const charsAfter = guessLength - charsBefore - 3; // number of characters after the sequence ends 
-    // word variables
-    const wordLength = word.length; // length of the word 
-    const startIndex = sequence.index - charsBefore; // can be a negative number 
-    const endIndex = sequence.index + 3 + charsAfter;
-
-    // we need to generate an array of letters that compares respectively to the letters in guess
-    for (let n = startIndex; n < endIndex; n++) {
-      // if the index is out of bounds (aka the guess has more characters on either side of the sequence than the word)
-      if (n < 0 || n > wordLength) {
-        splitWord.push({ letter: "", sequence: false, index: n, });
-     }
-      // mark the sequence letters
-      else if (n >= sequence.index && n < sequence.index + 3) {
-        splitWord.push({ letter: word.charAt(n) as Key, sequence: true, index: n });
-      }
-      else {
-        splitWord.push({ letter: word.charAt(n) as Key, sequence: false, index: n });
-      }
-    }
-
-    // pass through the guess once first to check for correct letters
-    for (let i = 0; i < guessLength; i++) {
-      const letterGuessed = guessedWord.charAt(i);
-      const letterToCompare = splitWord[i] ?? { letter: "", sequence: false, index: i };
-
-      if (letterToCompare.letter === letterGuessed && !letterToCompare.sequence) {
-        lettersMap[letterToCompare.index] = {
-          letter: letterGuessed,
-          used: true,
-        };
-        keys[letterGuessed] = "correct";
-        validationMap[i] = { letter: letterGuessed, type: "correct", sequence: false };
-      }
-    }
-
-    // compare the guess to the split word (the word that accurately corresponds to the same letter positions as the guess)
-    for (let i = 0; i < guessLength; i++) {
-      const letterGuessed = guessedWord.charAt(i) as Key;
-      const letterToCompare = splitWord[i]!.letter;
-      const letterIsSequence = splitWord[i]!.sequence;
-      // check to see if the guessed letter is already marked as correct
-      const correctLetterExists = validationMap.length > 0 && validationMap.find(l => l?.letter === letterGuessed && l.type === "correct");
-      const misplacedLetterExists = lettersMap.find(l => l.letter === letterGuessed && !l.used);
-
-      // never override an existing letter
-      if (validationMap[i]) continue;
-
-      if (letterIsSequence) {
-        validationMap[i] = { letter: letterGuessed, type: "sequence", sequence: true };
-      }
-      else if (letterToCompare === "") {
-        validationMap[i] = { letter: letterGuessed, type: "empty", sequence: false };
-      }
-      else if (misplacedLetterExists) {
-        if (!correctLetterExists) {
-          keys[letterGuessed] = "misplaced";
-        };
-
-        validationMap[i] = { letter: letterGuessed, type: "misplaced", sequence: false };
-        misplacedLetterExists.used = true;
-      }
-      else {
-        if (!correctLetterExists) {
-          keys[letterGuessed] = "incorrect";
-        };
-
-        validationMap[i] = { letter: letterGuessed, type: "incorrect", sequence: false };
-      }
-    }
-
-    setKeysStatus(prev => ({ ...prev, ...keys }));
-
-    return validationMap
-  }
-
   async function handleGuessSubmit() {
     const guessedWord = guessRef.current.string;
 
-    if (gameState.editing.toggled) {
-      return setGameState({
-        ...gameState,
-        editing: {
-          toggled: false,
-          key: 0,
-        }
+    if (editing.toggled) {
+      return setEditing({
+        toggled: false,
+        key: 0,
       });
     }
 
@@ -350,43 +255,54 @@ export default function Keyboard({
     }
 
     // if the guess doesn't include the sequence
-    if (!guessedWord.includes(wordData.data.sequence.string)) {
+    if (!guessedWord.includes(wordData.sequence.string)) {
       toast.dismiss();
       toast.error("Word must include the sequence");
     }
     else {
       setLoading(true);
+      
       // check if guess is a valid word
-      const validateData = await validateGuess(guessedWord);
-      const newGuessIndex = gameState.currentGuessIndex + 1
+      const validateData = await checkGuess({
+        guess: guessedWord,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        length: wordData.length,
+      });
 
-      if (validateData.isValid) {
-        const newGuess: GuessData = {
-          number: newGuessIndex,
-          validationMap: createValidationMap(guessedWord),
-          word: guessedWord,
-          length: guessedWord.length,
-        }
-
-        setGameState({
-          ...gameState,
-          guesses: [
-            ...gameState?.guesses,
-            newGuess,
-          ],
-          currentGuessIndex: newGuessIndex,
-        })
-        setGuess({
-          string: "",
-          letters: [],
-        });
-        return setLoading(false);;
-      }
-      else {
+      if (!validateData.isValid) {
         setLoading(false);
         toast.dismiss();
-        return toast.error("Invalid word");
+        toast.error("Invalid word");
+
+        return;
       }
+
+      setKeysStatus(prev => ({ ...prev, ...validateData.keys }));
+      
+      const newGuess: GuessData = {
+        validationMap: validateData.map,
+        word: guessedWord,
+        length: guessedWord.length,
+      }
+      console.log(currentGame.guesses)
+      const wonOrLost = validateData.won ? "won" : currentGame.guesses.length >= 5 ? "lost" : "playing"
+
+      setGameState({
+        ...gameState,
+        games: {
+          ...gameState.games,
+          [wordData.length as WordLength]: {
+            guesses: [...currentGame.guesses, newGuess],
+            status: wonOrLost,
+          },
+        },
+      })
+      setGuess({
+        string: "",
+        letters: [],
+      });
+
+      return setLoading(false);
     }
   }
 
@@ -455,7 +371,7 @@ export default function Keyboard({
   }
 
   // handle long press
-  function handleContextMenu(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: string) {
+  function handleContextMenu(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     event.preventDefault();
     return false;
   }
@@ -478,7 +394,7 @@ export default function Keyboard({
                 isKeyActive(key) ? styles.active : "",
                 key === "Backspace" ? styles.largeKey : "",
                 getKeyStyleOrIcon(keysStatus[key], "style"),
-                data.sequence.letters.includes(key) ? styles.isSequence : "",
+                wordData.sequence.letters.includes(key) ? styles.isSequence : "",
               ].filter(Boolean).join(" ")}
               {...(!isGameOver && { 
                 onPointerDown: (event) => handleKeyPress(event, key),
@@ -486,7 +402,7 @@ export default function Keyboard({
                 onPointerLeave: handlePointerLeave,
                 onKeyDown: (event) => handleKeyDown(event, key),
                 onKeyUp: () => handleKeyUp(key),
-                onContextMenu: (event) => handleContextMenu(event, key),
+                onContextMenu: (event) => handleContextMenu(event),
               })}
             >
               {key === "Backspace" ? "⌫" : key.toUpperCase()}
@@ -510,7 +426,7 @@ export default function Keyboard({
             onPointerLeave: handlePointerLeave,
             onKeyDown: (event) => handleKeyDown(event, "Blank"),
             onKeyUp: () => handleKeyUp("Blank"),
-            onContextMenu: (event) => handleContextMenu(event, "Blank"),
+            onContextMenu: (event) => handleContextMenu(event),
           })}
         >
           <span>Space</span>
@@ -528,11 +444,11 @@ export default function Keyboard({
             onPointerLeave: handlePointerLeave,
             onKeyDown: (event) => handleKeyDown(event, "Enter"),
             onKeyUp: () => handleKeyUp("Enter"),
-            onContextMenu: (event) => handleContextMenu(event, "Enter"),
+            onContextMenu: (event) => handleContextMenu(event),
           })}
         >
           <span>
-            {gameState.editing.toggled ? "Change" : "Enter"}
+            {editing.toggled ? "Change" : "Enter"}
           </span>
           <KeyReturn size={18} />
         </button>

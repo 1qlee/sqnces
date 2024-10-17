@@ -1,0 +1,200 @@
+{
+  "today": {
+    "words": [
+      {
+        "id": 1794,
+        "word": "ODIOUS",
+        "sequence": {
+          "id": 292,
+          "string": "OUS",
+          "index": 3,
+          "letters": [
+            "O",
+            "U",
+            "S"
+          ],
+          "score": {
+            "id": 292,
+            "wordLength": 6,
+            "score": 34,
+            "category": "Medium",
+            "sequenceId": 292
+          }
+        },
+        "letters": [
+          "O",
+          "D",
+          "I",
+          "",
+          "",
+          ""
+        ],
+        "length": 6
+      },
+      {
+        "id": 4956,
+        "word": "PIRANHA",
+        "sequence": {
+          "id": 320,
+          "string": "PIR",
+          "index": 0,
+          "letters": [
+            "P",
+            "I",
+            "R"
+          ],
+          "score": {
+            "id": 2184,
+            "wordLength": 7,
+            "score": 25,
+            "category": "Medium",
+            "sequenceId": 320
+          }
+        },
+        "letters": [
+          "",
+          "",
+          "",
+          "A",
+          "N",
+          "H",
+          "A"
+        ],
+        "length": 7
+      },
+      {
+        "id": 8065,
+        "word": "PARALLAX",
+        "sequence": {
+          "id": 159,
+          "string": "ALL",
+          "index": 3,
+          "letters": [
+            "A",
+            "L",
+            "L"
+          ],
+          "score": {
+            "id": 3968,
+            "wordLength": 8,
+            "score": 257,
+            "category": "Easy",
+            "sequenceId": 159
+          }
+        },
+        "letters": [
+          "P",
+          "A",
+          "R",
+          "",
+          "",
+          "",
+          "A",
+          "X"
+        ],
+        "length": 8
+      }
+    ],
+    "date": "2024-10-16",
+    "id": 1
+  },
+  "tomorrow": {
+    "words": [
+      {
+        "id": 317,
+        "word": "BORROW",
+        "sequence": {
+          "id": 447,
+          "string": "RRO",
+          "index": 2,
+          "letters": [
+            "R",
+            "R",
+            "O"
+          ],
+          "score": {
+            "id": 447,
+            "wordLength": 6,
+            "score": 24,
+            "category": "Medium",
+            "sequenceId": 447
+          }
+        },
+        "letters": [
+          "B",
+          "O",
+          "",
+          "",
+          "",
+          "W"
+        ],
+        "length": 6
+      },
+      {
+        "id": 4408,
+        "word": "INHUMAN",
+        "sequence": {
+          "id": 445,
+          "string": "MAN",
+          "index": 4,
+          "letters": [
+            "M",
+            "A",
+            "N"
+          ],
+          "score": {
+            "id": 1834,
+            "wordLength": 7,
+            "score": 134,
+            "category": "Easy",
+            "sequenceId": 445
+          }
+        },
+        "letters": [
+          "I",
+          "N",
+          "H",
+          "U",
+          "",
+          "",
+          ""
+        ],
+        "length": 7
+      },
+      {
+        "id": 7889,
+        "word": "NATIVITY",
+        "sequence": {
+          "id": 75,
+          "string": "ITY",
+          "index": 5,
+          "letters": [
+            "I",
+            "T",
+            "Y"
+          ],
+          "score": {
+            "id": 3964,
+            "wordLength": 8,
+            "score": 124,
+            "category": "Medium",
+            "sequenceId": 75
+          }
+        },
+        "letters": [
+          "N",
+          "A",
+          "T",
+          "I",
+          "V",
+          "",
+          "",
+          ""
+        ],
+        "length": 8
+      }
+    ],
+    "date": "2024-10-17",
+    "id": 2
+  }
+}

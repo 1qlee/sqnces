@@ -1,19 +1,18 @@
-import { Dispatch, memo, SetStateAction, useState } from "react";
+import { type Dispatch, memo, type SetStateAction, useRef, useEffect } from "react";
+import useGameState from "~/app/hooks/useGameState";
 
 import styles from "./Guesses.module.css";
-import type { Word } from "~/server/types/word";
-import { type GameState } from "~/app/components/game/Game.types";
-import type { Key } from "../keyboard/Keyboard.types";
+import type { Editing, Game } from "~/app/components/game/Game.types";
 import type { GuessData } from "../guess-area/Guess.types";
 import { X, Empty, Check, ArrowsLeftRight, Pen } from "@phosphor-icons/react";
-import { Guess } from "../guess-area/Guess.types";
+import type { Guess } from "../guess-area/Guess.types";
 
 type GuessesProps = {
-  gameState: GameState;
   guess: Guess;
-  wordData: Word;
+  editing: Editing;
+  currentGame: Game;
+  setEditing: Dispatch<SetStateAction<Editing>>;
   setGuess: Dispatch<SetStateAction<Guess>>;
-  setGameState: Dispatch<SetStateAction<GameState>>;
 }
 
 function parseLetterStyle(type: string) {
@@ -47,36 +46,44 @@ function parseLetterIcon(type: string) {
 }
 
 export const Guesses = memo(({
-  gameState,
+  currentGame,
   guess,
-  setGameState,
+  editing,
+  setEditing,
   setGuess,
 }: GuessesProps) => {
-  const { guesses, status } = gameState;
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [gameState] = useGameState();
 
-  if (guesses.length === 0 && guess.letters.length === 0) {
+  useEffect(() => {
+    if (wrapperRef.current) {
+      const hasScrollableContent =
+      wrapperRef.current.scrollHeight > wrapperRef.current.clientHeight;
+
+      if (hasScrollableContent) {
+        // Scroll to the bottom if the content is scrollable
+        wrapperRef.current.scrollTop = wrapperRef.current.scrollHeight;
+      }
+    }
+  }, [guess])
+
+  if (currentGame.guesses.length === 0 && guess.letters.length === 0) {
     return (
       <p className={styles.helperText}>Start typing to enter your first guess</p>
     )
   }
 
   function handleEditCurrGuess(index: number) {
-    if (gameState.editing.key === index) {
-      setGameState({
-        ...gameState,
-        editing: {
-          toggled: !gameState.editing.toggled,
-          key: index,
-        },
+    if (editing.key === index) {
+      setEditing({
+        toggled: !editing.toggled,
+        key: index,
       });
     }
     else {
-      setGameState({
-        ...gameState,
-        editing: {
-          toggled: true,
-          key: index,
-        }
+      setEditing({
+        toggled: true,
+        key: index,
       });
     }
   }
@@ -88,18 +95,18 @@ export const Guesses = memo(({
       string: guess.word,
       letters: letters,
     })
-    setGameState({
-      ...gameState,
-      editing: {
-        toggled: true,
-        key: index,
-      },
+    setEditing({
+      toggled: true,
+      key: index,
     });
   }
 
   return (
-    <div className={styles.wrapper}>
-      {guesses.map((guess, index) => (
+    <div 
+      className={styles.wrapper}
+      ref={wrapperRef}
+    >
+      {currentGame.guesses.map((guess, index) => (
         <div className={styles.word} key={index}>
           {guess?.validationMap.map((char, i) => (
             <span
@@ -113,7 +120,7 @@ export const Guesses = memo(({
           ))}
         </div>
       ))}
-      {status === "playing" && (
+      {currentGame.status === "playing" && (
         <div className={styles.word}>
           {guess?.letters.map((char, i) => (
             <span
@@ -121,12 +128,12 @@ export const Guesses = memo(({
               className={[
                 styles.letter,
                 styles.isCurrentGuess,
-                gameState.editing.toggled && gameState.editing.key === i ? styles.isEditing : "",
+                editing.toggled && editing.key === i ? styles.isEditing : "",
               ].filter(Boolean).join(" ")}
               onPointerDown={() => handleEditCurrGuess(i)}
             >
               <span>{char === "Blank" ? "" : char}</span>
-              <span className={styles.icon}>{gameState.editing.toggled && gameState.editing.key === i && <Pen size={10} />}</span>
+              <span className={styles.icon}>{editing.toggled && editing.key === i && <Pen size={10} />}</span>
             </span>
           ))}
         </div>
