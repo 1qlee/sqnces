@@ -72,7 +72,7 @@ export default function Game({ initialPuzzleData}: GameProps) {
     }
 
     if (!loading) {
-      if (gameState.puzzle !== puzzleData.id) {
+      if (!gameState.puzzle || gameState.puzzle !== puzzleData.id) {
         resetGameState();
       }
     }
