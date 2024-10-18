@@ -2,92 +2,191 @@
   "today": {
     "words": [
       {
-        "id": 2059,
-        "word": "RADIUS",
+        "id": 760,
+        "word": "DIAPER",
         "sequence": {
-          "id": 909,
-          "string": "RAD",
-          "index": 0,
+          "id": 195,
+          "string": "PER",
+          "index": 3,
           "letters": [
-            "R",
-            "A",
-            "D"
+            "P",
+            "E",
+            "R"
           ],
           "score": {
-            "id": 909,
+            "id": 195,
             "wordLength": 6,
-            "score": 26,
-            "category": "Medium",
-            "sequenceId": 909
+            "score": 88,
+            "category": "Easy",
+            "sequenceId": 195
           }
         },
         "letters": [
-          "",
-          "",
-          "",
+          "D",
           "I",
-          "U",
-          "S"
+          "A",
+          "",
+          "",
+          ""
         ],
         "length": 6
       },
       {
-        "id": 5583,
-        "word": "STEALTH",
+        "id": 3262,
+        "word": "BASEMAN",
         "sequence": {
-          "id": 260,
-          "string": "EAL",
-          "index": 2,
+          "id": 445,
+          "string": "MAN",
+          "index": 4,
           "letters": [
-            "E",
+            "M",
             "A",
-            "L"
+            "N"
           ],
           "score": {
-            "id": 2801,
+            "id": 1834,
             "wordLength": 7,
-            "score": 77,
-            "category": "Medium",
-            "sequenceId": 260
+            "score": 134,
+            "category": "Easy",
+            "sequenceId": 445
           }
         },
         "letters": [
+          "B",
+          "A",
           "S",
-          "T",
+          "E",
           "",
           "",
-          "",
-          "T",
-          "H"
+          ""
         ],
         "length": 7
       },
       {
-        "id": 7795,
-        "word": "MISHEARD",
+        "id": 8037,
+        "word": "OVERTURE",
         "sequence": {
-          "id": 14,
-          "string": "ARD",
-          "index": 5,
+          "id": 94,
+          "string": "VER",
+          "index": 1,
           "letters": [
-            "A",
-            "R",
-            "D"
+            "V",
+            "E",
+            "R"
           ],
           "score": {
-            "id": 3809,
+            "id": 3927,
             "wordLength": 8,
-            "score": 194,
+            "score": 316,
             "category": "Easy",
-            "sequenceId": 14
+            "sequenceId": 94
           }
         },
         "letters": [
-          "M",
-          "I",
+          "O",
+          "",
+          "",
+          "",
+          "T",
+          "U",
+          "R",
+          "E"
+        ],
+        "length": 8
+      }
+    ],
+    "date": "2024-10-17",
+    "id": 5
+  },
+  "tomorrow": {
+    "words": [
+      {
+        "id": 1220,
+        "word": "GUZZLE",
+        "sequence": {
+          "id": 707,
+          "string": "UZZ",
+          "index": 1,
+          "letters": [
+            "U",
+            "Z",
+            "Z"
+          ],
+          "score": {
+            "id": 707,
+            "wordLength": 6,
+            "score": 9,
+            "category": "Hard",
+            "sequenceId": 707
+          }
+        },
+        "letters": [
+          "G",
+          "",
+          "",
+          "",
+          "L",
+          "E"
+        ],
+        "length": 6
+      },
+      {
+        "id": 5513,
+        "word": "SOMEHOW",
+        "sequence": {
+          "id": 239,
+          "string": "HOW",
+          "index": 4,
+          "letters": [
+            "H",
+            "O",
+            "W"
+          ],
+          "score": {
+            "id": 2709,
+            "wordLength": 7,
+            "score": 25,
+            "category": "Medium",
+            "sequenceId": 239
+          }
+        },
+        "letters": [
           "S",
-          "H",
+          "O",
+          "M",
           "E",
+          "",
+          "",
+          ""
+        ],
+        "length": 7
+      },
+      {
+        "id": 7256,
+        "word": "GLORIOUS",
+        "sequence": {
+          "id": 292,
+          "string": "OUS",
+          "index": 5,
+          "letters": [
+            "O",
+            "U",
+            "S"
+          ],
+          "score": {
+            "id": 3934,
+            "wordLength": 8,
+            "score": 141,
+            "category": "Easy",
+            "sequenceId": 292
+          }
+        },
+        "letters": [
+          "G",
+          "L",
+          "O",
+          "R",
+          "I",
           "",
           "",
           ""
@@ -96,105 +195,6 @@
       }
     ],
     "date": "2024-10-18",
-    "id": 3
-  },
-  "tomorrow": {
-    "words": [
-      {
-        "id": 551,
-        "word": "COFFEE",
-        "sequence": {
-          "id": 109,
-          "string": "FFE",
-          "index": 2,
-          "letters": [
-            "F",
-            "F",
-            "E"
-          ],
-          "score": {
-            "id": 109,
-            "wordLength": 6,
-            "score": 21,
-            "category": "Medium",
-            "sequenceId": 109
-          }
-        },
-        "letters": [
-          "C",
-          "O",
-          "",
-          "",
-          "",
-          "E"
-        ],
-        "length": 6
-      },
-      {
-        "id": 3288,
-        "word": "BENZENE",
-        "sequence": {
-          "id": 509,
-          "string": "BEN",
-          "index": 0,
-          "letters": [
-            "B",
-            "E",
-            "N"
-          ],
-          "score": {
-            "id": 2358,
-            "wordLength": 7,
-            "score": 20,
-            "category": "Hard",
-            "sequenceId": 509
-          }
-        },
-        "letters": [
-          "",
-          "",
-          "",
-          "Z",
-          "E",
-          "N",
-          "E"
-        ],
-        "length": 7
-      },
-      {
-        "id": 6558,
-        "word": "CLEAVAGE",
-        "sequence": {
-          "id": 130,
-          "string": "AGE",
-          "index": 5,
-          "letters": [
-            "A",
-            "G",
-            "E"
-          ],
-          "score": {
-            "id": 4205,
-            "wordLength": 8,
-            "score": 221,
-            "category": "Easy",
-            "sequenceId": 130
-          }
-        },
-        "letters": [
-          "C",
-          "L",
-          "E",
-          "A",
-          "V",
-          "",
-          "",
-          ""
-        ],
-        "length": 8
-      }
-    ],
-    "date": "2024-10-19",
-    "id": 4
+    "id": 6
   }
 }
