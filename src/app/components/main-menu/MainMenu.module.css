@@ -52,3 +52,32 @@
   color: var(--foreground);
   padding: 0.25rem 0.5rem;
 }
+
+.word {
+  background-color: var(--background);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 100;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.letter {
+  font-size: 0.875rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--foreground);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 0 var(--foreground);
+  
+  &:not(:last-child) {
+    margin-right: 0.25rem;
+  }
+}

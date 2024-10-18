@@ -4,8 +4,7 @@ import Game from "./components/game/Game";
 import { getPuzzle } from "./actions/getPuzzle";
 
 export default async function Home() {
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const puzzleData = await getPuzzle(timezone);
+  const initialPuzzleData = await getPuzzle("America/Vancouver");
   // const hello = await api.post.hello({ text: "from tRPC" });
   // const session = await auth();
   // void session?.user && api.post.getLatest.prefetch();
@@ -13,8 +12,9 @@ export default async function Home() {
   return (
     <HydrateClient>
       <Game 
-        puzzleData={puzzleData}
+        initialPuzzleData={initialPuzzleData}
       />
     </HydrateClient>
   );
 }
+ 

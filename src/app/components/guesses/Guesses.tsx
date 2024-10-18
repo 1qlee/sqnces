@@ -1,3 +1,5 @@
+"use client";
+
 import { type Dispatch, memo, type SetStateAction, useRef, useEffect } from "react";
 import useGameState from "~/app/hooks/useGameState";
 
@@ -53,7 +55,6 @@ export const Guesses = memo(({
   setGuess,
 }: GuessesProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [gameState] = useGameState();
 
   useEffect(() => {
     if (wrapperRef.current) {

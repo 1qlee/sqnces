@@ -1,9 +1,11 @@
-import type { Dispatch, SetStateAction } from 'react';
-import useGameState from '~/app/hooks/useGameState';
-import styles from './MainMenu.module.css';
+"use client"
+
 import Button from '../button/Button';
-import type { ClientPuzzle } from '~/server/types/word';
+import useGameState from '~/app/hooks/useGameState';
 import GameModeToggle from '../game-mode-toggle/GameModeToggle';
+import styles from './MainMenu.module.css';
+import type { ClientPuzzle } from '~/server/types/word';
+import type { Dispatch, SetStateAction } from 'react';
 import type { Game } from '../game/Game.types';
 
 type MainMenuProps = {
@@ -35,7 +37,8 @@ export default function MainMenu({
               ...currentGame,
               status: "playing",
             },
-          }
+          },
+          puzzle: puzzleData.id,
         });
         setShowMainMenu(false);
         break;
@@ -67,6 +70,16 @@ export default function MainMenu({
 
   return (
     <div className={styles.menu}>
+      <div className={styles.word}>
+        {"SQNCES".split("").map((char, i) => (
+          <span
+            key={i}
+            className={styles.letter}
+          >
+            {char}
+          </span>
+        ))}
+      </div>
       {status === "won" && (
         <>
           <h1 className={styles.heading}>You won!</h1>
@@ -82,14 +95,14 @@ export default function MainMenu({
       {status === "notStarted" && (
         <>
           <div className={styles.heading}>
-            sqnces
+            Start a New Game
           </div>
           <p className={styles.body}>Find the hidden word by using the given 3-letter sequence.</p>
         </>
       )}
       {status === "playing" && (
         <>
-          <h1 className={styles.heading}>Game in progress...</h1>
+          <h1 className={styles.heading}>Game in Progress...</h1>
           <p className={styles.body}>
             {currentGame.guesses.length === 0 ? (
               "It's time to make your first guess!"

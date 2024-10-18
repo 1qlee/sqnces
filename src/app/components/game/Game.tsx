@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { ClientPuzzle } from "~/server/types/word";
+import { getPuzzle } from "~/app/actions/getPuzzle";
 
 import Nav from "../nav/Nav";
 import styles from "./Game.module.css";
@@ -11,10 +11,16 @@ import InfoModal from "../info-modal/InfoModal";
 import MainMenu from "../main-menu/MainMenu";
 import EndgameModal from "../endgame-modal/EndgameModal";
 import useGameState from "~/app/hooks/useGameState";
+import { ClientPuzzle } from "~/server/types/word";
+import Loader from "../loader/Loader";
 
-export default function Game({
-  puzzleData
-}: { puzzleData: ClientPuzzle }) {
+type GameProps = {
+  initialPuzzleData: ClientPuzzle;
+}
+
+export default function Game({ initialPuzzleData}: GameProps) {
+  const [loading, setLoading] = useState(true);
+  const [puzzleData, setPuzzleData] = useState(initialPuzzleData);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
   const [gameState, setGameState] = useGameState();
@@ -45,14 +51,39 @@ export default function Game({
   }
 
   useEffect(() => {
-    if (!gameState.puzzle) {
-      resetGameState();
+    async function fetchPuzzle() {
+      try {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const puzzleData = await getPuzzle(timezone);
+        setPuzzleData(puzzleData);
+      } catch(error) {
+        setPuzzleData({
+          words: [],
+          id: 0,
+          date: "",
+        });
+      } finally {
+        setLoading(false);
+      }
     }
-    
-    if (gameState.puzzle !== puzzleData.id) {
-      resetGameState();
+
+    if (loading) {
+      void fetchPuzzle();
     }
-  }, [])
+
+    if (!loading) {
+      if (gameState.puzzle !== puzzleData.id) {
+        resetGameState();
+      }
+    }
+
+    console.log("Game loaded")
+
+  }, [puzzleData.id, loading])
+
+  if (loading) {
+    return <Loader />
+  }
 
   return (
     <>
