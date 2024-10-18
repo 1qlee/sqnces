@@ -21,3 +21,18 @@ export type Game = {
   guesses: GuessData[];
   status: "won" | "lost" | "playing" | "notStarted" | undefined;
 }
+
+export type Stats = {
+  played: number;
+  won: number;
+  lost: number;
+  winRate: string;
+  currentStreak: number;
+  longestStreak: number;
+}
+
+export type GameStats = {
+  games: {
+    [key in WordLength]: Stats;
+  };
+}

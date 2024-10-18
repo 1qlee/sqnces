@@ -22,7 +22,7 @@ export default function MainMenu({
   const [gameState, setGameState] = useGameState();
   const { status } = currentGame;
   
-  if (!currentGame.status || gameState.loading) {
+  if (!status) {
     return <div className={styles.menu}>Loading...</div>
   }
 
@@ -95,14 +95,16 @@ export default function MainMenu({
       {status === "notStarted" && (
         <>
           <div className={styles.heading}>
-            Start a New Game
+            New Game
           </div>
-          <p className={styles.body}>Find the hidden word by using the given 3-letter sequence.</p>
+          <p className={styles.body}>Use a 3-letter sequence to find the hidden word.</p>
         </>
       )}
       {status === "playing" && (
         <>
-          <h1 className={styles.heading}>Game in Progress...</h1>
+          <div className={styles.heading}>
+            Continue Game
+          </div>
           <p className={styles.body}>
             {currentGame.guesses.length === 0 ? (
               "It's time to make your first guess!"

@@ -493,6 +493,8 @@ export const wordRouter = createTRPCRouter({
           return clientPuzzle;
         }
         else {
+          console.log(`[WORD API] Cache missed. Sending back fallback.`);
+
           const fallbackPuzzle: ClientPuzzle = {
             words: fallbackWords,
             id: 0,

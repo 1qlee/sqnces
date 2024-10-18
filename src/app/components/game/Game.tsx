@@ -24,13 +24,12 @@ export default function Game({ initialPuzzleData}: GameProps) {
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
   const [gameState, setGameState] = useGameState();
-  const currentGame = gameState.games[gameState.wordLength];
+  const currentGame = gameState?.games && gameState.games[gameState.wordLength];
   const wordData = puzzleData.words.find(word => word.length === gameState.wordLength)!;
 
   function resetGameState() {
     setGameState({
       ...gameState,
-      loading: false,
       puzzle: puzzleData.id,
       games: {
         6: {
@@ -76,8 +75,6 @@ export default function Game({ initialPuzzleData}: GameProps) {
         resetGameState();
       }
     }
-
-    console.log("Game loaded")
 
   }, [puzzleData.id, loading])
 

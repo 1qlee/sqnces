@@ -112,20 +112,20 @@ function EndgameModal({
               Stats
             </p>
             <div className={styles.flex}>
-              <div>
+              <div className={styles.stat}>
                 <p className={styles.statHeading}>Played</p>
                 0
               </div>
-              <div>
+              <div className={styles.stat}>
                 <p className={styles.statHeading}>Win %</p>
                 0
               </div>
-              <div>
+              <div className={styles.stat}>
                 <p className={styles.statHeading}>Current Streak</p>
                 0
               </div>
-              <div>
-                <p className={styles.statHeading}>Max Streak</p>
+              <div className={styles.stat}>
+                <p className={styles.statHeading}>Longest Streak</p>
                 0
               </div>
             </div>

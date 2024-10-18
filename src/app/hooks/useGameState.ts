@@ -19,7 +19,6 @@ const defaultGameState: GameState = {
   showHelp: true,
   wordLength: 6,
   puzzle: undefined,
-  loading: true,
 };
 
 export default function useGameState() {
@@ -40,21 +39,26 @@ export default function useGameState() {
     const gameState = window.localStorage.getItem("gameState");
 
     if (gameState) {
-      const isStateCached = JSON.stringify(cachedGameState.current) === gameState;
       const parsedGameState = JSON.parse(gameState) as GameState;
-  
-      // if no cache or cache is different from localStorage
-      if (!cachedGameState.current || !isStateCached) {
-        cachedGameState.current = parsedGameState;
+      
+      if ("games" in parsedGameState) {
+        const isStateCached = JSON.stringify(cachedGameState.current) === gameState;
+        // if no cache or cache is different from localStorage
+        if (!cachedGameState.current || !isStateCached) {
+          cachedGameState.current = parsedGameState;
+        }
+
+        return cachedGameState.current;
       }
-  
+      
+      cachedGameState.current = defaultGameState
+
       return cachedGameState.current;
     }
     else {
       cachedGameState.current = defaultGameState;
       setGameState({
         ...defaultGameState,
-        loading: false,
       });
 
       return defaultGameState;

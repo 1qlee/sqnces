@@ -6,8 +6,8 @@
 
 .checkbox {
   border: 2px solid var(--foreground);
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 0.25rem;
   display: flex;
   align-items: center;
