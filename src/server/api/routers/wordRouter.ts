@@ -192,45 +192,43 @@ function getLocalDate(timezone: string): string {
 
 // Set today's words to tomorrow's words at the UTC midnight and
 // generate a new set of words for tomorrow
-if (process.env.NODE_ENV === "production") {
-  cron.schedule("0 0 * * *", () => {
-    (async () => {
-      if (isJobRunning || isJobDone) {
-        console.log("Cron job is already running. Skipping this execution.");
-        return;
-      }
+cron.schedule("10 0 * * *", () => {
+  (async () => {
+    if (isJobRunning || isJobDone) {
+      console.log("Cron job is already running. Skipping this execution.");
+      return;
+    }
 
-      isJobRunning = true;
+    isJobRunning = true;
 
-      try {
-        const currentDate = new Date();
-        const tomorrowsDate = currentDate.setDate(currentDate.getDate() + 1);
+    try {
+      const currentDate = new Date();
+      const tomorrowsDate = currentDate.setDate(currentDate.getDate() + 1);
 
-        // change today's words with tomorrow's words
-        todaysPuzzle = JSON.parse(JSON.stringify(tomorrowsPuzzle)) as CachedPuzzle;
+      // change today's words with tomorrow's words
+      todaysPuzzle = JSON.parse(JSON.stringify(tomorrowsPuzzle)) as CachedPuzzle;
 
-        const formattedDate = format(tomorrowsDate, "yyyy-MM-dd")
-        const newPuzzle = await generateNewWords(formattedDate);
-        tomorrowsPuzzle.date = formattedDate;
-        tomorrowsPuzzle.words = newPuzzle.words;
-        tomorrowsPuzzle.id = newPuzzle.id;
+      const formattedDate = format(tomorrowsDate, "yyyy-MM-dd")
+      const newPuzzle = await generateNewWords(formattedDate);
+      tomorrowsPuzzle.date = formattedDate;
+      tomorrowsPuzzle.words = newPuzzle.words;
+      tomorrowsPuzzle.id = newPuzzle.id;
 
-        saveCacheToFile(); // Save new words to cache
+      saveCacheToFile(); // Save new words to cache
 
-        console.log(`[WORD API] CRON: Set today's words to tomorrow's words for ${tomorrowsPuzzle.date}`);
-      } catch (error) {
-        console.log(`[WORD API] CRON: Error setting today's words to tomorrow's words.`);
-      } finally {
-        isJobRunning = false;
-        isJobDone = true;
-      }
-    })
-  });
-
-  cron.schedule("01 0 * * *", () => {
-    if (isJobDone) isJobDone = false;
+      console.log(`[WORD API] CRON: Set today's words to tomorrow's words for ${tomorrowsPuzzle.date}`);
+    } catch (error) {
+      console.log(`[WORD API] CRON: Error setting today's words to tomorrow's words.`);
+    } finally {
+      isJobRunning = false;
+      isJobDone = true;
+    }
   })
-}
+});
+
+cron.schedule("01 0 * * *", () => {
+  if (isJobDone) isJobDone = false;
+})
 
 function getRandomSequence(sequences: Sequence[]): Sequence | undefined {
   // Step 1: Filter sequences with timesUsed = 0
