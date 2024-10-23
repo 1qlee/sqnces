@@ -49,6 +49,9 @@ export default function Game({ initialPuzzleData}: GameProps) {
         },
       },
       wordLength: 6,
+      settings: {
+        hardMode: false,
+      }
     });
   }
 
@@ -74,7 +77,7 @@ export default function Game({ initialPuzzleData}: GameProps) {
     }
 
     if (!loading) {
-      if (!gameState.puzzle || gameState.puzzle !== puzzleData.id) {
+      if (!gameState.puzzle || gameState.puzzle !== puzzleData.id || !gameState.settings) {
         resetGameState();
       }
     }
