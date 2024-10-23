@@ -1,0 +1,83 @@
+
+.trigger {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  position: relative;
+  line-height: 1;
+  gap: 0.25rem;
+  background-color: var(--background);
+  border: 2px solid var(--foreground);
+
+  &[data-state="open"] {
+    .icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: var(--grayed);
+  }
+}
+
+.content {
+  background-color: var(--background);
+  overflow: hidden;
+  border-radius: 0.25rem;
+  border: 2px solid var(--foreground);
+  z-index: 88;
+  width: 100%;
+}
+
+.item {
+  font-size: 0.875rem;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem 0.5rem 1.5rem;
+  align-items: center;
+  position: relative;
+  user-select: none;
+
+  &[data-state="checked"] {
+    background-color: var(--grayed);
+  }
+
+  &[data-highlighted] {
+    &:not([data-state="checked"]) {
+      background-color: var(--grayed);
+    }
+  }
+}
+
+.tag {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.5rem;
+  width: min-content;
+
+  & > svg {
+    border: 1px solid var(--foreground);
+    border-radius: 3rem;
+  }
+}
+
+.scrollUp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  background-color: white;
+  color: var(--violet-11);
+  cursor: default;
+}
+
+.icon {
+  transition: transform 0.2s;
+}

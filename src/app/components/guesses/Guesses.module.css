@@ -51,6 +51,10 @@
     color: var(--foreground);
   }
 
+  &.isMisplacedEmpty {
+    background: linear-gradient(to right, var(--misplaced) 50%, var(--empty) 50%);
+  }
+
   &.isEmpty {
     background-color: var(--empty);
     color: var(--foreground);
@@ -89,6 +93,11 @@
   font-size: 0.375rem;
   top: 2px;
   z-index: 9;
+
+  &.isLeft {
+    left: 2px;
+    right: auto;
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     animation: fadeIn 0.2s;

@@ -358,7 +358,7 @@ const InfoModal = () => {
                 ))}
               </Tabs.Content>
               <div className={styles.footer}>
-                sqnces is currently in beta. Please <a href="mailto:sqnces@gmail.com">email me</a> if you have any feedback or suggestions.
+                sqnces is currently in beta. Please <b><a href="mailto:sqnces@gmail.com">email me</a></b> if you have any feedback or suggestions.
               </div>
             </div>
           </Tabs.Root>

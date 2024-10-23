@@ -19,6 +19,9 @@ const defaultGameState: GameState = {
   showHelp: true,
   wordLength: 6,
   puzzle: undefined,
+  settings: {
+    hardMode: false,
+  }
 };
 
 export default function useGameState() {
@@ -41,7 +44,7 @@ export default function useGameState() {
     if (gameState) {
       const parsedGameState = JSON.parse(gameState) as GameState;
       
-      if ("games" in parsedGameState) {
+      if ("games" in parsedGameState || !("settings" in parsedGameState)) {
         const isStateCached = JSON.stringify(cachedGameState.current) === gameState;
         // if no cache or cache is different from localStorage
         if (!cachedGameState.current || !isStateCached) {

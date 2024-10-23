@@ -13,6 +13,15 @@
 .section {
   display: flex;
   align-items: center;
+  flex: 1;
+
+  &.isCentered {
+    justify-content: center;
+  }
+
+  &.isRight {
+    justify-content: flex-end;
+  }
 }
 
 .item {

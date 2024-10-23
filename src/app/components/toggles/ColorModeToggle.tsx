@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import flexStyles from "../styles/Flex.module.css";
 
 import Toggle from "../toggle/Toggle";
 import { Sun, Moon, Dot } from "@phosphor-icons/react";
@@ -23,13 +24,19 @@ export default function ColorModeToggle({ className }: { className?: string }) {
       {!mounted ? (
         <Dot size={18} />
       ) : (
-        <>
+        <div className={flexStyles.flexCentered}>
           {isLight ? (
-            <Moon size={18} />
+            <>
+              <Moon size={18} />
+              <span style={{fontSize: "1rem"}}>Dark</span>
+            </>
           ) : (
-            <Sun size={18} />
+            <>
+              <Sun size={18} />
+              <span style={{fontSize: "1rem"}}>Light</span>
+            </>
           )}
-        </>
+        </div>
       )}
     </Toggle>
   )

@@ -7,14 +7,19 @@ export type Editing = {
 
 export type WordLength = 6 | 7 | 8;
 
+export type GameSettings = {
+  hardMode: boolean;
+}
+
 export type GameState = {
   games: {
     [key in WordLength]: Game;
   };
-  wordLength: WordLength;
+  wordLength: number;
   showHelp: boolean;
   puzzle: number | undefined;
   loading?: boolean;
+  settings: GameSettings;
 }
 
 export type Game = {

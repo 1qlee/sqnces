@@ -6,12 +6,14 @@ export async function checkGuess({
   guess,
   timezone,
   length,
+  hardMode,
 }: {
   guess: string;
   timezone: string;
   length: number;
+  hardMode: boolean;
 }) {
-  const data = await api.word.check({ guess, timezone, length });
+  const data = await api.word.check({ guess, timezone, length, hardMode });
 
   return data;
 }

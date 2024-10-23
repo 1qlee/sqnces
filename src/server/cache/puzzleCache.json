@@ -2,199 +2,199 @@
   "today": {
     "words": [
       {
-        "id": 760,
-        "word": "DIAPER",
-        "sequence": {
-          "id": 195,
-          "string": "PER",
-          "index": 3,
-          "letters": [
-            "P",
-            "E",
-            "R"
-          ],
-          "score": {
-            "id": 195,
-            "wordLength": 6,
-            "score": 88,
-            "category": "Easy",
-            "sequenceId": 195
-          }
-        },
+        "id": 7262,
+        "word": "GOLDFISH",
+        "length": 8,
         "letters": [
+          "G",
+          "O",
+          "L",
           "D",
-          "I",
-          "A",
           "",
           "",
-          ""
+          "",
+          "H"
         ],
-        "length": 6
-      },
-      {
-        "id": 3262,
-        "word": "BASEMAN",
         "sequence": {
-          "id": 445,
-          "string": "MAN",
+          "id": 1171,
+          "string": "FIS",
           "index": 4,
           "letters": [
-            "M",
-            "A",
-            "N"
+            "F",
+            "I",
+            "S"
           ],
           "score": {
-            "id": 1834,
-            "wordLength": 7,
-            "score": 134,
-            "category": "Easy",
-            "sequenceId": 445
+            "id": 4641,
+            "wordLength": 8,
+            "score": 34,
+            "category": "Medium",
+            "sequenceId": 1171
           }
-        },
+        }
+      },
+      {
+        "id": 3252,
+        "word": "BAPTIST",
+        "length": 7,
         "letters": [
           "B",
           "A",
-          "S",
-          "E",
+          "P",
           "",
           "",
-          ""
+          "",
+          "T"
         ],
-        "length": 7
-      },
-      {
-        "id": 8037,
-        "word": "OVERTURE",
         "sequence": {
-          "id": 94,
-          "string": "VER",
-          "index": 1,
+          "id": 303,
+          "string": "TIS",
+          "index": 3,
           "letters": [
-            "V",
-            "E",
-            "R"
+            "T",
+            "I",
+            "S"
           ],
           "score": {
-            "id": 3927,
-            "wordLength": 8,
-            "score": 316,
-            "category": "Easy",
-            "sequenceId": 94
+            "id": 2158,
+            "wordLength": 7,
+            "score": 24,
+            "category": "Medium",
+            "sequenceId": 303
           }
-        },
+        }
+      },
+      {
+        "id": 1754,
+        "word": "NEWTON",
+        "length": 6,
         "letters": [
-          "O",
           "",
           "",
           "",
           "T",
-          "U",
-          "R",
-          "E"
+          "O",
+          "N"
         ],
-        "length": 8
+        "sequence": {
+          "id": 1421,
+          "string": "NEW",
+          "index": 0,
+          "letters": [
+            "N",
+            "E",
+            "W"
+          ],
+          "score": {
+            "id": 1421,
+            "wordLength": 6,
+            "score": 12,
+            "category": "Hard",
+            "sequenceId": 1421
+          }
+        }
       }
     ],
-    "date": "2024-10-17",
-    "id": 5
+    "date": "10-22-2024",
+    "id": 2
   },
   "tomorrow": {
     "words": [
       {
-        "id": 1220,
-        "word": "GUZZLE",
-        "sequence": {
-          "id": 707,
-          "string": "UZZ",
-          "index": 1,
-          "letters": [
-            "U",
-            "Z",
-            "Z"
-          ],
-          "score": {
-            "id": 707,
-            "wordLength": 6,
-            "score": 9,
-            "category": "Hard",
-            "sequenceId": 707
-          }
-        },
+        "id": 7220,
+        "word": "FUSELAGE",
+        "length": 8,
         "letters": [
+          "F",
+          "U",
+          "",
+          "",
+          "",
+          "A",
           "G",
-          "",
-          "",
-          "",
-          "L",
           "E"
         ],
-        "length": 6
-      },
-      {
-        "id": 5513,
-        "word": "SOMEHOW",
         "sequence": {
-          "id": 239,
-          "string": "HOW",
-          "index": 4,
+          "id": 782,
+          "string": "SEL",
+          "index": 2,
           "letters": [
-            "H",
-            "O",
-            "W"
+            "S",
+            "E",
+            "L"
           ],
           "score": {
-            "id": 2709,
-            "wordLength": 7,
-            "score": 25,
-            "category": "Medium",
-            "sequenceId": 239
-          }
-        },
-        "letters": [
-          "S",
-          "O",
-          "M",
-          "E",
-          "",
-          "",
-          ""
-        ],
-        "length": 7
-      },
-      {
-        "id": 7256,
-        "word": "GLORIOUS",
-        "sequence": {
-          "id": 292,
-          "string": "OUS",
-          "index": 5,
-          "letters": [
-            "O",
-            "U",
-            "S"
-          ],
-          "score": {
-            "id": 3934,
+            "id": 4516,
             "wordLength": 8,
-            "score": 141,
-            "category": "Easy",
-            "sequenceId": 292
+            "score": 65,
+            "category": "Medium",
+            "sequenceId": 782
           }
-        },
+        }
+      },
+      {
+        "id": 5212,
+        "word": "REPLACE",
+        "length": 7,
         "letters": [
-          "G",
-          "L",
-          "O",
           "R",
-          "I",
           "",
           "",
-          ""
+          "",
+          "A",
+          "C",
+          "E"
         ],
-        "length": 8
+        "sequence": {
+          "id": 5065,
+          "string": "EPL",
+          "index": 1,
+          "letters": [
+            "E",
+            "P",
+            "L"
+          ],
+          "score": {
+            "id": 2964,
+            "wordLength": 7,
+            "score": 16,
+            "category": "Hard",
+            "sequenceId": 5065
+          }
+        }
+      },
+      {
+        "id": 1094,
+        "word": "FROZEN",
+        "length": 6,
+        "letters": [
+          "F",
+          "R",
+          "",
+          "",
+          "",
+          "N"
+        ],
+        "sequence": {
+          "id": 1209,
+          "string": "OZE",
+          "index": 2,
+          "letters": [
+            "O",
+            "Z",
+            "E"
+          ],
+          "score": {
+            "id": 1209,
+            "wordLength": 6,
+            "score": 13,
+            "category": "Hard",
+            "sequenceId": 1209
+          }
+        }
       }
     ],
-    "date": "2024-10-18",
-    "id": 6
+    "date": "10-23-2024",
+    "id": 3
   }
 }

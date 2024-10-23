@@ -4,27 +4,23 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
-import type { Word, CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key, Sequence } from "~/server/types/word";
-import cron from "node-cron";
-import { format } from "date-fns";
+import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
+import { endOfToday, endOfTomorrow, format, isSameDay, startOfToday, startOfTomorrow } from "date-fns";
 import { toZonedTime } from "date-fns-tz"; // Handle timezones
 import fs from "fs";
 import path from "path";
 
-let todaysPuzzle: CachedPuzzle = {
+let todaysCache: CachedPuzzle = {
   words: [],
-  date: "",
+  date: new Date(),
   id: 0,
 };
-let tomorrowsPuzzle: CachedPuzzle = {
+let tomorrowsCache: CachedPuzzle = {
   words: [],
-  date: "",
+  date: new Date(),
   id: 0,
 };
 let guesses4: string[], guesses5: string[], guesses6: string[], guesses7: string[], guesses8: string[];
-let usedSequences: string[] = [];
-let isJobRunning = false;
-let isJobDone = false;
 const fallbackWords = [
   {
     sequence: {
@@ -63,322 +59,179 @@ const cacheFilePath = path.join(process.cwd(), 'src', 'server', 'cache', 'puzzle
 // Save cache to file
 function saveCacheToFile() {
   const cacheData: PuzzleCache = {
-    today: todaysPuzzle,
-    tomorrow: tomorrowsPuzzle,
+    today: todaysCache,
+    tomorrow: tomorrowsCache,
   };
 
   fs.writeFileSync(cacheFilePath, JSON.stringify(cacheData), "utf-8");
   console.log("[WORD API] Cache saved to file.");
 }
 
-// Load words cache from file or create new words if cache is empty
-async function loadWordsFromFile() {
-  if (fs.existsSync(cacheFilePath)) {
-    console.log("[WORD API] Cache file found.");
-    const cacheData = await JSON.parse(fs.readFileSync(cacheFilePath, "utf-8")) as PuzzleCache;
-
-    // if cache is empty, fill it with new words
-    if (Object.keys(cacheData).length <= 0) {
-      console.log("[WORD API] Cache file is empty.");
-      const currentDate = new Date();
-
-      const todaysDate = format(currentDate, "yyyy-MM-dd");
-      const currentPuzzle = await generateNewWords(todaysDate) as CachedPuzzle;
-      todaysPuzzle.words = currentPuzzle.words;
-      todaysPuzzle.date = todaysDate;
-      todaysPuzzle.id = currentPuzzle.id;
-
-      console.log("[WORD API] Generated random words to save to cache.");
-
-      const tomorrowsDate = currentDate.setDate(currentDate.getDate() + 1);
-      const nextDate = format(tomorrowsDate, "yyyy-MM-dd");
-      const nextPuzzle = await generateNewWords(nextDate) as CachedPuzzle;
-      tomorrowsPuzzle.words = nextPuzzle.words;
-      tomorrowsPuzzle.date = nextDate;
-      tomorrowsPuzzle.id = nextPuzzle.id;
-
-      saveCacheToFile();
-
-      console.log("[WORD API] Generated random words to save to cache.");
-
-      return; 
-    }
-
-    todaysPuzzle = cacheData.today;
-    tomorrowsPuzzle = cacheData.tomorrow;
-
-    console.log("[WORD API] Cache loaded.");
-  }
-  else {
-    console.log("[WORD API] No cache file found.");
-    fs.writeFileSync(cacheFilePath, JSON.stringify({ today: {}, tomorrow: {} }), "utf-8");
-    const currentDate = new Date();
-    
-    const todaysDate = format(currentDate, "yyyy-MM-dd");
-    const currentPuzzle = await generateNewWords(todaysDate);
-    todaysPuzzle.words = currentPuzzle.words;
-    todaysPuzzle.date = format(currentDate, "yyyy-MM-dd");
-    todaysPuzzle.id = currentPuzzle.id;
-
-    saveCacheToFile();
-
-    console.log("[WORD API] Generated random words to save to cache.");
-
-    const tomorrowsDate = currentDate.setDate(currentDate.getDate() + 1);
-    const nextDate = format(tomorrowsDate, "yyyy-MM-dd");
-    const nextPuzzle = await generateNewWords(nextDate);
-    tomorrowsPuzzle.words = nextPuzzle.words;
-    tomorrowsPuzzle.date = nextDate;
-    tomorrowsPuzzle.id = nextPuzzle.id;
-
-    saveCacheToFile();
-
-    console.log("[WORD API] Generated random words to save to cache.");
-
-  }
-}
-
-async function getValidWord(length: number): Promise<Word> {
-  let randomWord: Word | undefined;
-  do {
-    randomWord = await getRandomWord(length);
-  } while (!randomWord);
-
-  return randomWord;
-}
-
-async function generateNewWords(date: string) {
+async function getWordsForCache() {
   const ctx = await createTRPCContext({ headers: new Headers() });
   const { db } = ctx;
 
-  const random6 = await getValidWord(6);
-  const random7 = await getValidWord(7);
-  const random8 = await getValidWord(8);
+  const todayStart = startOfToday(); // Today at 00:00
+  const todayEnd = endOfToday();
 
-  usedSequences = []; // Reset usedSequences array
-
-  // save the puzzle to the database
-  const newPuzzle = await db.puzzle.create({
-    data: {
-      words: {
-        connect: [
-          { id: random6.id }, // Connect a word by its id
-          { id: random7.id },
-          { id: random8.id },
-        ],
-      },
-      sequences: {
-        connect: [
-          { id: random6.sequence.id }, // Connect a sequence by its id
-          { id: random7.sequence.id },
-          { id: random8.sequence.id },
-        ],
-      },
-      lastPlayed: date,
+  const todaysPuzzle = await db.puzzle.findFirst({
+    where: {
+      datePlayed: {
+        gte: todayStart,
+        lt: todayEnd,
+      }
     },
+    select: {
+      id: true,
+      datePlayed: true,
+      wordSequences: {
+        select: {
+          word: {
+            select: {
+              id: true,
+              word: true,
+              length: true,
+            }
+          },
+          sequence: {
+            select: {
+              id: true,
+              letters: true,
+              scores: true,
+            }
+          }
+        }
+      },
+    }
   });
 
-  return {
-    words: [random6, random7, random8],
-    id: newPuzzle.id,
-  }
+  todaysCache.words = todaysPuzzle!.wordSequences.map((wordSequence) => {
+    const sequenceLetters = wordSequence.sequence.letters
+    const indexOfSequence = wordSequence.word.word.indexOf(sequenceLetters);
+    const wordWithoutSequence = wordSequence.word.word.substring(0, indexOfSequence) + wordSequence.word.word.substring(indexOfSequence + 3);
+    const letters = wordWithoutSequence.split('');
+    letters.splice(indexOfSequence, 0, "", "", "");
+    
+    return {
+      id: wordSequence.word.id,
+      word: wordSequence.word.word,
+      length: wordSequence.word.length,
+      letters: letters,
+      sequence: {
+        id: wordSequence.sequence.id,
+        string: sequenceLetters,
+        index: indexOfSequence,
+        letters: sequenceLetters.split(''),
+        score: wordSequence.sequence.scores.find(score => score.wordLength === wordSequence.word.length)!,
+      },
+    }
+  });
+  todaysCache.id = todaysPuzzle!.id;
+  todaysCache.date = todaysPuzzle!.datePlayed;
+
+  const tomorrowStart = startOfTomorrow(); // Today at 00:00
+  const tomorrowEnd = endOfTomorrow();
+
+  const tomorrowsPuzzle = await db.puzzle.findFirst({
+    where: {
+      datePlayed: {
+        gte: tomorrowStart,
+        lt: tomorrowEnd,
+      }
+    },
+    select: {
+      id: true,
+      datePlayed: true,
+      wordSequences: {
+        select: {
+          word: {
+            select: {
+              id: true,
+              word: true,
+              length: true,
+            }
+          },
+          sequence: {
+            select: {
+              id: true,
+              letters: true,
+              scores: true,
+            }
+          }
+        }
+      },
+    }
+  });
+
+  tomorrowsCache.words = tomorrowsPuzzle!.wordSequences.map((wordSequence) => {
+    const sequenceLetters = wordSequence.sequence.letters
+    const indexOfSequence = wordSequence.word.word.indexOf(sequenceLetters);
+    const wordWithoutSequence = wordSequence.word.word.substring(0, indexOfSequence) + wordSequence.word.word.substring(indexOfSequence + 3);
+    const letters = wordWithoutSequence.split('');
+    letters.splice(indexOfSequence, 0, "", "", "");
+
+    return {
+      id: wordSequence.word.id,
+      word: wordSequence.word.word,
+      length: wordSequence.word.length,
+      letters: letters,
+      sequence: {
+        id: wordSequence.sequence.id,
+        string: sequenceLetters,
+        index: indexOfSequence,
+        letters: sequenceLetters.split(''),
+        score: wordSequence.sequence.scores.find(score => score.wordLength === wordSequence.word.length)!,
+      },
+    }
+  });
+  tomorrowsCache.id = tomorrowsPuzzle!.id;
+  tomorrowsCache.date = tomorrowsPuzzle!.datePlayed;
 }
 
-function getLocalDate(timezone: string): string {
+// Load words cache from file or create new words if cache is empty
+async function loadCache() {
+  if (!fs.existsSync(cacheFilePath)) {
+    console.log("[WORD API] No cache file found, creating a new cache file.");
+
+    fs.writeFileSync(cacheFilePath, JSON.stringify({ today: {}, tomorrow: {} }), "utf-8");
+
+    await getWordsForCache();
+
+    saveCacheToFile();
+
+    console.log("[WORD API] Generated random words to save to cache.");
+
+    return;
+  }
+
+  console.log("[WORD API] Cache file found.");
+
+  const cacheData = await JSON.parse(fs.readFileSync(cacheFilePath, "utf-8")) as PuzzleCache;
+
+  // if cache is empty, fill it with new words
+  if (Object.keys(cacheData).length <= 0) {
+    console.log("[WORD API] Cache file is empty.");
+
+    await getWordsForCache();
+
+    saveCacheToFile();
+
+    console.log("[WORD API] Generated random words to save to cache.");
+
+    return; 
+  }
+
+  todaysCache = cacheData.today;
+  tomorrowsCache = cacheData.tomorrow;
+
+  console.log("[WORD API] Cache loaded.");
+  
+}
+
+function getLocalDate(timezone: string): Date {
   const now = new Date();
   const localNow = toZonedTime(now, timezone); // Convert to the user's local time
-  return format(localNow, "yyyy-MM-dd"); // Return date-only (midnight)
-}
-
-// Set today's words to tomorrow's words at the UTC midnight and
-// generate a new set of words for tomorrow
-if (process.env.NODE_ENV === "production") {
-  cron.schedule("0 0 * * *", () => {
-    (async () => {
-      if (isJobRunning || isJobDone) {
-        console.log("Cron job is already running. Skipping this execution.");
-        return;
-      }
-
-      isJobRunning = true;
-
-      try {
-        const currentDate = new Date();
-        const tomorrowsDate = currentDate.setDate(currentDate.getDate() + 1);
-
-        // change today's words with tomorrow's words
-        todaysPuzzle = JSON.parse(JSON.stringify(tomorrowsPuzzle)) as CachedPuzzle;
-
-        const formattedDate = format(tomorrowsDate, "yyyy-MM-dd")
-        const newPuzzle = await generateNewWords(formattedDate);
-        tomorrowsPuzzle.date = formattedDate;
-        tomorrowsPuzzle.words = newPuzzle.words;
-        tomorrowsPuzzle.id = newPuzzle.id;
-
-        saveCacheToFile(); // Save new words to cache
-
-        console.log(`[WORD API] CRON: Set today's words to tomorrow's words for ${tomorrowsPuzzle.date}`);
-      } catch (error) {
-        console.log(`[WORD API] CRON: Error setting today's words to tomorrow's words.`);
-      } finally {
-        isJobRunning = false;
-        isJobDone = true;
-      }
-    })
-  });
-
-  cron.schedule("01 0 * * *", () => {
-    if (isJobDone) isJobDone = false;
-  })
-}
-
-function getRandomSequence(sequences: Sequence[]): Sequence | undefined {
-  // Step 1: Filter sequences with timesUsed = 0
-  const unusedSequences = sequences.filter(seq => seq.timesUsed === 0);
-
-  // Step 2: If there are any unused sequences, pick one randomly
-  if (unusedSequences.length > 0) {
-    let sequence: Sequence;
-    let attempts = 0;
-    const maxAttempts = unusedSequences.length;
-
-    // If usedSequences is empty, return the first sequence
-    if (usedSequences.length === 0) {
-      return unusedSequences[0];
-    }
-
-    // Sequentially iterate through unusedSequences
-    do {
-      sequence = unusedSequences[attempts]!;
-      attempts++;
-    } while (usedSequences.includes(sequence.letters) && attempts < maxAttempts);
-
-    // Return undefined if no valid sequence is found
-    if (usedSequences.includes(sequence.letters)) {
-      return undefined;
-    }
-
-    usedSequences.push(sequence.letters);
-    return sequence;
-  }
-
-  // Step 3: If no unused sequences, sort by least recent lastUsed
-  const sortedByLastUsed = sequences.sort((a, b) => {
-    // Handle nulls for lastUsed (nulls are considered least recent)
-    if (a.lastUsed === null && b.lastUsed === null) return 0;
-    if (a.lastUsed === null) return -1;
-    if (b.lastUsed === null) return 1;
-
-    // Compare lastUsed dates (least recent first)
-    return new Date(a.lastUsed).getTime() - new Date(b.lastUsed).getTime();
-  });
-
-  // Step 4: Return the least recently used sequence that is not in usedSequences
-  for (const sequence of sortedByLastUsed) {
-    if (!usedSequences.includes(sequence.letters)) {
-      usedSequences.push(sequence.letters);
-      return sequence;
-    }
-  }
-
-  // Step 5: If all sequences are in usedSequences, return undefined
-  return undefined;
-}
-
-async function getRandomWord(length: number): Promise<Word | undefined> {
-  const ctx = await createTRPCContext({ headers: new Headers() });
-  const { db } = ctx;
-
-  // Query the database for a random word of the given length
-  let randomWord = await db.word.findRandom({
-    select: { 
-      id: true, 
-      word: true, 
-      sequences: {
-        select: {
-          id: true,
-          letters: true,
-          timesUsed: true,
-          lastUsed: true,
-          scores: true,
-        }
-      }, 
-      puzzles: true,
-      length: true 
-    },
-    where: { length: length, timesUsed: 0 },
-  });
-
-  // if no word is found, that means all words of that length have been used
-  // so we reset the timesUsed field for all words of that length
-  if (!randomWord) {
-    // Safety check: make sure timesUsed is not 0 for any word of that length
-    // await db.word.updateMany({
-    //   where: { length: length, timesUsed: { not: 0 } },
-    //   data: { timesUsed: 0 },
-    // });
-
-    // Now we can try to find a random word again
-    randomWord = await db.word.findRandom({
-      select: {
-        id: true,
-        word: true,
-        sequences: {
-          select: {
-            id: true,
-            letters: true,
-            timesUsed: true,
-            lastUsed: true,
-            scores: true,
-          }
-        },
-        puzzles: true,
-        length: true
-      },
-      where: { length: length, timesUsed: 0 },
-    });
-  }
-
-  const sequence = getRandomSequence(randomWord!.sequences);
-
-  if (!sequence) {
-    console.log(`WORD API] No unique sequence found for ${randomWord!.word}`);
-
-    return undefined;
-  }
-
-  const sequenceLetters = sequence.letters;
-  const indexOfSequence = randomWord!.word.indexOf(sequenceLetters);
-  const wordWithoutSequence = randomWord!.word.substring(0, indexOfSequence) + randomWord!.word.substring(indexOfSequence + 3);
-  const letters = wordWithoutSequence.split('');
-  letters.splice(indexOfSequence, 0, "", "", "");
-
-  // Update the word's timesUsed field
-  // await db.word.update({
-  //   where: { id: randomWord.id },
-  //   data: { lastUsed: now, timesUsed: { increment: 1 } },
-  // });
-
-  // await db.sequence.update({
-  //   where: { id: sequence!.id },
-  //   data: { lastUsed: now, timesUsed: { increment: 1 } },
-  // })
-
-  const newWord: Word = {
-    id: randomWord!.id,
-    word: randomWord!.word,
-    sequence: {
-      id: sequence.id,
-      string: sequenceLetters,
-      index: randomWord!.word.indexOf(sequenceLetters),
-      letters: sequenceLetters.split(''),
-      score: sequence.scores.find(score => score.wordLength === length)!,
-    },
-    letters: letters,
-    length: randomWord!.length,
-  };
-
-  return newWord;
+  return localNow; // Return date-only (midnight)
 }
 
 function loadGuessFile(filePath: string) {
@@ -433,78 +286,77 @@ function findGuessInFile(arr: string[], target: string) {
   return false; // Target not found
 }
 
-await loadWordsFromFile();
+await loadCache();
 loadAllGuessFiles();
 
 export const wordRouter = createTRPCRouter({
   get: publicProcedure
-    .input(z.object({ 
-      timezone: z.string().refine((val) => Intl.supportedValuesOf('timeZone').includes(val), {
-        message: "Invalid time zone",
-      })
-    }))
-    .query(async ({ input }) => {
-      const { timezone } = input;
-      const usersDate = getLocalDate(timezone);
+  .input(z.object({ 
+    timezone: z.string().refine((val) => Intl.supportedValuesOf('timeZone').includes(val), {
+      message: "Invalid time zone",
+    })
+  }))
+  .query(async ({ input }) => {
+    const { timezone } = input;
+    const usersDate = getLocalDate(timezone);
 
-      if (todaysPuzzle.words.length > 0 && tomorrowsPuzzle.words.length > 0) {
-        // return the puzzle for today in the cache
-        if (usersDate === todaysPuzzle.date) {
-          const clientPuzzle: ClientPuzzle = {
-            words: [],
-            id: todaysPuzzle.id,
-            date: todaysPuzzle.date,
-          }
-          clientPuzzle.words = todaysPuzzle.words.map((cachedWord) => ({
-            sequence: {
-              string: cachedWord.sequence.string,
-              index: cachedWord.sequence.index,
-              letters: cachedWord.sequence.letters,
-              score: cachedWord.sequence.score.score,
-            },
-            length: cachedWord.length,
-            puzzleId: todaysPuzzle.id,
-          }));
-
-          console.log(`[WORD API] Cache hit for today's words, date: ${todaysPuzzle.date}.`);
-
-          return clientPuzzle;
+    // check if the cached puzzles exist for both today and tomorrow
+    if (todaysCache.words.length > 0 && tomorrowsCache.words.length > 0) {
+      // return the puzzle for today in the cache
+      if (isSameDay(usersDate, todaysCache.date)) {
+        const clientPuzzle: ClientPuzzle = {
+          words: [],
+          id: todaysCache.id,
+          date: format(todaysCache.date, "MM-dd-yyyy"),
         }
-          // return the puzzle for tomorrow in the cache
-        else if (usersDate === tomorrowsPuzzle.date) {
-          const clientPuzzle: ClientPuzzle = {
-            words: [],
-            id: tomorrowsPuzzle.id,
-            date: tomorrowsPuzzle.date,
-          }
-          clientPuzzle.words = tomorrowsPuzzle.words.map((cachedWord) => ({
-            sequence: {
-              string: cachedWord.sequence.string,
-              index: cachedWord.sequence.index,
-              letters: cachedWord.sequence.letters,
-              score: cachedWord.sequence.score.score,
-            },
-            length: cachedWord.length,
-            puzzleId: tomorrowsPuzzle.id,
-          }));
+        clientPuzzle.words = todaysCache.words.map((cachedWord) => ({
+          sequence: {
+            string: cachedWord.sequence.string,
+            index: cachedWord.sequence.index,
+            letters: cachedWord.sequence.letters,
+            score: cachedWord.sequence.score.score,
+          },
+          length: cachedWord.length,
+          puzzleId: todaysCache.id,
+        }));
 
-          console.log(`[WORD API] Cache hit for tomorrow's words, date: ${tomorrowsPuzzle.date}.`);
+        console.log(`[WORD API] Cache hit for today's words, date: ${format(todaysCache.date, "MM-dd-yyyy")}.`);
 
-          return clientPuzzle;
-        }
-        else {
-          console.log(`[WORD API] Cache missed. Sending back fallback.`);
-
-          const fallbackPuzzle: ClientPuzzle = {
-            words: fallbackWords,
-            id: 0,
-            date: usersDate,
-          }
-          // fallback
-          return fallbackPuzzle;
-        }
+        return clientPuzzle;
       }
-    }),
+      // return the puzzle for tomorrow in the cache
+      else if (isSameDay(usersDate, tomorrowsCache.date)) {
+        const clientPuzzle: ClientPuzzle = {
+          words: [],
+          id: tomorrowsCache.id,
+          date: format(tomorrowsCache.date, "MM-dd-yyyy"),
+        }
+        clientPuzzle.words = tomorrowsCache.words.map((cachedWord) => ({
+          sequence: {
+            string: cachedWord.sequence.string,
+            index: cachedWord.sequence.index,
+            letters: cachedWord.sequence.letters,
+            score: cachedWord.sequence.score.score,
+          },
+          length: cachedWord.length,
+          puzzleId: tomorrowsCache.id,
+        }));
+
+        console.log(`[WORD API] Cache hit for tomorrow's words, date: ${format(tomorrowsCache.date, "MM-dd-yyyy") }.`);
+
+        return clientPuzzle;
+      }
+      // this SHOULD mean the cache is completely stale, so we need to fetch new words
+      else {
+        console.log(`[WORD API] Cache miss for today and tomorrow's words. Fetching a new puzzle from the database.`);
+        
+        await getWordsForCache();
+
+        saveCacheToFile();
+      }
+    }
+    
+  }),
 
   check: publicProcedure
     .input(z.object({ 
@@ -517,13 +369,14 @@ export const wordRouter = createTRPCRouter({
       length: z.number().refine((val) => [6, 7, 8].includes(val), {
         message: "Length must be one of 6, 7, or 8",
       }),
+      hardMode: z.boolean(),
     }))
     .query(async ({ input }) => {
-      const { guess, timezone, length } = input;
+      const { guess, timezone, length, hardMode } = input;
       const guessLength = guess.length;
       const usersDate = getLocalDate(timezone);
       let isGuessValid: boolean
-      const word = usersDate === todaysPuzzle.date ? todaysPuzzle.words.find(word => word.length === length)! : tomorrowsPuzzle.words.find(word => word.length === length)!;
+      const word = isSameDay(usersDate,todaysCache.date) ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
 
       switch (guessLength) {
         case 4:
@@ -626,7 +479,17 @@ export const wordRouter = createTRPCRouter({
           }
         }
         else if (letterToCompare === "") {
-          validationMap[i] = { letter: letterGuessed, type: "empty", sequence: false };
+          if (!hardMode && misplacedLetterExists) {
+            if (!correctLetterExists) {
+              keys[letterGuessed] = "misplacedEmpty";
+            };
+
+            validationMap[i] = { letter: letterGuessed, type: "misplacedEmpty", sequence: false };
+            misplacedLetterExists.used = true;
+          }
+          else {
+            validationMap[i] = { letter: letterGuessed, type: "empty", sequence: false };
+          };
         }
         else if (misplacedLetterExists) {
           if (!correctLetterExists) {

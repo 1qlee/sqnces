@@ -25,6 +25,8 @@ function parseLetterStyle(type: string) {
       return styles.isIncorrect;
     case "misplaced":
       return styles.isMisplaced;
+    case "misplacedEmpty":
+      return styles.isMisplacedEmpty;
     case "empty":
       return styles.isEmpty;
     default:
@@ -116,7 +118,14 @@ export const Guesses = memo(({
               onPointerDown={() => handleEditPrevGuess(guess, i)}
             >
               {char.letter}
-              <span className={styles.icon}>{parseLetterIcon(char.type)}</span>
+              {char.type === "misplacedEmpty" ? (
+                <>
+                  <span className={[styles.icon, styles.isLeft].join(" ")}><ArrowsLeftRight size={10} weight="bold" /></span>
+                  <span className={styles.icon}><Empty size={10} weight="bold" /></span>
+                </>
+              ) : (
+                <span className={styles.icon}>{parseLetterIcon(char.type)}</span>
+              )}
             </span>
           ))}
         </div>

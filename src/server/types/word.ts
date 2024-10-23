@@ -35,7 +35,7 @@ export type ClientPuzzle = {
 export type CachedPuzzle = { 
   words: Word[];
   id: number;
-  date: string;
+  date: Date;
 }
 
 export type PuzzleCache = {
@@ -66,7 +66,7 @@ export type Score = {
 
 export type LetterData = {
   letter: ImportedKey;
-  type: "correct" | "incorrect" | "misplaced" | "empty" | "sequence";
+  type: "correct" | "incorrect" | "misplaced" | "empty" | "misplacedEmpty" | "sequence";
   sequence: boolean;
 }
 

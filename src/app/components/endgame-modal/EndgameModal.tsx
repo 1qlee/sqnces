@@ -2,6 +2,7 @@
 
 import { type Dispatch, type SetStateAction, useState } from "react"
 import styles from "./EndgameModal.module.css"
+import flexStyles from "../styles/Flex.module.css"
 
 import * as Dialog from '@radix-ui/react-dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
@@ -106,26 +107,26 @@ function EndgameModal({
         >
           <div className={modalStyles.modalInner}>
             <h2 className={modalStyles.heading}>
-              {currentGame.status === "won" ? "You won!" : "You lost!"}
+              {currentGame.status === "won" ? "You won!" : currentGame.status === "lost" ? "You lost!" : "New Game"}
             </h2>
             <p className={modalStyles.text}>
               Stats
             </p>
-            <div className={styles.flex}>
-              <div className={styles.stat}>
-                <p className={styles.statHeading}>Played</p>
+            <div className={flexStyles.flexList}>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Played</p>
                 0
               </div>
-              <div className={styles.stat}>
-                <p className={styles.statHeading}>Win %</p>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Win %</p>
                 0
               </div>
-              <div className={styles.stat}>
-                <p className={styles.statHeading}>Current Streak</p>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Current Streak</p>
                 0
               </div>
-              <div className={styles.stat}>
-                <p className={styles.statHeading}>Longest Streak</p>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Longest Streak</p>
                 0
               </div>
             </div>

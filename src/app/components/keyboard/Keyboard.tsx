@@ -9,8 +9,7 @@ import type { Guess, GuessData } from "../guess-area/Guess.types";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
 import useGameState from "~/app/hooks/useGameState";
 import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
-import { useRef } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react";
 import { checkGuess } from "~/app/actions/checkGuess";
 
 const KeyboardRows: Key[][] = [
@@ -22,30 +21,29 @@ const KeyboardRows: Key[][] = [
 interface KeyboardProps {
   editing: Editing;
   currentGame: Game;
-  setEditing: Dispatch<SetStateAction<Editing>>;
+  keysStatus: KeysStatus;
   guess: Guess;
+  wordData: ClientWord;
+  setKeysStatus: Dispatch<SetStateAction<KeysStatus>>
+  setEditing: Dispatch<SetStateAction<Editing>>;
   setGuess: Dispatch<SetStateAction<{
     string: string;
     letters: Key[];
   }>>;
-  wordData: ClientWord;
 }
 
 export default function Keyboard({ 
   guess,
   currentGame,
+  keysStatus,
   editing,
+  wordData,
   setEditing,
   setGuess,
-  wordData,
+  setKeysStatus,
 }: KeyboardProps) {
   const [gameState, setGameState] = useGameState();
   const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
-  const [keysStatus, setKeysStatus] = useState<KeysStatus>({
-    [String(wordData.sequence.letters[0])]: "",
-    [String(wordData.sequence.letters[1])]: "",
-    [String(wordData.sequence.letters[2])]: "",
-  });
   const [loading, setLoading] = useState(false);
   const [activeKeys, setActiveKeys] = useState<Key[]>([]);
   const guessRef = useRef(guess); // Create a ref to store the guess value
@@ -203,6 +201,7 @@ export default function Keyboard({
       correct: { style: styles.isCorrect, component: <Check size={12} weight="bold" /> },
       incorrect: { style: styles.isIncorrect, component: <X size={12} weight="bold" /> },
       misplaced: { style: styles.isMisplaced, component: <ArrowsLeftRight size={12} weight="bold" /> },
+      misplacedEmpty: { style: styles.isMisplaced, component: <ArrowsLeftRight size={12} weight="bold" /> },
     };
 
     const result = keyStyleOrIcon[status];
@@ -267,6 +266,7 @@ export default function Keyboard({
         guess: guessedWord,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         length: wordData.length,
+        hardMode: gameState.settings.hardMode,
       });
 
       if (!validateData.isValid) {
@@ -275,7 +275,7 @@ export default function Keyboard({
         toast.error("Invalid word");
 
         return;
-      }
+      };
 
       setKeysStatus(prev => ({ ...prev, ...validateData.keys }));
       
@@ -283,9 +283,15 @@ export default function Keyboard({
         validationMap: validateData.map,
         word: guessedWord,
         length: guessedWord.length,
+      };
+      const gameStatus = validateData.won ? "won" : currentGame.guesses.length >= 5 ? "lost" : "playing";
+      
+      if (gameStatus === "won") {
+        toast.success("You won!");
       }
-      console.log(currentGame.guesses)
-      const wonOrLost = validateData.won ? "won" : currentGame.guesses.length >= 5 ? "lost" : "playing"
+      else if (gameStatus === "lost") {
+        toast.error("You lost!");
+      }
 
       setGameState({
         ...gameState,
@@ -293,10 +299,10 @@ export default function Keyboard({
           ...gameState.games,
           [wordData.length as WordLength]: {
             guesses: [...currentGame.guesses, newGuess],
-            status: wonOrLost,
+            status: gameStatus,
           },
         },
-      })
+      });
       setGuess({
         string: "",
         letters: [],
@@ -331,7 +337,6 @@ export default function Keyboard({
           handleBackspace(event);
         }
         else {
-          console.log("GISOY")
           handleBackspace(event);
         }
       }

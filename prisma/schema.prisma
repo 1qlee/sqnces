@@ -20,11 +20,23 @@ enum Category {
   Hard
 }
 
+model WordSequence {
+  id        Int      @id @default(autoincrement())
+  word      Word     @relation(fields: [wordId], references: [id])
+  wordId    Int
+  sequence  Sequence @relation(fields: [sequenceId], references: [id])
+  sequenceId Int
+  puzzle    Puzzle   @relation(fields: [puzzleId], references: [id])
+  puzzleId  Int
+
+  @@unique([puzzleId, wordId, sequenceId]) // Ensures each word-sequence pair is unique within a puzzle
+}
+
 model Puzzle {
   id         Int        @id @default(autoincrement())
+  number     Int        @unique @default(autoincrement()) // The number of the puzzle
 
-  words      Word[]     @relation("WordPuzzles") // Many-to-many relationship with Word
-  sequences  Sequence[] @relation("SequencePuzzles") // Many-to-many relationship with Sequence
+  wordSequences WordSequence[]
 
   lettersUsed  Int      @default(0) // The number of total letters used to solve the puzzle
   timesGuessed Int      @default(0) // The number of times the puzzle has been guessed
@@ -32,7 +44,7 @@ model Puzzle {
   timesSolved  Int      @default(0) // The number of times the puzzle has been solved
 
   createdAt  DateTime   @default(now())
-  lastPlayed String?  // The last time the puzzle was played
+  datePlayed DateTime   @unique
 
   @@index([id])
 }
@@ -42,7 +54,7 @@ model Word {
   word       String     @unique
   length     Int        // The length of the word
   sequences  Sequence[] @relation("WordSequences") // Many-to-many relationship with Sequence
-  puzzles    Puzzle[]   @relation("WordPuzzles") // Many-to-many relationship with Puzzle
+  wordSequences WordSequence[]
 
   lastUsed   DateTime?  // The last time the word was used
   timesUsed  Int        @default(0) // The number of times the word has been used
@@ -55,9 +67,9 @@ model Word {
 model Sequence {
   id        Int        @id @default(autoincrement())
   letters   String     @unique // The sequence of letters
-  word      Word[]     @relation("WordSequences") // Many-to-many relationship with Word
+  words     Word[]     @relation("WordSequences") // Many-to-many relationship with Word
   scores    Score[]    // One-to-many relationship with Score
-  puzzles   Puzzle[]   @relation("SequencePuzzles") // One-to-many relationship with Puzzle
+  wordSequences WordSequence[]
 
   lastUsed   DateTime?  // The last time the sequence was used
   timesUsed  Int        @default(0) // The number of times the sequence has been used

@@ -7,7 +7,8 @@ import type { Guess } from "./Guess.types";
 
 import { Guesses } from "../guesses/Guesses";
 import Keyboard from "../keyboard/Keyboard";
-import toast from "react-hot-toast";
+import useGameState from "~/app/hooks/useGameState";
+import { KeysStatus, Status } from "../keyboard/Keyboard.types";
 
 type GuessAreaProps = {
   wordData: ClientWord;
@@ -20,6 +21,15 @@ export default function GuessArea({
   setShowEndgameModal,
   currentGame,
 }: GuessAreaProps) {
+  const [gameState, setGameState] = useGameState(); 
+  const guesses = currentGame.guesses;
+  const letterStatusMap: Record<string, Status> = guesses.reduce((acc, guess) => {
+    guess.validationMap.forEach(({ letter, type }) => {
+      acc[letter] = type;
+    });
+    return acc;
+  }, {} as Record<string, Status>);
+  const [keysStatus, setKeysStatus] = useState<KeysStatus>(letterStatusMap);
   const [guess, setGuess] = useState<Guess>({
     string: "",
     letters: [],
@@ -30,19 +40,29 @@ export default function GuessArea({
   })
 
   useEffect(() => {
-    if (currentGame.status === "won") {
-      toast.success("You won!", { id: "won" });
-      setTimeout(() => {
-        setShowEndgameModal(true);
-      }, 1000);
+    if (currentGame.status === "won" || currentGame.status === "lost") {
+      setShowEndgameModal(true);
     }
-    else if (currentGame.status === "lost") {
-      toast.error("You lost!", { id: "lost" });
-      setTimeout(() => {
-        setShowEndgameModal(true);
-      }, 1000);
+
+    if (currentGame.status === "notStarted") {
+      setGameState({
+        ...gameState,
+        games: {
+          ...gameState.games,
+          [gameState.wordLength]: {
+            guesses: [...gameState.games[gameState.wordLength as keyof typeof gameState.games].guesses],
+            status: "playing",
+          },
+        }
+      })
     }
-  }, [currentGame.status])
+
+    setGuess({
+      string: "",
+      letters: [],
+    })
+    setKeysStatus(letterStatusMap);
+  }, [currentGame.status, gameState.wordLength])
   
   return (
     <>
@@ -55,11 +75,13 @@ export default function GuessArea({
       />
       <Keyboard
         currentGame={currentGame}
+        keysStatus={keysStatus}
         wordData={wordData}
         guess={guess}
         editing={editing}
         setEditing={setEditing}
         setGuess={setGuess}
+        setKeysStatus={setKeysStatus}
       />
     </>
   )

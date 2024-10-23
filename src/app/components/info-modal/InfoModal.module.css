@@ -2,6 +2,7 @@
   background-color: var(--overlay);
   position: fixed;
   inset: 0;
+  z-index: 98;
 }
 
 .heading {
@@ -15,6 +16,11 @@
 .text {
   color: var(--foreground);
   margin-bottom: 1rem;
+}
+
+.subtext {
+  color: var(--olive-9);
+  font-size: 0.75rem;
 }
 
 .subtitle {

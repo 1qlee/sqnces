@@ -13,6 +13,8 @@ import EndgameModal from "../endgame-modal/EndgameModal";
 import useGameState from "~/app/hooks/useGameState";
 import { ClientPuzzle } from "~/server/types/word";
 import Loader from "../loader/Loader";
+import SettingsModal from "../settings-modal/SettingsModal";
+import { WordLength } from "./Game.types";
 
 type GameProps = {
   initialPuzzleData: ClientPuzzle;
@@ -23,8 +25,9 @@ export default function Game({ initialPuzzleData}: GameProps) {
   const [puzzleData, setPuzzleData] = useState(initialPuzzleData);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
+  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
   const [gameState, setGameState] = useGameState();
-  const currentGame = gameState?.games && gameState.games[gameState.wordLength];
+  const currentGame = gameState?.games && gameState.games[gameState.wordLength as WordLength];
   const wordData = puzzleData.words.find(word => word.length === gameState.wordLength)!;
 
   function resetGameState() {
@@ -86,6 +89,7 @@ export default function Game({ initialPuzzleData}: GameProps) {
     <>
       <Nav 
         setShowEndgameModal={setShowEndgameModal}
+        setShowSettingsModal={setShowSettingsModal}
       />
       <main
         className={styles.game}
@@ -113,6 +117,12 @@ export default function Game({ initialPuzzleData}: GameProps) {
                 puzzleData={puzzleData}
                 showEndgameModal={showEndgameModal}
                 setShowEndgameModal={setShowEndgameModal}
+              />
+            )}
+            {showSettingsModal && (
+              <SettingsModal 
+                showSettingsModal={showSettingsModal}
+                setShowSettingsModal={setShowSettingsModal}
               />
             )}
           </>

@@ -15,9 +15,12 @@
   border-radius: 0.25rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   position: relative;
   font-size: 0.875rem;
   transition: background-color 0.2s;
+  white-space: nowrap;
+  flex: 1;
 
   &:hover {
     cursor: pointer;
