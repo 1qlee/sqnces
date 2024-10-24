@@ -42,7 +42,7 @@ export default function GameModeSelect() {
       onValueChange={(value) => handleSelectChange(value)}
     >
       <Select.Trigger className={styles.trigger} aria-label="Game Mode">
-        <Select.Value className={styles.value} placeholder="Game Mode">
+        <Select.Value className={styles.value} style={{whiteSpace:"nowrap"}} placeholder="Game Mode">
           {wordLength} Letters
         </Select.Value>
         <Select.Icon className={styles.icon}>
