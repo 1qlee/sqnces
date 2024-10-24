@@ -78,7 +78,7 @@
 
   &:hover {
     cursor: pointer;
-    background-color: var(--grayed);
+    transform: translateY(-2px);
   }
   
   &:not(:last-child) {

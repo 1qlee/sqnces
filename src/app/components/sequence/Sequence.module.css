@@ -9,6 +9,7 @@
   display: flex;
   text-align: center;
   color: var(--foreground);
+  user-select: none;
 }
 
 .letter {

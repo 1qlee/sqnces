@@ -18,7 +18,6 @@ export type GameState = {
   wordLength: number;
   showHelp: boolean;
   puzzle: number | undefined;
-  loading?: boolean;
   settings: GameSettings;
 }
 

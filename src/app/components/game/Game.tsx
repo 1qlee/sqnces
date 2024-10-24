@@ -62,11 +62,7 @@ export default function Game({ initialPuzzleData}: GameProps) {
         const puzzleData = await getPuzzle(timezone);
         setPuzzleData(puzzleData);
       } catch(error) {
-        setPuzzleData({
-          words: [],
-          id: 0,
-          date: "",
-        });
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -77,7 +73,8 @@ export default function Game({ initialPuzzleData}: GameProps) {
     }
 
     if (!loading) {
-      if (!gameState.puzzle || gameState.puzzle !== puzzleData.id || !gameState.settings) {
+      if (!("games" in gameState) || !("settings" in gameState) || !("wordLength" in gameState) || !("puzzle" in gameState) || !("showHelp" in gameState)) {
+        console.log("Missing properties in gameState, resetting...");
         resetGameState();
       }
     }
