@@ -280,7 +280,7 @@ export default function Keyboard({
         if (!validateData.isValid) {
           setLoading(false);
           toast.dismiss();
-          return toast.error("Invalid word");
+          return toast.error("Invalid word", { id: "invalidWord" });
         }
 
         setKeysStatus((prev) => ({ ...prev, ...validateData.keys }));

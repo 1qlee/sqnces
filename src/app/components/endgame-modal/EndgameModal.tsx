@@ -28,7 +28,6 @@ function EndgameModal({
   showEndgameModal,
   setShowEndgameModal,
 }: EndgameModalProps) {
-  console.log(puzzleData)
   const [gameState] = useGameState();
   const getCurrentDate = () => {
     const date = new Date();

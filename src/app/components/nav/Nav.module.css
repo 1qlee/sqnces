@@ -11,6 +11,15 @@
   gap: 0.5rem;
 }
 
+.donate {
+  display: block;
+  position: absolute;
+  & > img {
+    width: 115px;
+    height: 32px;
+  }
+}
+
 .section {
   display: flex;
   align-items: center;

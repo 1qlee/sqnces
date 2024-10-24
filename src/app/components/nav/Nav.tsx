@@ -22,7 +22,6 @@ export default function Nav({
   // const session = await auth();
 
   if (!("games" in gameState) || !("settings" in gameState) || !("wordLength" in gameState) || !("puzzle" in gameState) || !("showHelp" in gameState)) {
-    console.log("Missing properties in gameState, resetting...");
     setGameState({
       games: {
         6: {
@@ -50,9 +49,7 @@ export default function Nav({
   return (
     <nav className={styles.nav}>
       <div className={styles.section}>
-        <Link href="/">
-          sqnces
-        </Link>
+        <a className={styles.donate} href="https://www.buymeacoffee.com/sqnces" target="_blank" rel="noreferrer noopener"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" /></a>
       </div>
       <div className={[styles.section, styles.isCentered].join(" ")}>
         <GameModeSelect />

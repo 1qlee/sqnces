@@ -48,6 +48,7 @@ export default function RootLayout({
             style: {
               background: 'var(--background)',
               color: 'var(--foreground)',
+              userSelect: 'none',
             },
             error: {
               style: {
