@@ -4,16 +4,16 @@ import { api } from "~/trpc/server";
 
 export async function checkGuess({
   guess,
-  date,
+  usersDate,
   length,
   hardMode,
 }: {
   guess: string;
-  date: string;
+  usersDate: string;
   length: number;
   hardMode: boolean;
 }) {
-  const data = await api.word.check({ guess, date, length, hardMode });
+  const data = await api.word.check({ guess, usersDate, length, hardMode });
 
   return data;
 }

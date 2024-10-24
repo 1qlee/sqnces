@@ -308,11 +308,8 @@ export const wordRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
     usersDate: z.string().refine((dateString) => {
-      // Extract the substring before "T"
-      const usersDate = dateString.split('T')[0];
-
       // Validate if the date part matches today or tomorrow
-      return usersDate === today || usersDate === tomorrow;
+      return dateString === today || dateString === tomorrow;
     }, {
       message: "Invalid date.",
     }),
@@ -383,8 +380,11 @@ export const wordRouter = createTRPCRouter({
       guess: z.string().refine((val) => [4, 5, 6, 7, 8].includes(val.length), {
         message: "Word must be 6, 7, or 8 letters long",
       }),
-      date: z.string().refine((val) => Intl.supportedValuesOf('timeZone').includes(val), {
-        message: "Invalid time zone",
+      usersDate: z.string().refine((dateString) => {
+        // Validate if the date part matches today or tomorrow
+        return dateString === today || dateString === tomorrow;
+      }, {
+        message: "Invalid date.",
       }),
       length: z.number().refine((val) => [6, 7, 8].includes(val), {
         message: "Length must be one of 6, 7, or 8",
@@ -392,11 +392,11 @@ export const wordRouter = createTRPCRouter({
       hardMode: z.boolean(),
     }))
     .query(async ({ input }) => {
-      const { guess, date, length, hardMode } = input;
+      const { guess, usersDate, length, hardMode } = input;
       const guessLength = guess.length;
-      const usersDate = getLocalDate(date);
+      const todaysDate = todaysCache.date.split("T")[0]!;
       let isGuessValid: boolean
-      const word = isSameDay(usersDate,todaysCache.date) ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
+      const word = usersDate === todaysDate ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
 
       switch (guessLength) {
         case 4:

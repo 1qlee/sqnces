@@ -270,7 +270,7 @@ export default function Keyboard({
         const validateData = await Promise.race([
           checkGuess({
             guess: guessedWord,
-            date: new Date().toISOString().split("T")[0]!,
+            usersDate: new Date().toISOString().split("T")[0]!,
             length: wordData.length,
             hardMode: gameState.settings.hardMode,
           }),
