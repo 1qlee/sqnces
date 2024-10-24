@@ -6,6 +6,7 @@
 
 .checkbox {
   border: 2px solid var(--foreground);
+  background-color: var(--background);
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 0.25rem;

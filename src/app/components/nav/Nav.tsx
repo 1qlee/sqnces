@@ -1,5 +1,4 @@
 "use client";
-import { useEffect } from "react";
 // import { auth } from "~/root/auth";
 import Link from "next/link";
 import styles from "./Nav.module.css";
