@@ -71,14 +71,6 @@ export default function Game({ initialPuzzleData}: GameProps) {
     if (loading) {
       void fetchPuzzle();
     }
-
-    if (!loading) {
-      if (!("games" in gameState) || !("settings" in gameState) || !("wordLength" in gameState) || !("puzzle" in gameState) || !("showHelp" in gameState)) {
-        console.log("Missing properties in gameState, resetting...");
-        resetGameState();
-      }
-    }
-
   }, [puzzleData.id, loading])
 
   if (loading) {
