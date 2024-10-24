@@ -51,7 +51,7 @@ const exampleGuesses = [
     ],
   },
   {
-    text: <p className={styles.guessText}><b>E and R</b> are in positions where there are no letters. In this case, they exceed the length of the hidden word.</p>,
+    text: <p className={styles.guessText}><b>E and R</b> are in positions where there are no letters - they exceed the length of the hidden word. Also, <b>R</b> exists elsewhere in the hidden word.</p>,
     letters: [
       {
         letter: "E",
@@ -75,7 +75,7 @@ const exampleGuesses = [
       },
       {
         letter: "R",
-        type: "isEmpty",
+        type: "isMisplacedEmpty",
         icon: <Empty size={10} weight="bold" />,
       },
     ],
@@ -288,13 +288,13 @@ const InfoModal = () => {
                     />
                   ))}
                 </ul>
-                <h3 className={styles.subtitle}>Example Guesses</h3>
+                <h3 className={styles.subtitle}>Example Guesses (non hard mode)</h3>
                 <p className={styles.text}>For a 6-letter hidden word:</p>
                 {exampleGuesses.map((guess, index) => (
                   <div className={styles.example} key={index}>
                     <div
                       key={index}
-                      className={guessStyles.word}
+                      className={[guessStyles.word, guessStyles.isLeftAligned].join(" ")}
                     >
                       {guess.letters.map((l, i) => (
                         <span
@@ -306,7 +306,14 @@ const InfoModal = () => {
                     `}
                         >
                           {l.letter}
-                          <span className={guessStyles.icon}>{l.icon}</span>
+                          {l.type === "isMisplacedEmpty" ? (
+                            <>
+                              <span className={[guessStyles.icon, guessStyles.isLeft].join(" ")}><ArrowsLeftRight size={10} weight="bold" /></span>
+                              <span className={guessStyles.icon}><Empty size={10} weight="bold" /></span>
+                            </>
+                          ) : (
+                            <span className={guessStyles.icon}>{l.icon}</span>
+                          )}
                         </span>
                       ))}
                     </div>

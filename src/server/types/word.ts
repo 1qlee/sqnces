@@ -35,7 +35,7 @@ export type ClientPuzzle = {
 export type CachedPuzzle = { 
   words: Word[];
   id: number;
-  date: Date;
+  date: string;
 }
 
 export type PuzzleCache = {
@@ -74,6 +74,13 @@ export type SplitWordLetter = {
   letter: ImportedKey;
   sequence: boolean;
   index: number;
+}
+
+export type CheckedGuess = {
+  isValid: boolean;
+  keys: KeysStatus;
+  map: LetterData[];
+  won: boolean;
 }
 
 // Extend the imported KeysStatus type

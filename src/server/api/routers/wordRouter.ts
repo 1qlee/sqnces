@@ -5,19 +5,19 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
-import { endOfToday, endOfTomorrow, format, isSameDay, startOfToday, startOfTomorrow } from "date-fns";
-import { toZonedTime } from "date-fns-tz"; // Handle timezones
+import { endOfToday, endOfTomorrow, format, startOfDay, isSameDay, startOfToday, startOfTomorrow, addDays } from "date-fns";
+import { toZonedTime, fromZonedTime } from "date-fns-tz"; // Handle timezones
 import fs from "fs";
 import path from "path";
 
 let todaysCache: CachedPuzzle = {
   words: [],
-  date: new Date(),
+  date: "",
   id: 0,
 };
 let tomorrowsCache: CachedPuzzle = {
   words: [],
-  date: new Date(),
+  date: "",
   id: 0,
 };
 let guesses4: string[], guesses5: string[], guesses6: string[], guesses7: string[], guesses8: string[];
@@ -127,7 +127,7 @@ async function getWordsForCache() {
     }
   });
   todaysCache.id = todaysPuzzle!.id;
-  todaysCache.date = todaysPuzzle!.datePlayed;
+  todaysCache.date = todaysPuzzle!.datePlayed.toISOString();
 
   const tomorrowStart = startOfTomorrow(); // Today at 00:00
   const tomorrowEnd = endOfTomorrow();
@@ -185,7 +185,7 @@ async function getWordsForCache() {
     }
   });
   tomorrowsCache.id = tomorrowsPuzzle!.id;
-  tomorrowsCache.date = tomorrowsPuzzle!.datePlayed;
+  tomorrowsCache.date = tomorrowsPuzzle!.datePlayed.toISOString();
 }
 
 // Load words cache from file or create new words if cache is empty
@@ -231,7 +231,19 @@ async function loadCache() {
 function getLocalDate(timezone: string): Date {
   const now = new Date();
   const localNow = toZonedTime(now, timezone); // Convert to the user's local time
-  return localNow; // Return date-only (midnight)
+  // Reset the time portion to midnight in the local timezone
+  const localMidnight = new Date(
+    localNow.getFullYear(),
+    localNow.getMonth(),
+    localNow.getDate(),
+    0, 0, 0
+  );
+
+  // Convert local midnight back to UTC
+  const utcMidnight = fromZonedTime(localMidnight, timezone);
+
+  // Return the UTC midnight time
+  return utcMidnight;
 }
 
 function loadGuessFile(filePath: string) {
@@ -289,21 +301,29 @@ function findGuessInFile(arr: string[], target: string) {
 await loadCache();
 loadAllGuessFiles();
 
+const today = new Date().toISOString().split('T')[0];
+const tomorrow = addDays(new Date(), 1).toISOString().split('T')[0];
+
 export const wordRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
-    timezone: z.string().refine((val) => Intl.supportedValuesOf('timeZone').includes(val), {
-      message: "Invalid time zone",
-    })
+    usersDate: z.string().refine((dateString) => {
+      // Extract the substring before "T"
+      const usersDate = dateString.split('T')[0];
+
+      // Validate if the date part matches today or tomorrow
+      return usersDate === today || usersDate === tomorrow;
+    }, {
+      message: "Invalid date.",
+    }),
   }))
   .query(async ({ input }) => {
-    const { timezone } = input;
-    const usersDate = getLocalDate(timezone);
+    const { usersDate } = input;
 
     // check if the cached puzzles exist for both today and tomorrow
     if (todaysCache.words.length > 0 && tomorrowsCache.words.length > 0) {
       // return the puzzle for today in the cache
-      if (isSameDay(usersDate, todaysCache.date)) {
+      if (usersDate === todaysCache.date.split("T")[0]!) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: todaysCache.id,
@@ -325,7 +345,7 @@ export const wordRouter = createTRPCRouter({
         return clientPuzzle;
       }
       // return the puzzle for tomorrow in the cache
-      else if (isSameDay(usersDate, tomorrowsCache.date)) {
+      else if (usersDate === tomorrowsCache.date.split("T")[0]!) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: tomorrowsCache.id,
@@ -363,7 +383,7 @@ export const wordRouter = createTRPCRouter({
       guess: z.string().refine((val) => [4, 5, 6, 7, 8].includes(val.length), {
         message: "Word must be 6, 7, or 8 letters long",
       }),
-      timezone: z.string().refine((val) => Intl.supportedValuesOf('timeZone').includes(val), {
+      date: z.string().refine((val) => Intl.supportedValuesOf('timeZone').includes(val), {
         message: "Invalid time zone",
       }),
       length: z.number().refine((val) => [6, 7, 8].includes(val), {
@@ -372,9 +392,9 @@ export const wordRouter = createTRPCRouter({
       hardMode: z.boolean(),
     }))
     .query(async ({ input }) => {
-      const { guess, timezone, length, hardMode } = input;
+      const { guess, date, length, hardMode } = input;
       const guessLength = guess.length;
-      const usersDate = getLocalDate(timezone);
+      const usersDate = getLocalDate(date);
       let isGuessValid: boolean
       const word = isSameDay(usersDate,todaysCache.date) ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
 

@@ -58,8 +58,8 @@ export default function Game({ initialPuzzleData}: GameProps) {
   useEffect(() => {
     async function fetchPuzzle() {
       try {
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const puzzleData = await getPuzzle(timezone);
+        const date = new Date().toISOString().split("T")[0]!;
+        const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch(error) {
         console.error(error);
@@ -70,6 +70,12 @@ export default function Game({ initialPuzzleData}: GameProps) {
 
     if (loading) {
       void fetchPuzzle();
+    }
+
+    if (!loading) {
+      if (puzzleData.id !== gameState.puzzle) {
+        resetGameState();
+      }
     }
   }, [puzzleData.id, loading])
 

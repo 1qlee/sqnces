@@ -3,9 +3,9 @@
 import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
-import type { ClientWord } from "~/server/types/word";
-import type { Editing, Game, WordLength } from "../game/Game.types";
-import type { Guess, GuessData } from "../guess-area/Guess.types";
+import type { ClientWord, CheckedGuess } from "~/server/types/word";
+import type { Editing, Game } from "../game/Game.types";
+import type { Guess } from "../guess-area/Guess.types";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
 import useGameState from "~/app/hooks/useGameState";
 import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
@@ -261,54 +261,70 @@ export default function Keyboard({
     else {
       setLoading(true);
       
-      // check if guess is a valid word
-      const validateData = await checkGuess({
-        guess: guessedWord,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        length: wordData.length,
-        hardMode: gameState.settings.hardMode,
-      });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Request timed out")), 10000) // 10 seconds timeout
+      );
 
-      if (!validateData.isValid) {
-        setLoading(false);
-        toast.dismiss();
-        toast.error("Invalid word");
+      try {
+        // Race the API call against the timeout
+        const validateData = await Promise.race([
+          checkGuess({
+            guess: guessedWord,
+            date: new Date().toISOString().split("T")[0]!,
+            length: wordData.length,
+            hardMode: gameState.settings.hardMode,
+          }),
+          timeoutPromise,
+        ]) as CheckedGuess;
 
-        return;
-      };
+        if (!validateData.isValid) {
+          setLoading(false);
+          toast.dismiss();
+          return toast.error("Invalid word");
+        }
 
-      setKeysStatus(prev => ({ ...prev, ...validateData.keys }));
-      
-      const newGuess: GuessData = {
-        validationMap: validateData.map,
-        word: guessedWord,
-        length: guessedWord.length,
-      };
-      const gameStatus = validateData.won ? "won" : currentGame.guesses.length >= 5 ? "lost" : "playing";
-      
-      if (gameStatus === "won") {
-        toast.success("You won!");
-      }
-      else if (gameStatus === "lost") {
-        toast.error("You lost!");
-      }
+        setKeysStatus((prev) => ({ ...prev, ...validateData.keys }));
 
-      setGameState({
-        ...gameState,
-        games: {
-          ...gameState.games,
-          [wordData.length as WordLength]: {
-            guesses: [...currentGame.guesses, newGuess],
-            status: gameStatus,
+        const newGuess = {
+          validationMap: validateData.map,
+          word: guessedWord,
+          length: guessedWord.length,
+        };
+
+        const gameStatus = validateData.won
+          ? "won"
+          : currentGame.guesses.length >= 5
+            ? "lost"
+            : "playing";
+
+        if (gameStatus === "won") {
+          toast.success("You won!");
+        } else if (gameStatus === "lost") {
+          toast.error("You lost!");
+        }
+
+        setGameState({
+          ...gameState,
+          games: {
+            ...gameState.games,
+            [wordData.length]: {
+              guesses: [...currentGame.guesses, newGuess],
+              status: gameStatus,
+            },
           },
-        },
-      });
-      setGuess({
-        string: "",
-        letters: [],
-      });
+        });
 
-      return setLoading(false);
+        setGuess({
+          string: "",
+          letters: [],
+        });
+
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+
+        toast.error("Request timed out. Please try again.");
+      }
     }
   }
 

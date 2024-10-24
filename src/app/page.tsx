@@ -4,7 +4,8 @@ import Game from "./components/game/Game";
 import { getPuzzle } from "./actions/getPuzzle";
 
 export default async function Home() {
-  const initialPuzzleData = await getPuzzle("America/Vancouver");
+  const date = new Date().toISOString().split("T")[0]!;
+  const initialPuzzleData = await getPuzzle(date);
   // const hello = await api.post.hello({ text: "from tRPC" });
   // const session = await auth();
   // void session?.user && api.post.getLatest.prefetch();
