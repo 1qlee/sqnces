@@ -5,7 +5,12 @@ import { openDB } from 'idb';
 const GUESSES_DB = "guessesDB";
 const STORE_NAME = "guessesStore";
 
-function findGuess(arr: { guess: string, id: number }[], target: string): boolean {
+type Guess = {
+  guess: string;
+  id: number;
+};
+
+function findGuess(arr: Guess[], target: string): boolean {
   let left = 0;
   let right = arr.length - 1;
 
@@ -31,7 +36,7 @@ export default function useGuessSearch() {
       const tx = db.transaction(STORE_NAME, 'readonly');
 
       // Retrieve all entries from the store
-      const guesses: { guess: string, id: number }[] = await tx.store.getAll();
+      const guesses: Guess[] = await tx.store.getAll() as Guess[];
       return findGuess(guesses, guess);
     } catch (error) {
       return false;

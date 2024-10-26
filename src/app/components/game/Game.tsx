@@ -79,7 +79,7 @@ export default function Game({ initialPuzzleData}: GameProps) {
           const chunk = validGuesses.slice(i, i + CHUNK_SIZE);
           const tx = db.transaction(STORE_NAME, 'readwrite');
 
-          chunk.forEach((guess: string) => tx.store.add({ guess }));
+          await Promise.all(chunk.map((guess) => tx.store.add({ guess })));
 
           await tx.done;
         }
@@ -88,7 +88,7 @@ export default function Game({ initialPuzzleData}: GameProps) {
       setInitializing(false);
     };
 
-    initializeDB();
+    void initializeDB();
   }, [])
 
   useEffect(() => {
