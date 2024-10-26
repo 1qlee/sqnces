@@ -29,20 +29,12 @@ function EndgameModal({
   setShowEndgameModal,
 }: EndgameModalProps) {
   const [gameState] = useGameState();
-  const getCurrentDate = () => {
-    const date = new Date();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-  };
-  const currentDate = getCurrentDate();
   const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
 
   async function handleCopyToClipboard() {
     if (navigator.clipboard && window.isSecureContext) {
-      let textToCopy = `sqnces.com ${currentDate}\nPuzzle #${puzzleData.id} (${gameState.wordLength}) ${currentPuzzle?.sequence.string}${gameState.settings.hardMode ? " -Hard" : ""}\n`;
+      let textToCopy = `sqnces.com\nPuzzle #${puzzleData.id} (${gameState.wordLength}) ${currentPuzzle?.sequence.string}${gameState.settings.hardMode ? " -Hard" : ""}\n`;
       toast.success("Copied!", { id: "copied" });
 
       currentGame.guesses.forEach(guess => {

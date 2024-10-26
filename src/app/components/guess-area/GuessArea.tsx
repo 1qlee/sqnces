@@ -22,6 +22,7 @@ export default function GuessArea({
   currentGame,
 }: GuessAreaProps) {
   const [gameState, setGameState] = useGameState(); 
+  const [delayedStatus, setDelayedStatus] = useState(currentGame.status);
   const guesses = currentGame.guesses;
   const letterStatusMap: Record<string, Status> = guesses.reduce((acc, guess) => {
     guess.validationMap.forEach(({ letter, type }) => {
@@ -39,8 +40,18 @@ export default function GuessArea({
     key: 0,
   })
 
+
   useEffect(() => {
-    if (currentGame.status === "won" || currentGame.status === "lost") {
+    // Only update the delayedStatus after 1000ms
+    const timer = setTimeout(() => {
+      setDelayedStatus(currentGame.status);
+    }, 1000);
+
+    return () => clearTimeout(timer); // Clean up the timer on unmount or before re-running effect
+  }, [currentGame.status]);
+
+  useEffect(() => {
+    if (delayedStatus === "won" || delayedStatus === "lost") {
       setShowEndgameModal(true);
     }
 
@@ -62,7 +73,7 @@ export default function GuessArea({
       letters: [],
     })
     setKeysStatus(letterStatusMap);
-  }, [currentGame.status, gameState.wordLength])
+  }, [delayedStatus, gameState.wordLength])
   
   return (
     <>
