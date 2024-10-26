@@ -8,6 +8,7 @@ import type { Editing, Game } from "../game/Game.types";
 import type { Guess } from "../guess-area/Guess.types";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
 import useGameState from "~/app/hooks/useGameState";
+import useGuessSearch from "~/app/hooks/useGuessSearch";
 import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react";
 import { checkGuess } from "~/app/actions/checkGuess";
@@ -42,6 +43,7 @@ export default function Keyboard({
   setGuess,
   setKeysStatus,
 }: KeyboardProps) {
+  const searchGuess = useGuessSearch();
   const [gameState, setGameState] = useGameState();
   const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const [loading, setLoading] = useState(false);
@@ -256,10 +258,17 @@ export default function Keyboard({
     // if the guess doesn't include the sequence
     if (!guessedWord.includes(wordData.sequence.string)) {
       toast.dismiss();
-      toast.error("Word must include the sequence");
+      toast.error("Word must include the sequence.");
     }
     else {
       setLoading(true);
+      const isGuessValid = await searchGuess(guessedWord);
+
+      if (!isGuessValid) {
+        setLoading(false);
+        toast.dismiss();
+        return toast.error("Invalid word");
+      };
       
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Request timed out")), 10000) // 10 seconds timeout
@@ -280,7 +289,7 @@ export default function Keyboard({
         if (!validateData.isValid) {
           setLoading(false);
           toast.dismiss();
-          return toast.error("Invalid word", { id: "invalidWord" });
+          return toast.error("Invalid word");
         }
 
         setKeysStatus((prev) => ({ ...prev, ...validateData.keys }));

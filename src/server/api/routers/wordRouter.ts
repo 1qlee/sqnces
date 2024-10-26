@@ -20,39 +20,6 @@ let tomorrowsCache: CachedPuzzle = {
   date: "",
   id: 0,
 };
-let guesses4: string[], guesses5: string[], guesses6: string[], guesses7: string[], guesses8: string[];
-const fallbackWords = [
-  {
-    sequence: {
-      string: "OUS",
-      index: 3,
-      letters: ["O", "U", "S"],
-      score: 34,
-    },
-    length: 6,
-    puzzleId: 0,
-  },
-  {
-    sequence: {
-      string: "PIR",
-      index: 0,
-      letters: ["P", "I", "R"],
-      score: 25,
-    },
-    length: 7,
-    puzzleId: 0,
-  },
-  {
-    sequence: {
-      string: "ITY",
-      index: 5,
-      letters: ["I", "T", "Y"],
-      score: 124,
-    },
-    length: 8,
-    puzzleId: 0,
-  },
-]
 
 const cacheFilePath = path.join(process.cwd(), 'src', 'server', 'cache', 'puzzleCache.json');
 
@@ -246,60 +213,7 @@ function getLocalDate(timezone: string): Date {
   return utcMidnight;
 }
 
-function loadGuessFile(filePath: string) {
-  const jsonData = fs.readFileSync(filePath, 'utf-8');
-  return JSON.parse(jsonData) as string[];
-}
-
-function loadAllGuessFiles() {
-  if (!guesses4 || !guesses5 || !guesses6 || !guesses7 || !guesses8) {
-    console.log("[WORD API] Caching guess files...");
-
-    for (let i = 4; i < 9; i++) {
-      const filePath = path.join(process.cwd(), 'src', 'server', 'guesses', `guesses-${i}.json`);
-
-      switch (i) {
-        case 4:
-          if (!guesses4) guesses4 = loadGuessFile(filePath);
-          break;
-        case 5:
-          if (!guesses5) guesses5 = loadGuessFile(filePath);
-          break;
-        case 6:
-          if (!guesses6) guesses6 = loadGuessFile(filePath);
-          break;
-        case 7:
-          if (!guesses7) guesses7 = loadGuessFile(filePath);
-          break;
-        case 8:
-          if (!guesses8) guesses8 = loadGuessFile(filePath);
-          break;
-      }
-    }
-  }
-}
-
-// binary search
-function findGuessInFile(arr: string[], target: string) {
-  let left = 0;
-  let right = arr.length - 1;
-
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-    if (arr[mid] === target) {
-      return true; // Target found
-    }
-    if (arr[mid] !== undefined && arr[mid] < target) {
-      left = mid + 1; // Search in the right half
-    } else {
-      right = mid - 1; // Search in the left half
-    }
-  }
-  return false; // Target not found
-}
-
 await loadCache();
-loadAllGuessFiles();
 
 const today = new Date().toISOString().split('T')[0];
 const tomorrow = addDays(new Date(), 1).toISOString().split('T')[0];
@@ -316,6 +230,7 @@ export const wordRouter = createTRPCRouter({
   }))
   .query(async ({ input }) => {
     const { usersDate } = input;
+    console.log("🚀 ~ .query ~ usersDate:", usersDate)
 
     // check if the cached puzzles exist for both today and tomorrow
     if (todaysCache.words.length > 0 && tomorrowsCache.words.length > 0) {
@@ -395,44 +310,19 @@ export const wordRouter = createTRPCRouter({
       const { guess, usersDate, length, hardMode } = input;
       const guessLength = guess.length;
       const todaysDate = todaysCache.date.split("T")[0]!;
-      let isGuessValid: boolean
       const word = usersDate === todaysDate ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
+      const { sequence } = word;
 
-      switch (guessLength) {
-        case 4:
-          if (!guesses4) loadAllGuessFiles();
-          isGuessValid = findGuessInFile(guesses4, guess);
-          break;
-        case 5:
-          if (!guesses5) loadAllGuessFiles();
-          isGuessValid = findGuessInFile(guesses5, guess);
-          break;
-        case 6:
-          if (!guesses6) loadAllGuessFiles();
-          isGuessValid = findGuessInFile(guesses6, guess);
-          break;
-        case 7:
-          if (!guesses7) loadAllGuessFiles();
-          isGuessValid = findGuessInFile(guesses7, guess);
-          break;
-        case 8:
-          if (!guesses8) loadAllGuessFiles();
-          isGuessValid = findGuessInFile(guesses8, guess);
-          break;
-        default:
-          loadAllGuessFiles();
-          isGuessValid = findGuessInFile(guesses6, guess);
-      }
-
-      if (!isGuessValid) {
+      if (!guess.includes(sequence.string)) {
         return {
           isValid: false,
           keys: {},
           map: [],
+          won: false,
+          message: "Word must include the sequence.",
         }
       }
 
-      const { sequence } = word;
       const guessIsCorrect = guess === word.word;
       const letters = word.letters;
       const lettersMap: LettersMap = letters.map((letter) => ({ letter, used: false }));

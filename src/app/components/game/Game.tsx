@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getPuzzle } from "~/app/actions/getPuzzle";
+import { openDB } from "idb";
 
 import Nav from "../nav/Nav";
 import styles from "./Game.module.css";
@@ -15,13 +16,19 @@ import { ClientPuzzle } from "~/server/types/word";
 import Loader from "../loader/Loader";
 import SettingsModal from "../settings-modal/SettingsModal";
 import { WordLength } from "./Game.types";
+import validGuesses from "../../guesses/guesses.json";
 
 type GameProps = {
   initialPuzzleData: ClientPuzzle;
 }
 
+const GUESSES_DB = "guessesDB";
+const STORE_NAME = "guessesStore";
+const CHUNK_SIZE = 500;
+
 export default function Game({ initialPuzzleData}: GameProps) {
   const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(false);
   const [puzzleData, setPuzzleData] = useState(initialPuzzleData);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
@@ -49,11 +56,40 @@ export default function Game({ initialPuzzleData}: GameProps) {
         },
       },
       wordLength: 6,
-      settings: {
-        hardMode: false,
-      }
     });
   }
+
+  useEffect(() => {
+    // create IndexedDB for valid guesses if it doesn't exist
+    const initializeDB = async () => {
+      setInitializing(true);
+
+      const db = await openDB(GUESSES_DB, 1, {
+        upgrade(db) {
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+          }
+        },
+      });
+
+      // Check if data already exists
+      const count = await db.count(STORE_NAME);
+      if (count === 0) {
+        for (let i = 0; i < validGuesses.length; i += CHUNK_SIZE) {
+          const chunk = validGuesses.slice(i, i + CHUNK_SIZE);
+          const tx = db.transaction(STORE_NAME, 'readwrite');
+
+          chunk.forEach((guess: string) => tx.store.add({ guess }));
+
+          await tx.done;
+        }
+      }
+
+      setInitializing(false);
+    };
+
+    initializeDB();
+  }, [])
 
   useEffect(() => {
     async function fetchPuzzle() {
@@ -79,7 +115,7 @@ export default function Game({ initialPuzzleData}: GameProps) {
     }
   }, [puzzleData.id, loading])
 
-  if (loading) {
+  if (loading || initializing) {
     return <Loader />
   }
 
