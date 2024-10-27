@@ -354,8 +354,8 @@ export const wordRouter = createTRPCRouter({
         const letterToCompare = splitWord[i]!.letter;
         const letterIsSequence = splitWord[i]!.sequence;
         // check to see if the guessed letter is already marked as correct
-        const correctLetterExists = validationMap.length > 0 && validationMap.find(l => l.letter === letterGuessed && l.type === "correct");
-        const misplacedLetterExists = lettersMap.find(l => l.letter === letterGuessed && !l.used);
+        const correctLetterExists = validationMap.length > 0 && validationMap.find(l => l?.letter === letterGuessed && l.type === "correct");
+        const misplacedLetterExists = lettersMap.find(l => l?.letter === letterGuessed && !l.used);
 
         // never override an existing letter
         if (validationMap[i]) continue;
