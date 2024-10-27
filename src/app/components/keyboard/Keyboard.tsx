@@ -202,6 +202,7 @@ export default function Keyboard({
       "": { style: "" },
       correct: { style: styles.isCorrect, component: <Check size={12} weight="bold" /> },
       incorrect: { style: styles.isIncorrect, component: <X size={12} weight="bold" /> },
+      incorrectEmpty: { style: styles.isIncorrect, component: <X size={12} weight="bold" /> },
       misplaced: { style: styles.isMisplaced, component: <ArrowsLeftRight size={12} weight="bold" /> },
       misplacedEmpty: { style: styles.isMisplaced, component: <ArrowsLeftRight size={12} weight="bold" /> },
     };
@@ -279,7 +280,7 @@ export default function Keyboard({
         const validateData = await Promise.race([
           checkGuess({
             guess: guessedWord,
-            usersDate: new Date().toISOString().split("T")[0]!,
+            usersDate: new Date().toLocaleDateString(),
             length: wordData.length,
             hardMode: gameState.settings.hardMode,
           }),

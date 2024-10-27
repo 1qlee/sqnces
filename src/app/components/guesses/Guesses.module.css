@@ -58,6 +58,10 @@
     background: linear-gradient(to right, var(--misplaced) 50%, var(--empty) 50%);
   }
 
+  &.isIncorrectEmpty {
+    background: linear-gradient(to right, var(--incorrect) 50%, var(--empty) 50%);
+  }
+
   &.isEmpty {
     background-color: var(--empty);
     color: var(--foreground);

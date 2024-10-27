@@ -1,6 +1,5 @@
 "use client";
 // import { auth } from "~/root/auth";
-import Link from "next/link";
 import styles from "./Nav.module.css";
 import HowToPlayToggle from "../toggles/HowToPlayToggle";
 import EndgameToggle from "../toggles/EndgameToggle";

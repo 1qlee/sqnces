@@ -1,13 +1,11 @@
 "use client";
 
 import { type Dispatch, memo, type SetStateAction, useRef, useEffect } from "react";
-import useGameState from "~/app/hooks/useGameState";
 
 import styles from "./Guesses.module.css";
 import type { Editing, Game } from "~/app/components/game/Game.types";
-import type { GuessData } from "../guess-area/Guess.types";
+import type { GuessData, Guess } from "../guess-area/Guess.types";
 import { X, Empty, Check, ArrowsLeftRight, Pen } from "@phosphor-icons/react";
-import type { Guess } from "../guess-area/Guess.types";
 
 type GuessesProps = {
   guess: Guess;
@@ -27,6 +25,8 @@ function parseLetterStyle(type: string) {
       return styles.isMisplaced;
     case "misplacedEmpty":
       return styles.isMisplacedEmpty;
+    case "incorrectEmpty":
+      return styles.isIncorrectEmpty;
     case "empty":
       return styles.isEmpty;
     default:
@@ -123,6 +123,11 @@ export const Guesses = memo(({
                   <span className={[styles.icon, styles.isLeft].join(" ")}><ArrowsLeftRight size={10} weight="bold" /></span>
                   <span className={styles.icon}><Empty size={10} weight="bold" /></span>
                 </>
+              ) : char.type === "incorrectEmpty" ? (
+                  <>
+                    <span className={[styles.icon, styles.isLeft].join(" ")}><X size={10} weight="bold" /></span>
+                    <span className={styles.icon}><Empty size={10} weight="bold" /></span>
+                  </>
               ) : (
                 <span className={styles.icon}>{parseLetterIcon(char.type)}</span>
               )}

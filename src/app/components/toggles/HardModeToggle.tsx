@@ -6,7 +6,7 @@ import flexStyles from "../styles/Flex.module.css";
 import Toggle from "../toggle/Toggle";
 import { Circle } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
-import { WordLength } from "../game/Game.types";
+import type { WordLength } from "../game/Game.types";
 
 export default function HardModeToggle() {
   const [gameState, setGameState] = useGameState();

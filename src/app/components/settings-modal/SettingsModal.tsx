@@ -3,7 +3,7 @@
 import ColorModeToggle from "../toggles/ColorModeToggle";
 import * as Dialog from "@radix-ui/react-dialog";
 import modalStyles from "../info-modal/InfoModal.module.css";
-import { Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import flexStyles from "../styles/Flex.module.css";
 import HardModeToggle from "../toggles/HardModeToggle";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";

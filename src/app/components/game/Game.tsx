@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { getPuzzle } from "~/app/actions/getPuzzle";
 import { openDB } from "idb";
+import type { ClientPuzzle } from "~/server/types/word";
+import type { WordLength } from "./Game.types";
 
 import Nav from "../nav/Nav";
 import styles from "./Game.module.css";
@@ -12,24 +14,20 @@ import InfoModal from "../info-modal/InfoModal";
 import MainMenu from "../main-menu/MainMenu";
 import EndgameModal from "../endgame-modal/EndgameModal";
 import useGameState from "~/app/hooks/useGameState";
-import { ClientPuzzle } from "~/server/types/word";
 import Loader from "../loader/Loader";
 import SettingsModal from "../settings-modal/SettingsModal";
-import { WordLength } from "./Game.types";
 import validGuesses from "../../guesses/guesses.json";
 
 type GameProps = {
-  initialPuzzleData: ClientPuzzle;
+  puzzleData: ClientPuzzle;
 }
 
 const GUESSES_DB = "guessesDB";
 const STORE_NAME = "guessesStore";
 const CHUNK_SIZE = 500;
 
-export default function Game({ initialPuzzleData}: GameProps) {
-  const [loading, setLoading] = useState(true);
-  const [initializing, setInitializing] = useState(false);
-  const [puzzleData, setPuzzleData] = useState(initialPuzzleData);
+export default function Game({ puzzleData}: GameProps) {
+  const [initializing, setInitializing] = useState(true);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
@@ -62,8 +60,6 @@ export default function Game({ initialPuzzleData}: GameProps) {
   useEffect(() => {
     // create IndexedDB for valid guesses if it doesn't exist
     const initializeDB = async () => {
-      setInitializing(true);
-
       const db = await openDB(GUESSES_DB, 1, {
         upgrade(db) {
           if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -75,6 +71,8 @@ export default function Game({ initialPuzzleData}: GameProps) {
       // Check if data already exists
       const count = await db.count(STORE_NAME);
       if (count === 0) {
+        setInitializing(true);
+
         for (let i = 0; i < validGuesses.length; i += CHUNK_SIZE) {
           const chunk = validGuesses.slice(i, i + CHUNK_SIZE);
           const tx = db.transaction(STORE_NAME, 'readwrite');
@@ -92,30 +90,14 @@ export default function Game({ initialPuzzleData}: GameProps) {
   }, [])
 
   useEffect(() => {
-    async function fetchPuzzle() {
-      try {
-        const date = new Date().toISOString().split("T")[0]!;
-        const puzzleData = await getPuzzle(date);
-        setPuzzleData(puzzleData);
-      } catch(error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (loading) {
-      void fetchPuzzle();
-    }
-
-    if (!loading) {
+    if (gameState.puzzle) {
       if (puzzleData.id !== gameState.puzzle) {
         resetGameState();
       }
     }
-  }, [puzzleData.id, loading])
+  }, [gameState.puzzle])
 
-  if (loading || initializing) {
+  if (initializing) {
     return <Loader />
   }
 

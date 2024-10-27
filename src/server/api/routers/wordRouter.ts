@@ -5,7 +5,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
-import { endOfToday, endOfTomorrow, format, startOfDay, isSameDay, startOfToday, startOfTomorrow, addDays } from "date-fns";
+import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays } from "date-fns";
 import { toZonedTime, fromZonedTime } from "date-fns-tz"; // Handle timezones
 import fs from "fs";
 import path from "path";
@@ -94,7 +94,7 @@ async function getWordsForCache() {
     }
   });
   todaysCache.id = todaysPuzzle!.id;
-  todaysCache.date = todaysPuzzle!.datePlayed.toISOString();
+  todaysCache.date = new Date(todaysPuzzle!.datePlayed).toLocaleDateString();
 
   const tomorrowStart = startOfTomorrow(); // Today at 00:00
   const tomorrowEnd = endOfTomorrow();
@@ -152,7 +152,7 @@ async function getWordsForCache() {
     }
   });
   tomorrowsCache.id = tomorrowsPuzzle!.id;
-  tomorrowsCache.date = tomorrowsPuzzle!.datePlayed.toISOString();
+  tomorrowsCache.date = new Date(tomorrowsPuzzle!.datePlayed).toLocaleDateString();
 }
 
 // Load words cache from file or create new words if cache is empty
@@ -195,28 +195,10 @@ async function loadCache() {
   
 }
 
-function getLocalDate(timezone: string): Date {
-  const now = new Date();
-  const localNow = toZonedTime(now, timezone); // Convert to the user's local time
-  // Reset the time portion to midnight in the local timezone
-  const localMidnight = new Date(
-    localNow.getFullYear(),
-    localNow.getMonth(),
-    localNow.getDate(),
-    0, 0, 0
-  );
-
-  // Convert local midnight back to UTC
-  const utcMidnight = fromZonedTime(localMidnight, timezone);
-
-  // Return the UTC midnight time
-  return utcMidnight;
-}
-
 await loadCache();
 
-const today = new Date().toISOString().split('T')[0];
-const tomorrow = addDays(new Date(), 1).toISOString().split('T')[0];
+const today = new Date().toLocaleDateString();
+const tomorrow = addDays(new Date(), 1).toLocaleDateString();
 
 export const wordRouter = createTRPCRouter({
   get: publicProcedure
@@ -230,12 +212,11 @@ export const wordRouter = createTRPCRouter({
   }))
   .query(async ({ input }) => {
     const { usersDate } = input;
-    console.log("🚀 ~ .query ~ usersDate:", usersDate)
 
     // check if the cached puzzles exist for both today and tomorrow
     if (todaysCache.words.length > 0 && tomorrowsCache.words.length > 0) {
       // return the puzzle for today in the cache
-      if (usersDate === todaysCache.date.split("T")[0]!) {
+      if (usersDate === new Date(todaysCache.date).toLocaleDateString()) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: todaysCache.id,
@@ -257,7 +238,7 @@ export const wordRouter = createTRPCRouter({
         return clientPuzzle;
       }
       // return the puzzle for tomorrow in the cache
-      else if (usersDate === tomorrowsCache.date.split("T")[0]!) {
+      else if (usersDate === new Date(tomorrowsCache.date).toLocaleDateString()) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: tomorrowsCache.id,
@@ -309,7 +290,7 @@ export const wordRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { guess, usersDate, length, hardMode } = input;
       const guessLength = guess.length;
-      const todaysDate = todaysCache.date.split("T")[0]!;
+      const todaysDate = new Date(todaysCache.date).toLocaleDateString();
       const word = usersDate === todaysDate ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
       const { sequence } = word;
 
@@ -373,12 +354,13 @@ export const wordRouter = createTRPCRouter({
         const letterToCompare = splitWord[i]!.letter;
         const letterIsSequence = splitWord[i]!.sequence;
         // check to see if the guessed letter is already marked as correct
-        const correctLetterExists = validationMap.length > 0 && validationMap.find(l => l?.letter === letterGuessed && l.type === "correct");
+        const correctLetterExists = validationMap.length > 0 && validationMap.find(l => l.letter === letterGuessed && l.type === "correct");
         const misplacedLetterExists = lettersMap.find(l => l.letter === letterGuessed && !l.used);
 
         // never override an existing letter
         if (validationMap[i]) continue;
 
+        // sequence position
         if (letterIsSequence) {
           if (guessIsCorrect) {
             keys[letterGuessed] = "correct";
@@ -388,14 +370,24 @@ export const wordRouter = createTRPCRouter({
             validationMap[i] = { letter: letterGuessed, type: "sequence", sequence: true };
           }
         }
+        // empty position
         else if (letterToCompare === "") {
-          if (!hardMode && misplacedLetterExists) {
-            if (!correctLetterExists) {
-              keys[letterGuessed] = "misplacedEmpty";
-            };
+          if (!hardMode) {
+            if (misplacedLetterExists) {
+              if (!correctLetterExists) {
+                keys[letterGuessed] = "misplacedEmpty";
+              };
 
-            validationMap[i] = { letter: letterGuessed, type: "misplacedEmpty", sequence: false };
-            misplacedLetterExists.used = true;
+              validationMap[i] = { letter: letterGuessed, type: "misplacedEmpty", sequence: false };
+              misplacedLetterExists.used = true;
+            }
+            else if (letterToCompare !== letterGuessed) {
+              if (!correctLetterExists) {
+                keys[letterGuessed] = "incorrectEmpty";
+              };
+
+              validationMap[i] = { letter: letterGuessed, type: "incorrectEmpty", sequence: false };
+            }
           }
           else {
             validationMap[i] = { letter: letterGuessed, type: "empty", sequence: false };
@@ -409,8 +401,10 @@ export const wordRouter = createTRPCRouter({
           validationMap[i] = { letter: letterGuessed, type: "misplaced", sequence: false };
           misplacedLetterExists.used = true;
         }
+        // incorrect position
         else {
-          if (!correctLetterExists) {
+          // should never override a correct or misplaced letter on the keyboard
+          if (!correctLetterExists && !misplacedLetterExists ) {
             keys[letterGuessed] = "incorrect";
           };
 

@@ -8,7 +8,7 @@ import type { Guess } from "./Guess.types";
 import { Guesses } from "../guesses/Guesses";
 import Keyboard from "../keyboard/Keyboard";
 import useGameState from "~/app/hooks/useGameState";
-import { KeysStatus, Status } from "../keyboard/Keyboard.types";
+import type { KeysStatus, Status } from "../keyboard/Keyboard.types";
 
 type GuessAreaProps = {
   wordData: ClientWord;

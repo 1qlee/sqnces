@@ -1,4 +1,4 @@
-export type Status = "misplaced" | "incorrect" | "correct" | "sequence" | "empty" | "misplacedEmpty" | "";
+export type Status = "misplaced" | "incorrect" | "correct" | "sequence" | "empty" | "misplacedEmpty" | "incorrectEmpty" | "";
 
 export type KeysStatus = Record<string, Status>;
 

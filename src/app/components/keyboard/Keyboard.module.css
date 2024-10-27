@@ -60,10 +60,6 @@
   background-color: var(--misplaced);
 }
 
-.isMisplacedEmpty {
-  background-color: orange;
-}
-
 .isSequence {
   box-shadow: inset 0 0 0 1px var(--foreground);
 }

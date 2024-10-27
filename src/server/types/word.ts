@@ -1,5 +1,4 @@
-import type { Key as ImportedKey } from "~/app/components/keyboard/Keyboard.types";
-import type { KeysStatus as ImportedKeysStatus } from "~/app/components/keyboard/Keyboard.types";
+import type { Key as ImportedKey, Status as LetterStatus, KeysStatus as ImportedKeysStatus } from "~/app/components/keyboard/Keyboard.types";
 
 export type Word = {
   id: number;
@@ -66,7 +65,7 @@ export type Score = {
 
 export type LetterData = {
   letter: ImportedKey;
-  type: "correct" | "incorrect" | "misplaced" | "empty" | "misplacedEmpty" | "sequence";
+  type: LetterStatus;
   sequence: boolean;
 }
 
