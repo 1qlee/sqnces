@@ -273,19 +273,41 @@ export const wordRouter = createTRPCRouter({
 
   check: publicProcedure
     .input(z.object({ 
-      guess: z.string().refine((val) => [4, 5, 6, 7, 8].includes(val.length), {
-        message: "Word must be 6, 7, or 8 letters long",
-      }),
+      guess: z.string()
+        .refine((val) => [4, 5, 6, 7, 8].includes(val.length), {
+          message: JSON.stringify({ 
+            message: "Word must be 6, 7, or 8 letters long.", 
+            code: "INVALID_GUESS_LENGTH" 
+          }),
+        })
+        .refine((val) => /^[a-zA-Z]+$/.test(val), {
+          message: JSON.stringify({
+            message: "Word must contain only alphabetic characters.",
+            code: "INVALID_CHARACTERS"
+          }),
+        }),
       usersDate: z.string().refine((dateString) => {
         // Validate if the date part matches today or tomorrow
         return dateString === today || dateString === tomorrow;
       }, {
-        message: "Invalid date.",
+        message: JSON.stringify({
+          message: "Invalid date.",
+          code: "INVALID_DATE",
+        })
       }),
       length: z.number().refine((val) => [6, 7, 8].includes(val), {
-        message: "Length must be one of 6, 7, or 8",
+        message: JSON.stringify({
+          message: "Length must be one of 6, 7, or 8.",
+          code: "INVALID_WORD_LENGTH",
+        })
       }),
       hardMode: z.boolean(),
+      puzzleId: z.number().refine((val) => val === todaysCache.id || val === tomorrowsCache.id, {
+        message: JSON.stringify({
+          message: "Could not find today's puzzle. Please refresh the page or clear your cache.",
+          code: "INVALID_PUZZLE_ID",
+        })
+      }),
     }))
     .query(async ({ input }) => {
       const { guess, usersDate, length, hardMode } = input;
@@ -300,7 +322,7 @@ export const wordRouter = createTRPCRouter({
           keys: {},
           map: [],
           won: false,
-          message: "Word must include the sequence.",
+          message: "noSequence",
         }
       }
 

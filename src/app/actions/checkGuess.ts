@@ -7,13 +7,15 @@ export async function checkGuess({
   usersDate,
   length,
   hardMode,
+  puzzleId,
 }: {
   guess: string;
   usersDate: string;
   length: number;
   hardMode: boolean;
+  puzzleId: number;
 }) {
-  const data = await api.word.check({ guess, usersDate, length, hardMode });
+  const data = await api.word.check({ guess, usersDate, length, hardMode, puzzleId });
 
   return data;
 }

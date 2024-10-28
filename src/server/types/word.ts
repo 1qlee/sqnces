@@ -80,6 +80,8 @@ export type CheckedGuess = {
   keys: KeysStatus;
   map: LetterData[];
   won: boolean;
+  message?: string;
+  status: string;
 }
 
 // Extend the imported KeysStatus type

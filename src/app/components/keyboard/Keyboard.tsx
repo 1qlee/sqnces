@@ -264,6 +264,7 @@ export default function Keyboard({
     else {
       setLoading(true);
       const isGuessValid = await searchGuess(guessedWord);
+      console.log("🚀 ~ handleGuessSubmit ~ isGuessValid:", isGuessValid);
 
       if (!isGuessValid) {
         setLoading(false);
@@ -283,6 +284,7 @@ export default function Keyboard({
             usersDate: new Date().toLocaleDateString(),
             length: wordData.length,
             hardMode: gameState.settings.hardMode,
+            puzzleId: gameState.puzzle!,
           }),
           timeoutPromise,
         ]) as CheckedGuess;
@@ -291,6 +293,20 @@ export default function Keyboard({
           setLoading(false);
           toast.dismiss();
           return toast.error("Invalid word");
+        }
+
+        if (validateData.status) {
+          switch (validateData.status) {
+            case "noSequence":
+              toast.dismiss();
+              return toast.error("Word must include the sequence.");
+            case "invalidPuzzle":
+              location.reload();
+              toast.dismiss();
+              return toast.error("Invalid puzzle.");
+            default:
+              break;
+          }
         }
 
         setKeysStatus((prev) => ({ ...prev, ...validateData.keys }));
@@ -333,7 +349,7 @@ export default function Keyboard({
       } catch (err) {
         setLoading(false);
 
-        toast.error("Request timed out. Please try again.");
+        toast.error("Server error. Please refresh and try again.");
       }
     }
   }

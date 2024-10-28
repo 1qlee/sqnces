@@ -19,14 +19,16 @@ import SettingsModal from "../settings-modal/SettingsModal";
 import validGuesses from "../../guesses/guesses.json";
 
 type GameProps = {
-  puzzleData: ClientPuzzle;
+  initialPuzzleData: ClientPuzzle;
 }
 
 const GUESSES_DB = "guessesDB";
 const STORE_NAME = "guessesStore";
 const CHUNK_SIZE = 500;
 
-export default function Game({ puzzleData}: GameProps) {
+export default function Game({ initialPuzzleData }: GameProps) {
+  const [loading, setLoading] = useState(true);
+  const [puzzleData, setPuzzleData] = useState(initialPuzzleData);
   const [initializing, setInitializing] = useState(true);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
@@ -90,14 +92,30 @@ export default function Game({ puzzleData}: GameProps) {
   }, [])
 
   useEffect(() => {
-    if (gameState.puzzle) {
+    async function fetchPuzzle() {
+      try {
+        const date = new Date().toLocaleDateString();
+        const puzzleData = await getPuzzle(date);
+        setPuzzleData(puzzleData);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (loading) {
+      void fetchPuzzle();
+    }
+
+    if (!loading) {
       if (puzzleData.id !== gameState.puzzle) {
         resetGameState();
       }
     }
-  }, [gameState.puzzle])
+  }, [puzzleData.id, loading])
 
-  if (initializing) {
+  if (loading || initializing) {
     return <Loader />
   }
 
