@@ -8,7 +8,13 @@ import {
 } from "@phosphor-icons/react";
 import styles from "./GameModeSelect.module.css";
 
-export default function GameModeSelect() {
+type SelectProps = {
+  disabled: boolean;
+}
+
+export default function GameModeSelect({
+  disabled,
+}: SelectProps) {
   const [gameState, setGameState] = useGameState();
   const wordLength = String(gameState.wordLength);
 
@@ -40,9 +46,10 @@ export default function GameModeSelect() {
     <Select.Root
       value={wordLength}
       onValueChange={(value) => handleSelectChange(value)}
+      disabled={disabled}
     >
       <Select.Trigger className={styles.trigger} aria-label="Game Mode">
-        <Select.Value className={styles.value} style={{whiteSpace:"nowrap"}} placeholder="Game Mode">
+        <Select.Value style={{whiteSpace:"nowrap"}} placeholder="Game Mode">
           {wordLength} Letters
         </Select.Value>
         <Select.Icon className={styles.icon}>

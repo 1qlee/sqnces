@@ -11,6 +11,8 @@ export type GameSettings = {
   hardMode: boolean;
 }
 
+export type GameStatus = "won" | "lost" | "playing" | "notStarted" | undefined;
+
 export type GameState = {
   games: {
     [key in WordLength]: Game;
@@ -23,7 +25,7 @@ export type GameState = {
 
 export type Game = {
   guesses: GuessData[];
-  status: "won" | "lost" | "playing" | "notStarted" | undefined;
+  status: GameStatus;
 }
 
 export type Stats = {

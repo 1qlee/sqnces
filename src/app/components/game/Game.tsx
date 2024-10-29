@@ -31,6 +31,7 @@ export default function Game({ initialPuzzleData }: GameProps) {
   const [puzzleData, setPuzzleData] = useState(initialPuzzleData);
   const [initializing, setInitializing] = useState(true);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
+  const [disableGameModeSelect, setDisableGameModeSelect] = useState<boolean>(false);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
   const [gameState, setGameState] = useGameState();
@@ -122,6 +123,7 @@ export default function Game({ initialPuzzleData }: GameProps) {
   return (
     <>
       <Nav 
+        disableGameModeSelect={disableGameModeSelect}
         setShowEndgameModal={setShowEndgameModal}
         setShowSettingsModal={setShowSettingsModal}
       />
@@ -143,6 +145,7 @@ export default function Game({ initialPuzzleData }: GameProps) {
             <GuessArea
               currentGame={currentGame}
               wordData={wordData}
+              setDisableGameModeSelect={setDisableGameModeSelect}
               setShowEndgameModal={setShowEndgameModal}
             />
             {showEndgameModal && (

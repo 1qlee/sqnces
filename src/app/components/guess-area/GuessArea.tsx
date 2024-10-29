@@ -2,7 +2,7 @@
 
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import type { ClientWord } from "~/server/types/word";
-import type { Editing, Game } from "~/app/components/game/Game.types";
+import type { Editing, Game, GameStatus } from "~/app/components/game/Game.types";
 import type { Guess } from "./Guess.types";
 
 import { Guesses } from "../guesses/Guesses";
@@ -11,22 +11,31 @@ import useGameState from "~/app/hooks/useGameState";
 import type { KeysStatus, Status } from "../keyboard/Keyboard.types";
 
 type GuessAreaProps = {
+  currentGame: Game;
   wordData: ClientWord;
   setShowEndgameModal: Dispatch<SetStateAction<boolean>>;
-  currentGame: Game;
+  setDisableGameModeSelect: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function GuessArea({ 
   wordData,
-  setShowEndgameModal,
   currentGame,
+  setShowEndgameModal,
+  setDisableGameModeSelect,
 }: GuessAreaProps) {
   const [gameState, setGameState] = useGameState(); 
-  const [delayedStatus, setDelayedStatus] = useState(currentGame.status);
+  const [delayedStatus, setDelayedStatus] = useState<GameStatus>(undefined);
   const guesses = currentGame.guesses;
   const letterStatusMap: Record<string, Status> = guesses.reduce((acc, guess) => {
     guess.validationMap.forEach(({ letter, type }) => {
+      if (!acc[letter] || 
+        (acc[letter] === "empty") || 
+        (acc[letter] === "incorrect" && type !== "empty") || 
+        (acc[letter] === "incorrectEmpty" && type !== "empty" && type !== "incorrect") || 
+        (acc[letter] === "misplacedEmpty" && type !== "empty" && type !== "incorrect" && type !== "incorrectEmpty") || 
+        (acc[letter] === "misplaced" && type === "correct")) {
       acc[letter] = type;
+      }
     });
     return acc;
   }, {} as Record<string, Status>);
@@ -39,20 +48,31 @@ export default function GuessArea({
     toggled: false,
     key: 0,
   })
+  const isGameWonOrLost = currentGame.status === "won" || currentGame.status === "lost";
 
 
   useEffect(() => {
-    // Only update the delayedStatus after 1000ms
-    const timer = setTimeout(() => {
-      setDelayedStatus(currentGame.status);
-    }, 1000);
+    if (isGameWonOrLost) {
+      setDisableGameModeSelect(true);
+      // Only update the delayedStatus after 1000ms
+      const timer = setTimeout(() => {
+        setDelayedStatus(currentGame.status);
+        setDisableGameModeSelect(false);
+      }, 1000);
 
-    return () => clearTimeout(timer); // Clean up the timer on unmount or before re-running effect
+      return () => clearTimeout(timer);
+    }
+    else {
+      setDelayedStatus(currentGame.status);
+    }
   }, [currentGame.status]);
 
   useEffect(() => {
     if (delayedStatus === "won" || delayedStatus === "lost") {
       setShowEndgameModal(true);
+    }
+    else {
+      setShowEndgameModal(false);
     }
 
     if (currentGame.status === "notStarted") {
@@ -79,17 +99,17 @@ export default function GuessArea({
     <>
       <Guesses
         currentGame={currentGame}
-        guess={guess}
         editing={editing}
+        guess={guess}
         setEditing={setEditing}
         setGuess={setGuess}
       />
       <Keyboard
         currentGame={currentGame}
+        editing={editing}
+        guess={guess}
         keysStatus={keysStatus}
         wordData={wordData}
-        guess={guess}
-        editing={editing}
         setEditing={setEditing}
         setGuess={setGuess}
         setKeysStatus={setKeysStatus}

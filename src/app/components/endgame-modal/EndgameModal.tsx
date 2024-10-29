@@ -110,7 +110,7 @@ function EndgameModal({
         >
           <div className={modalStyles.modalInner}>
             <h2 className={modalStyles.heading}>
-              {currentGame.status === "won" ? "You won!" : currentGame.status === "lost" ? "You lost!" : "New Game"}
+              {currentGame.status === "won" ? "You won!" : currentGame.status === "lost" ? "You lost!" : "In Progress"}
             </h2>
             <p className={modalStyles.text}>
               Stats (coming soon...)

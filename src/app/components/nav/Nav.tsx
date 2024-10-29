@@ -9,11 +9,13 @@ import GameModeSelect from "../game-mode-select/GameModeSelect";
 import useGameState from "~/app/hooks/useGameState";
 
 type NavProps = {
+  disableGameModeSelect: boolean;
   setShowEndgameModal: Dispatch<SetStateAction<boolean>>;
   setShowSettingsModal: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Nav({
+  disableGameModeSelect,
   setShowEndgameModal,
   setShowSettingsModal,
 }: NavProps) {
@@ -51,7 +53,9 @@ export default function Nav({
         <a className={styles.donate} href="https://www.buymeacoffee.com/sqnces" target="_blank" rel="noreferrer noopener"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" /></a>
       </div>
       <div className={[styles.section, styles.isCentered].join(" ")}>
-        <GameModeSelect />
+        <GameModeSelect 
+          disabled={disableGameModeSelect}
+        />
       </div>
       <div className={[styles.section, styles.isRight].join(" ")}>
         <EndgameToggle

@@ -44,11 +44,11 @@ export default function Keyboard({
   setKeysStatus,
 }: KeyboardProps) {
   const searchGuess = useGuessSearch();
-  const [gameState, setGameState] = useGameState();
-  const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
-  const [loading, setLoading] = useState(false);
   const [activeKeys, setActiveKeys] = useState<Key[]>([]);
+  const [gameState, setGameState] = useGameState();
+  const [loading, setLoading] = useState(false);
   const guessRef = useRef(guess); // Create a ref to store the guess value
+  const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const repeatInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -264,7 +264,6 @@ export default function Keyboard({
     else {
       setLoading(true);
       const isGuessValid = await searchGuess(guessedWord);
-      console.log("🚀 ~ handleGuessSubmit ~ isGuessValid:", isGuessValid);
 
       if (!isGuessValid) {
         setLoading(false);
