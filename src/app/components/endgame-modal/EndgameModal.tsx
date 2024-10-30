@@ -3,17 +3,18 @@
 import { type Dispatch, type SetStateAction, useState } from "react"
 import styles from "./EndgameModal.module.css"
 import flexStyles from "../styles/Flex.module.css"
+import useGameState from "~/app/hooks/useGameState"
+import useUserStats from "~/app/hooks/useUserStats"
 
 import * as Dialog from '@radix-ui/react-dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
+import Button from "../button/Button"
 import Checkbox from "../checkbox/Checkbox"
 import modalStyles from "../info-modal/InfoModal.module.css"
-import { XCircle } from '@phosphor-icons/react'
-import type { Game } from "../game/Game.types"
-import type { ClientPuzzle } from "~/server/types/word"
-import Button from "../button/Button"
 import toast from "react-hot-toast"
-import useGameState from "~/app/hooks/useGameState"
+import type { ClientPuzzle } from "~/server/types/word"
+import type { Game, WordLength } from "../game/Game.types"
+import { XCircle } from '@phosphor-icons/react'
 
 type EndgameModalProps = {
   currentGame: Game;
@@ -28,9 +29,15 @@ function EndgameModal({
   showEndgameModal,
   setShowEndgameModal,
 }: EndgameModalProps) {
+  const [userStats] = useUserStats();
   const [gameState] = useGameState();
-  const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
+  const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
+  const gameMode = gameState.settings.hardMode === true ? "hardMode" : "easyMode";
+  const currentGameStats = userStats.games[gameState.wordLength as WordLength][gameMode];
+  const totalGamesPlayed = Object.values(userStats.games).reduce((total, gameModes) => {
+    return total + Object.values(gameModes).reduce((modeTotal, stats) => modeTotal + stats.played, 0);
+  }, 0);
 
   async function handleCopyToClipboard() {
     if (navigator.clipboard && window.isSecureContext) {
@@ -113,27 +120,27 @@ function EndgameModal({
               {currentGame.status === "won" ? "You won!" : currentGame.status === "lost" ? "You lost!" : "In Progress"}
             </h2>
             <p className={modalStyles.text}>
-              Stats (coming soon...)
+              Stats ({gameState.wordLength}) -{gameState.settings.hardMode ? "Hard" : "Easy"}
             </p>
             <div className={flexStyles.flexList}>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Played</p>
-                0
+                {currentGameStats.played}
               </div>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Win %</p>
-                0
+                {currentGameStats.played > 0 ? Math.round((currentGameStats.won / currentGameStats.played) * 100) : 0}%
               </div>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Current Streak</p>
-                0
+                {currentGameStats.currentStreak}
               </div>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Longest Streak</p>
-                0
+                {currentGameStats.longestStreak}
               </div>
             </div>
-            {currentGame.status !== "playing" && currentGame.status !== "notStarted" ? (
+            {(currentGame.status !== "playing" && currentGame.status !== "notStarted") && (
               <div className={styles.flex}>
                 <Checkbox
                   text="Hide spoilers"
@@ -147,8 +154,6 @@ function EndgameModal({
                   Share results
                 </Button>
               </div>
-            ) : (
-              <p>Your game is still in progress.</p>
             )}
           </div>
           <VisuallyHidden.Root asChild>

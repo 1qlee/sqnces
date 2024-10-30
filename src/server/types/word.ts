@@ -84,6 +84,17 @@ export type CheckedGuess = {
   status: string;
 }
 
+export type GetWordError = {
+  code: string;
+  message: {
+    message: string;
+    code: string;
+  };
+  path: string[];
+}
+
+export type GetWordResponse = GetWordError[]
+
 // Extend the imported KeysStatus type
 export type KeysStatus = ImportedKeysStatus
 export type Key = ImportedKey

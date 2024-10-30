@@ -32,13 +32,15 @@ export type Stats = {
   played: number;
   won: number;
   lost: number;
-  winRate: string;
   currentStreak: number;
   longestStreak: number;
 }
 
-export type GameStats = {
+export type UserStats = {
   games: {
-    [key in WordLength]: Stats;
+    [key in WordLength]: {
+      easyMode: Stats;
+      hardMode: Stats;
+    };
   };
 }

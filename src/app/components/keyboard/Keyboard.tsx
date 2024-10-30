@@ -3,12 +3,13 @@
 import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
-import type { ClientWord, CheckedGuess } from "~/server/types/word";
-import type { Editing, Game } from "../game/Game.types";
+import type { ClientWord, CheckedGuess, GetWordResponse } from "~/server/types/word";
+import type { Editing, Game, WordLength } from "../game/Game.types";
 import type { Guess } from "../guess-area/Guess.types";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
 import useGameState from "~/app/hooks/useGameState";
 import useGuessSearch from "~/app/hooks/useGuessSearch";
+import useUserStats from "~/app/hooks/useUserStats";
 import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react";
 import { checkGuess } from "~/app/actions/checkGuess";
@@ -44,6 +45,7 @@ export default function Keyboard({
   setKeysStatus,
 }: KeyboardProps) {
   const searchGuess = useGuessSearch();
+  const [userStats, setUserStats] = useUserStats();
   const [activeKeys, setActiveKeys] = useState<Key[]>([]);
   const [gameState, setGameState] = useGameState();
   const [loading, setLoading] = useState(false);
@@ -280,10 +282,10 @@ export default function Keyboard({
         const validateData = await Promise.race([
           checkGuess({
             guess: guessedWord,
-            usersDate: new Date().toLocaleDateString(),
-            length: wordData.length,
             hardMode: gameState.settings.hardMode,
+            length: wordData.length,
             puzzleId: gameState.puzzle!,
+            usersDate: new Date().toLocaleDateString(),
           }),
           timeoutPromise,
         ]) as CheckedGuess;
@@ -291,7 +293,7 @@ export default function Keyboard({
         if (!validateData.isValid) {
           setLoading(false);
           toast.dismiss();
-          return toast.error("Invalid word");
+          return toast.error("Invalid guess. Make sure the guess contains the sequence.");
         }
 
         if (validateData.status) {
@@ -339,16 +341,53 @@ export default function Keyboard({
           },
         });
 
+        const gameMode = gameState.settings.hardMode ? 'hardMode' : 'easyMode'
+        const gameToModify = userStats.games[wordData.length as WordLength][gameMode];
+
+        if (gameStatus === "won" || gameStatus === "lost") {
+          setUserStats({
+            ...userStats,
+            games: {
+              ...userStats.games,
+              [wordData.length]: {
+                [gameMode]: {
+                  ...gameToModify,
+                  currentStreak: gameStatus === "won" ? gameToModify.currentStreak += 1 : 0,
+                  longestStreak: gameToModify.currentStreak > gameToModify.longestStreak ? gameToModify.currentStreak : gameToModify.longestStreak,
+                  played: gameToModify.played += 1,
+                  lost: gameStatus === "lost" ? gameToModify.lost += 1 : gameToModify.lost,
+                  won: gameStatus === "won" ? gameToModify.won += 1 : gameToModify.won,
+                },
+              }
+            }
+          })
+        }
+
         setGuess({
           string: "",
           letters: [],
         });
 
         setLoading(false);
-      } catch (err) {
+      } catch (err: unknown) {
         setLoading(false);
 
-        toast.error("Server error. Please refresh and try again.");
+        if (err instanceof Error) {
+          const response = JSON.parse(err.message) as GetWordResponse;
+          const error = response[0];
+          
+          if (error && typeof error.message === 'string') {
+            const serverError = JSON.parse(error.message) as { message: string, code: string };
+
+            toast.dismiss();
+            toast.error(serverError.message);
+          } else {
+            console.error("Unexpected error format", error);
+          }
+        } else {
+          toast.dismiss();
+          toast.error("Unexpected error occurred. Please try refreshing your page.");
+        }
       }
     }
   }

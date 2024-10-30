@@ -6,7 +6,6 @@ import {
 } from "~/server/api/trpc";
 import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
 import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays } from "date-fns";
-import { toZonedTime, fromZonedTime } from "date-fns-tz"; // Handle timezones
 import fs from "fs";
 import path from "path";
 
@@ -291,20 +290,20 @@ export const wordRouter = createTRPCRouter({
         return dateString === today || dateString === tomorrow;
       }, {
         message: JSON.stringify({
-          message: "Invalid date.",
+          message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
           code: "INVALID_DATE",
         })
       }),
       length: z.number().refine((val) => [6, 7, 8].includes(val), {
         message: JSON.stringify({
-          message: "Length must be one of 6, 7, or 8.",
+          message: "Word must be 6, 7, or 8 letters long.",
           code: "INVALID_WORD_LENGTH",
         })
       }),
       hardMode: z.boolean(),
       puzzleId: z.number().refine((val) => val === todaysCache.id || val === tomorrowsCache.id, {
         message: JSON.stringify({
-          message: "Could not find today's puzzle. Please refresh the page or clear your cache.",
+          message: "Could not find this puzzle. Please refresh the page or clear your cache.",
           code: "INVALID_PUZZLE_ID",
         })
       }),
@@ -426,7 +425,7 @@ export const wordRouter = createTRPCRouter({
         // incorrect position
         else {
           // should never override a correct or misplaced letter on the keyboard
-          if (!correctLetterExists && !misplacedLetterExists ) {
+          if (!correctLetterExists && !misplacedLetterExists) {
             keys[letterGuessed] = "incorrect";
           };
 
@@ -442,34 +441,4 @@ export const wordRouter = createTRPCRouter({
       }
     })
   ,
-
-  // validate: publicProcedure
-  //   .input(z.object({ word: z.string() }))
-  //   .query(async ({ input }) => {
-      
-      
-  //     // const definitionRes = await fetch(
-  //     //   `https://api.dictionaryapi.dev/api/v2/entries/en/${input.word}`
-  //     // )
-  //     // // https://www.dictionaryapi.com/products/api-collegiate-dictionary
-
-  //     // const definitionData = await definitionRes.json() as WordEntry[];
-
-  //     // if (typeof definitionData === "object" && "title" in definitionData) {
-  //     //   return {
-  //     //     isValid: false,
-  //     //     message: "Invalid word",
-  //     //     definition: "No definition found",
-  //     //   };
-  //     // }
-
-  //     // const entry = definitionData[0]!;
-  //     // const definition = entry?.meanings[0]?.definitions[0]?.definition;
-
-  //     // return {
-  //     //   isValid: true,
-  //     //   message: "Valid word",
-  //     //   definition: definition ?? "No definition found",
-  //     // }
-  //   }),
 });

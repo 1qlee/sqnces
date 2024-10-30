@@ -5,6 +5,8 @@ import { getPuzzle } from "~/app/actions/getPuzzle";
 import { openDB } from "idb";
 import type { ClientPuzzle } from "~/server/types/word";
 import type { WordLength } from "./Game.types";
+import useUserStats from "~/app/hooks/useUserStats";
+import useGameState from "~/app/hooks/useGameState";
 
 import Nav from "../nav/Nav";
 import styles from "./Game.module.css";
@@ -13,7 +15,6 @@ import GuessArea from "../guess-area/GuessArea";
 import InfoModal from "../info-modal/InfoModal";
 import MainMenu from "../main-menu/MainMenu";
 import EndgameModal from "../endgame-modal/EndgameModal";
-import useGameState from "~/app/hooks/useGameState";
 import Loader from "../loader/Loader";
 import SettingsModal from "../settings-modal/SettingsModal";
 import validGuesses from "../../guesses/guesses.json";
@@ -35,6 +36,7 @@ export default function Game({ initialPuzzleData }: GameProps) {
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
   const [gameState, setGameState] = useGameState();
+  const [userStats, setUserStats] = useUserStats();
   const currentGame = gameState?.games && gameState.games[gameState.wordLength as WordLength];
   const wordData = puzzleData.words.find(word => word.length === gameState.wordLength)!;
 

@@ -121,3 +121,9 @@ main,html,body {
   width: 100%;
   height: 100%;
 }
+
+hr {
+  margin: 1rem 0;
+  background-color: var(--foreground);
+  height: 2px;
+}
