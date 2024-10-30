@@ -425,7 +425,7 @@ export const wordRouter = createTRPCRouter({
         // incorrect position
         else {
           // should never override a correct or misplaced letter on the keyboard
-          if (!correctLetterExists && !misplacedLetterExists) {
+          if (!correctLetterExists && !lettersMap.find(l => l?.letter === letterGuessed)) {
             keys[letterGuessed] = "incorrect";
           };
 

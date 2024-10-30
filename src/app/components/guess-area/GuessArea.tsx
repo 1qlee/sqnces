@@ -27,18 +27,42 @@ export default function GuessArea({
   const [delayedStatus, setDelayedStatus] = useState<GameStatus>(undefined);
   const guesses = currentGame.guesses;
   const letterStatusMap: Record<string, Status> = guesses.reduce((acc, guess) => {
+    // Temporary map to store the highest priority type for each letter in the current guess
+    const tempStatusMap: Record<string, Status> = {};
+
     guess.validationMap.forEach(({ letter, type }) => {
-      if (!acc[letter] || 
-        (acc[letter] === "empty") || 
-        (acc[letter] === "incorrect" && type !== "empty") || 
-        (acc[letter] === "incorrectEmpty" && type !== "empty" && type !== "incorrect") || 
-        (acc[letter] === "misplacedEmpty" && type !== "empty" && type !== "incorrect" && type !== "incorrectEmpty") || 
-        (acc[letter] === "misplaced" && type === "correct")) {
-      acc[letter] = type;
+      // If letter is not in tempStatusMap, or the new type has higher priority, update it
+      if (
+        !tempStatusMap[letter] ||
+        (tempStatusMap[letter] === "sequence") ||
+        (tempStatusMap[letter] === "empty" && type !== "sequence") ||
+        (tempStatusMap[letter] === "incorrectEmpty" && (type === "misplacedEmpty" || type === "misplaced" || type === "correct")) ||
+        (tempStatusMap[letter] === "incorrect" && (type === "misplacedEmpty" || type === "misplaced" || type === "correct")) ||
+        (tempStatusMap[letter] === "misplacedEmpty" && (type === "misplaced" || type === "correct")) ||
+        (tempStatusMap[letter] === "misplaced" && type === "correct")
+      ) {
+        tempStatusMap[letter] = type;
       }
     });
+
+    // Merge tempStatusMap into acc, respecting priority rules
+    Object.entries(tempStatusMap).forEach(([letter, type]) => {
+      if (
+        !acc[letter] ||
+        (acc[letter] === "sequence") ||
+        (acc[letter] === "empty" && type !== "sequence") ||
+        (acc[letter] === "incorrectEmpty" && (type === "misplacedEmpty" || type === "misplaced" || type === "correct")) ||
+        (acc[letter] === "incorrect" && (type === "misplacedEmpty" || type === "misplaced" || type === "correct")) ||
+        (acc[letter] === "misplacedEmpty" && (type === "misplaced" || type === "correct")) ||
+        (acc[letter] === "misplaced" && type === "correct")
+      ) {
+        acc[letter] = type;
+      }
+    });
+
     return acc;
   }, {} as Record<string, Status>);
+
   const [keysStatus, setKeysStatus] = useState<KeysStatus>(letterStatusMap);
   const [guess, setGuess] = useState<Guess>({
     string: "",
