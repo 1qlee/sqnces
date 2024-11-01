@@ -153,11 +153,7 @@ export default function MainMenu({
       <p
         className={styles.time}
       >
-        {new Date().toLocaleString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-        })}
+        {puzzleData.date}
       </p>
       <p className={styles.badge}>Puzzle #{puzzleData.id}</p>
     </div>

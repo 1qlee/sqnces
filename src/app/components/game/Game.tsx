@@ -5,7 +5,6 @@ import { getPuzzle } from "~/app/actions/getPuzzle";
 import { openDB } from "idb";
 import type { ClientPuzzle } from "~/server/types/word";
 import type { WordLength } from "./Game.types";
-import useUserStats from "~/app/hooks/useUserStats";
 import useGameState from "~/app/hooks/useGameState";
 
 import Nav from "../nav/Nav";
@@ -36,7 +35,6 @@ export default function Game({ initialPuzzleData }: GameProps) {
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
   const [gameState, setGameState] = useGameState();
-  const [userStats, setUserStats] = useUserStats();
   const currentGame = gameState?.games && gameState.games[gameState.wordLength as WordLength];
   const wordData = puzzleData.words.find(word => word.length === gameState.wordLength)!;
 
@@ -101,6 +99,7 @@ export default function Game({ initialPuzzleData }: GameProps) {
     async function fetchPuzzle() {
       try {
         const date = new Date().toLocaleDateString();
+        console.log("🚀 ~ fetchPuzzle ~ date:", date)
         const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch (error) {
