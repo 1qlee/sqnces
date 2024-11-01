@@ -251,6 +251,7 @@ export const wordRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
     usersDate: z.string().refine((dateString) => {
+      console.log("🚀 ~ usersDate:z.string ~ dateString:", dateString)
       // Validate if the date part matches today or tomorrow
       return dateString === todaysCachedDate || dateString === tomorrowsCachedDate;
     }, {

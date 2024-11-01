@@ -99,7 +99,6 @@ export default function Game({ initialPuzzleData }: GameProps) {
     async function fetchPuzzle() {
       try {
         const date = new Date().toLocaleDateString();
-        console.log("🚀 ~ fetchPuzzle ~ date:", date)
         const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch (error) {
