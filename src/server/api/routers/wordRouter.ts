@@ -197,8 +197,9 @@ async function loadCache() {
 
 await loadCache();
 
-const today = new Date().toLocaleDateString();
-const tomorrow = addDays(new Date(), 1).toLocaleDateString();
+const todaysCachedDate = format(todaysCache.date, "MM/dd/yyyy");
+console.log("🚀 ~ todaysCachedDate:", todaysCachedDate)
+const tomorrowsCachedDate = format(tomorrowsCache.date, "MM/dd/yyyy");
 
 const checkGuessSchema = z
   .object({
@@ -217,7 +218,7 @@ const checkGuessSchema = z
       }),
     usersDate: z.string().refine((dateString) => {
       // Validate if the date part matches today or tomorrow
-      return dateString === today || dateString === tomorrow;
+      return dateString === todaysCachedDate || dateString === tomorrowsCachedDate;
     }, {
       message: JSON.stringify({
         message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
@@ -238,7 +239,7 @@ const checkGuessSchema = z
       })
     }),
   })
-  .refine((data) => data.puzzleId !== (data.usersDate === today ? todaysCache.id : tomorrowsCache.id), {
+  .refine((data) => data.puzzleId !== (data.usersDate === todaysCachedDate ? todaysCache.id : tomorrowsCache.id), {
     message: JSON.stringify({
       message: "Received a request for an old puzzle. Please refresh the page or clear your cache.",
       code: "INVALID_PUZZLE_ID"
@@ -251,7 +252,7 @@ export const wordRouter = createTRPCRouter({
   .input(z.object({ 
     usersDate: z.string().refine((dateString) => {
       // Validate if the date part matches today or tomorrow
-      return dateString === today || dateString === tomorrow;
+      return dateString === todaysCachedDate || dateString === tomorrowsCachedDate;
     }, {
       message: JSON.stringify({
         message: "Invalid date.",
@@ -265,7 +266,7 @@ export const wordRouter = createTRPCRouter({
     // check if the cached puzzles exist for both today and tomorrow
     if (todaysCache.words.length > 0 && tomorrowsCache.words.length > 0) {
       // return the puzzle for today in the cache
-      if (usersDate === new Date(todaysCache.date).toLocaleDateString()) {
+      if (usersDate === todaysCachedDate) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: todaysCache.id,
@@ -287,7 +288,7 @@ export const wordRouter = createTRPCRouter({
         return clientPuzzle;
       }
       // return the puzzle for tomorrow in the cache
-      else if (usersDate === new Date(tomorrowsCache.date).toLocaleDateString()) {
+      else if (usersDate === tomorrowsCachedDate) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: tomorrowsCache.id,
