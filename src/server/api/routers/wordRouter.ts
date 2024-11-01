@@ -94,7 +94,7 @@ async function getWordsForCache() {
     }
   });
   todaysCache.id = todaysPuzzle!.id;
-  todaysCache.date = new Date(todaysPuzzle!.datePlayed).toLocaleDateString();
+  todaysCache.date = format(new Date(todaysPuzzle!.datePlayed).toLocaleDateString(), "MM-dd-yyyy");
 
   const tomorrowStart = startOfTomorrow(); // Today at 00:00
   const tomorrowEnd = endOfTomorrow();
@@ -152,7 +152,7 @@ async function getWordsForCache() {
     }
   });
   tomorrowsCache.id = tomorrowsPuzzle!.id;
-  tomorrowsCache.date = new Date(tomorrowsPuzzle!.datePlayed).toLocaleDateString();
+  tomorrowsCache.date = format(new Date(tomorrowsPuzzle!.datePlayed).toLocaleDateString(), "MM-dd-yyyy");
 }
 
 // Load words cache from file or create new words if cache is empty
@@ -166,7 +166,7 @@ async function loadCache() {
 
     saveCacheToFile();
 
-    console.log("[WORD API] Generated random words to save to cache.");
+    console.log("[WORD API] Saved new puzzles to the cache.");
 
     return;
   }
@@ -183,7 +183,7 @@ async function loadCache() {
 
     saveCacheToFile();
 
-    console.log("[WORD API] Generated random words to save to cache.");
+    console.log("[WORD API] Saved new puzzles to the cache.");
 
     return; 
   }
@@ -197,9 +197,8 @@ async function loadCache() {
 
 await loadCache();
 
-const todaysCachedDate = format(todaysCache.date, "MM/dd/yyyy");
-console.log("🚀 ~ todaysCachedDate:", todaysCachedDate)
-const tomorrowsCachedDate = format(tomorrowsCache.date, "MM/dd/yyyy");
+const todaysCachedDate = format(todaysCache.date, "MM-dd-yyyy");
+const tomorrowsCachedDate = format(tomorrowsCache.date, "MM-dd-yyyy");
 
 const checkGuessSchema = z
   .object({
@@ -327,7 +326,7 @@ export const wordRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { guess, usersDate, length, hardMode } = input;
       const guessLength = guess.length;
-      const todaysDate = new Date(todaysCache.date).toLocaleDateString();
+      const todaysDate = format(new Date(todaysCache.date).toLocaleDateString(), "MM-dd-yyyy");
       const word = usersDate === todaysDate ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
       const { sequence } = word;
       const guessIsCorrect = guess === word.word;
