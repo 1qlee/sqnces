@@ -1,6 +1,7 @@
 "use server"
 
 import { api } from "~/trpc/server";
+import { format } from "date-fns";
 
 export async function checkGuess({
   guess,
@@ -15,7 +16,9 @@ export async function checkGuess({
   hardMode: boolean;
   puzzleId: number;
 }) {
-  const data = await api.word.check({ guess, usersDate, length, hardMode, puzzleId });
+  console.log("PUZZLE ID", puzzleId);
+  console.log("USERS DATE", format(usersDate, "MM-dd-yyyy"));
+  const data = await api.word.check({ guess, usersDate: format(usersDate, "MM-dd-yyyy"), length, hardMode, puzzleId });
 
   return data;
 }

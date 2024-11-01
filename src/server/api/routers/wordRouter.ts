@@ -218,6 +218,7 @@ const checkGuessSchema = z
         }),
       }),
     usersDate: z.string().refine((dateString) => {
+      console.log("🚀 ~ CHECK ~ dateString:", dateString)
       // Validate if the date part matches today or tomorrow
       return dateString === todaysCachedDate || dateString === tomorrowsCachedDate;
     }, {
@@ -240,7 +241,7 @@ const checkGuessSchema = z
       })
     }),
   })
-  .refine((data) => data.puzzleId !== (data.usersDate === todaysCachedDate ? todaysCache.id : tomorrowsCache.id), {
+  .refine((data) => data.puzzleId === (data.usersDate === todaysCachedDate ? todaysCache.id : tomorrowsCache.id), {
     message: JSON.stringify({
       message: "Received a request for an old puzzle. Please refresh the page or clear your cache.",
       code: "INVALID_PUZZLE_ID"
