@@ -43,7 +43,7 @@ function EndgameModal({
 
   async function handleCopyToClipboard() {
     if (navigator.clipboard && window.isSecureContext) {
-      let textToCopy = `sqnces.com\nPuzzle #${puzzleData.id} (${currentGame.status?.toUpperCase()}) (${gameState.wordLength}) ${currentPuzzle?.sequence.string}${gameState.games[gameState.wordLength as WordLength].hardMode ? " -Hard" : " -Easy"}\n`;
+      let textToCopy = `sqnces.com\n#${puzzleData.id} ${currentPuzzle?.sequence.string} (${gameState.wordLength}) ${currentGame.status?.toUpperCase()}${gameState.games[gameState.wordLength as WordLength].hardMode ? " -Hard" : " -Easy"}\n`;
       toast.success("Copied!", { id: "copied" });
 
       currentGame.guesses.forEach(guess => {
