@@ -16,6 +16,13 @@ export default function HardModeToggle() {
     if (gameState.games[gameState.wordLength as WordLength].guesses.length === 0) {
       setGameState({
         ...gameState,
+        games: {
+          ...gameState.games,
+          [gameState.wordLength]: {
+            ...gameState.games[gameState.wordLength as WordLength],
+            hardMode: !isHardModeOn,
+          }
+        },
         settings: {
           ...gameState.settings,
           hardMode: !isHardModeOn,

@@ -290,26 +290,6 @@ export default function Keyboard({
           timeoutPromise,
         ]) as CheckedGuess;
 
-        if (!validateData.isValid) {
-          setLoading(false);
-          toast.dismiss();
-          return toast.error("Invalid guess. Make sure the guess contains the sequence.");
-        }
-
-        if (validateData.status) {
-          switch (validateData.status) {
-            case "noSequence":
-              toast.dismiss();
-              return toast.error("Word must include the sequence.");
-            case "invalidPuzzle":
-              location.reload();
-              toast.dismiss();
-              return toast.error("Invalid puzzle.");
-            default:
-              break;
-          }
-        }
-
         setKeysStatus((prev) => ({ ...prev, ...validateData.keys }));
 
         const newGuess = {
@@ -335,13 +315,14 @@ export default function Keyboard({
           games: {
             ...gameState.games,
             [wordData.length]: {
+              ...currentGame,
               guesses: [...currentGame.guesses, newGuess],
               status: gameStatus,
             },
           },
         });
 
-        const gameMode = gameState.settings.hardMode ? 'hardMode' : 'easyMode'
+        const gameMode = currentGame.hardMode ? 'hardMode' : 'easyMode'
         const gameToModify = userStats.games[wordData.length as WordLength][gameMode];
 
         if (gameStatus === "won" || gameStatus === "lost") {
@@ -350,6 +331,7 @@ export default function Keyboard({
             games: {
               ...userStats.games,
               [wordData.length]: {
+                ...userStats.games[wordData.length as WordLength],
                 [gameMode]: {
                   ...gameToModify,
                   currentStreak: gameStatus === "won" ? gameToModify.currentStreak += 1 : 0,
@@ -373,6 +355,7 @@ export default function Keyboard({
         setLoading(false);
 
         if (err instanceof Error) {
+          console.log("🚀 ~ handleGuessSubmit ~ err:", err)
           const response = JSON.parse(err.message) as GetWordResponse;
           const error = response[0];
           

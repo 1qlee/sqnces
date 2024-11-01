@@ -42,7 +42,7 @@ export default function SettingsModal({
             ].join(" ")}>
               <div>
                 <p>Hard mode</p>
-                <small className={modalStyles.subtext}>If ON, out of bounds letters won't show misplacement.</small>
+                <small className={modalStyles.subtext}>If ON, out of bounds letters won't show additional clues.</small>
               </div>
               <HardModeToggle />
             </div>

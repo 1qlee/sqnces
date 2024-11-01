@@ -8,6 +8,7 @@ import useUserStats from "~/app/hooks/useUserStats"
 
 import * as Dialog from '@radix-ui/react-dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
+import Select from "../select/Select"
 import Button from "../button/Button"
 import Checkbox from "../checkbox/Checkbox"
 import modalStyles from "../info-modal/InfoModal.module.css"
@@ -32,21 +33,21 @@ function EndgameModal({
   const [userStats] = useUserStats();
   const [gameState] = useGameState();
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
+  const [statsMode, setStatsMode] = useState(gameState.settings.hardMode ? "Hard Mode" : "Easy Mode")
   const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
-  const gameMode = gameState.settings.hardMode === true ? "hardMode" : "easyMode";
-  const currentGameStats = userStats.games[gameState.wordLength as WordLength][gameMode];
+  const difficulty = statsMode === "Hard Mode" ? "hardMode" : "easyMode";
+  const currentGameStats = userStats.games[gameState.wordLength as WordLength][difficulty];
   const totalGamesPlayed = Object.values(userStats.games).reduce((total, gameModes) => {
     return total + Object.values(gameModes).reduce((modeTotal, stats) => modeTotal + stats.played, 0);
   }, 0);
 
   async function handleCopyToClipboard() {
     if (navigator.clipboard && window.isSecureContext) {
-      let textToCopy = `sqnces.com\nPuzzle #${puzzleData.id} (${gameState.wordLength}) ${currentPuzzle?.sequence.string}${gameState.settings.hardMode ? " -Hard" : ""}\n`;
+      let textToCopy = `sqnces.com\nPuzzle #${puzzleData.id} (${currentGame.status?.toUpperCase()}) (${gameState.wordLength}) ${currentPuzzle?.sequence.string}${gameState.games[gameState.wordLength as WordLength].hardMode ? " -Hard" : " -Easy"}\n`;
       toast.success("Copied!", { id: "copied" });
 
       currentGame.guesses.forEach(guess => {
         const { validationMap } = guess;
-        // 🟥🟨🟩⬛🔳⬜;
 
         if (hideSpoilers) {
           let numOfCorrect = 0, numOfIncorrect = 0, numOfMisplaced = 0, numOfEmpty = 0;
@@ -57,9 +58,11 @@ function EndgameModal({
                 numOfCorrect++;
                 break;
               case "incorrect":
+              case "incorrectEmpty":
                 numOfIncorrect++;
                 break;
               case "misplaced":
+              case "misplacedEmpty":
                 numOfMisplaced++;
                 break;
               case "empty":
@@ -119,25 +122,32 @@ function EndgameModal({
             <h2 className={modalStyles.heading}>
               {currentGame.status === "won" ? "You won!" : currentGame.status === "lost" ? "You lost!" : "In Progress"}
             </h2>
-            <p className={modalStyles.text}>
-              Stats ({gameState.wordLength}) -{gameState.settings.hardMode ? "Hard" : "Easy"}
-            </p>
+            <div className={flexStyles.flexList}>
+              <p>
+                Stats ({gameState.wordLength})
+              </p>
+              <Select
+                value={statsMode}
+                onChange={val => setStatsMode(val)}
+                options={[{ value: "Easy Mode", label: "Easy Mode" }, { value: "Hard Mode", label: "Hard Mode" }]}
+              />
+            </div>
             <div className={flexStyles.flexList}>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Played</p>
-                {currentGameStats.played}
+                {currentGameStats?.played ?? "N/A"}
               </div>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Win %</p>
-                {currentGameStats.played > 0 ? Math.round((currentGameStats.won / currentGameStats.played) * 100) : 0}%
+                {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "N/A"}
               </div>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Current Streak</p>
-                {currentGameStats.currentStreak}
+                {currentGameStats?.currentStreak ?? "N/A"}
               </div>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Longest Streak</p>
-                {currentGameStats.longestStreak}
+                {currentGameStats?.longestStreak ?? "N/A"}
               </div>
             </div>
             {(currentGame.status !== "playing" && currentGame.status !== "notStarted") && (

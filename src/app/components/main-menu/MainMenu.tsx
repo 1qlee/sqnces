@@ -1,12 +1,16 @@
 "use client"
+import type { ClientPuzzle } from '~/server/types/word';
+import type { Dispatch, SetStateAction } from 'react';
+import type { Game } from '../game/Game.types';
+import { Info } from '@phosphor-icons/react';
+import popoverStyles from '../popover/Popover.module.css';
 
 import Button from '../button/Button';
 import useGameState from '~/app/hooks/useGameState';
 import GameModeToggle from '../game-mode-toggle/GameModeToggle';
 import styles from './MainMenu.module.css';
-import type { ClientPuzzle } from '~/server/types/word';
-import type { Dispatch, SetStateAction } from 'react';
-import type { Game } from '../game/Game.types';
+import HardModeToggle from '../toggles/HardModeToggle';
+import * as Popover from "@radix-ui/react-popover";
 
 type MainMenuProps = {
   setShowMainMenu: Dispatch<SetStateAction<boolean>>;
@@ -36,6 +40,7 @@ export default function MainMenu({
             [gameState.wordLength]: {
               ...currentGame,
               status: "playing",
+              hardMode: gameState.settings.hardMode,
             },
           },
           puzzle: puzzleData.id,
@@ -109,15 +114,38 @@ export default function MainMenu({
             {currentGame.guesses.length === 0 ? (
               "It's time to make your first guess!"
             ) : (
-                `You've made ${currentGame.guesses.length} guess${currentGame.guesses.length > 1 ? "es" : ""} so far.`
+              `You've made ${currentGame.guesses.length} guess${currentGame.guesses.length > 1 ? "es" : ""} so far.`
             )}
           </p>
         </>
       )}
-      <p className={styles.subtext}>Select game mode:</p>
+      <p className={styles.subtext}>Game mode:</p>
       <GameModeToggle />
+      <div className={styles.marginBottom}>
+        <p className={styles.subtext}>
+          <span>Hard mode</span> 
+          <Popover.Root>
+            <Popover.Trigger
+              asChild
+            >
+              <button className={popoverStyles.button}>
+                <Info size={16} weight="bold" />
+              </button>
+            </Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Content
+                className={popoverStyles.content}
+              >
+                Some stuff
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+        <span>:</span>
+        </p>
+        <HardModeToggle />
+      </div>
       <Button
-        className={styles.button}
+        className={styles.marginBottom}
         onClick={() => handleButtonClick()}
       >
         {handleButtonText()}

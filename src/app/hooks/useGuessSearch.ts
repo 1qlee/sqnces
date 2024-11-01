@@ -37,6 +37,7 @@ export default function useGuessSearch() {
 
       // Retrieve all entries from the store
       const guesses: Guess[] = await tx.store.getAll() as Guess[];
+
       return findGuess(guesses, guess);
     } catch (error) {
       return false;

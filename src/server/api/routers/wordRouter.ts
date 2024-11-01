@@ -1,9 +1,10 @@
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import {
   createTRPCContext,
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
 import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays } from "date-fns";
 import fs from "fs";
@@ -199,6 +200,52 @@ await loadCache();
 const today = new Date().toLocaleDateString();
 const tomorrow = addDays(new Date(), 1).toLocaleDateString();
 
+const checkGuessSchema = z
+  .object({
+    guess: z.string()
+      .refine((val) => [4, 5, 6, 7, 8].includes(val.length), {
+        message: JSON.stringify({
+          message: "Word must be 6, 7, or 8 letters long.",
+          code: "INVALID_GUESS_LENGTH"
+        }),
+      })
+      .refine((val) => /^[a-zA-Z]+$/.test(val), {
+        message: JSON.stringify({
+          message: "Word must contain only alphabetic characters.",
+          code: "INVALID_CHARACTERS"
+        }),
+      }),
+    usersDate: z.string().refine((dateString) => {
+      // Validate if the date part matches today or tomorrow
+      return dateString === today || dateString === tomorrow;
+    }, {
+      message: JSON.stringify({
+        message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
+        code: "INVALID_DATE",
+      })
+    }),
+    length: z.number().refine((val) => [6, 7, 8].includes(val), {
+      message: JSON.stringify({
+        message: "Word must be 6, 7, or 8 letters long.",
+        code: "INVALID_WORD_LENGTH",
+      })
+    }),
+    hardMode: z.boolean(),
+    puzzleId: z.number().refine((val) => val === todaysCache.id || val === tomorrowsCache.id, {
+      message: JSON.stringify({
+        message: "Could not find this puzzle. Please refresh the page or clear your cache.",
+        code: "INVALID_PUZZLE_ID",
+      })
+    }),
+  })
+  .refine((data) => data.puzzleId !== (data.usersDate === today ? todaysCache.id : tomorrowsCache.id), {
+    message: JSON.stringify({
+      message: "Received a request for an old puzzle. Please refresh the page or clear your cache.",
+      code: "INVALID_PUZZLE_ID"
+    }),
+    path: ["puzzleId"], // Associates the error with the `usersDate` field
+  });
+
 export const wordRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
@@ -206,7 +253,10 @@ export const wordRouter = createTRPCRouter({
       // Validate if the date part matches today or tomorrow
       return dateString === today || dateString === tomorrow;
     }, {
-      message: "Invalid date.",
+      message: JSON.stringify({
+        message: "Invalid date.",
+        code: "INVALID_DATE",
+      })
     }),
   }))
   .query(async ({ input }) => {
@@ -271,60 +321,13 @@ export const wordRouter = createTRPCRouter({
   }),
 
   check: publicProcedure
-    .input(z.object({ 
-      guess: z.string()
-        .refine((val) => [4, 5, 6, 7, 8].includes(val.length), {
-          message: JSON.stringify({ 
-            message: "Word must be 6, 7, or 8 letters long.", 
-            code: "INVALID_GUESS_LENGTH" 
-          }),
-        })
-        .refine((val) => /^[a-zA-Z]+$/.test(val), {
-          message: JSON.stringify({
-            message: "Word must contain only alphabetic characters.",
-            code: "INVALID_CHARACTERS"
-          }),
-        }),
-      usersDate: z.string().refine((dateString) => {
-        // Validate if the date part matches today or tomorrow
-        return dateString === today || dateString === tomorrow;
-      }, {
-        message: JSON.stringify({
-          message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
-          code: "INVALID_DATE",
-        })
-      }),
-      length: z.number().refine((val) => [6, 7, 8].includes(val), {
-        message: JSON.stringify({
-          message: "Word must be 6, 7, or 8 letters long.",
-          code: "INVALID_WORD_LENGTH",
-        })
-      }),
-      hardMode: z.boolean(),
-      puzzleId: z.number().refine((val) => val === todaysCache.id || val === tomorrowsCache.id, {
-        message: JSON.stringify({
-          message: "Could not find this puzzle. Please refresh the page or clear your cache.",
-          code: "INVALID_PUZZLE_ID",
-        })
-      }),
-    }))
+    .input(checkGuessSchema)
     .query(async ({ input }) => {
       const { guess, usersDate, length, hardMode } = input;
       const guessLength = guess.length;
       const todaysDate = new Date(todaysCache.date).toLocaleDateString();
       const word = usersDate === todaysDate ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
       const { sequence } = word;
-
-      if (!guess.includes(sequence.string)) {
-        return {
-          isValid: false,
-          keys: {},
-          map: [],
-          won: false,
-          message: "noSequence",
-        }
-      }
-
       const guessIsCorrect = guess === word.word;
       const letters = word.letters;
       const lettersMap: LettersMap = letters.map((letter) => ({ letter, used: false }));
@@ -434,7 +437,7 @@ export const wordRouter = createTRPCRouter({
       }
 
       return {
-        isValid: true,
+        status: "SUCCESS",
         keys: keys,
         map: validationMap,
         won: guessIsCorrect,

@@ -26,6 +26,7 @@ export type GameState = {
 export type Game = {
   guesses: GuessData[];
   status: GameStatus;
+  hardMode: boolean;
 }
 
 export type Stats = {

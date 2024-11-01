@@ -41,7 +41,7 @@
   overflow: hidden;
   border-radius: 0.25rem;
   border: 2px solid var(--foreground);
-  z-index: 88;
+  z-index: 100;
   width: 100%;
 }
 
@@ -55,7 +55,8 @@
   user-select: none;
 
   &[data-state="checked"] {
-    background-color: var(--grayed);
+    background-color: var(--foreground);
+    color: var(--background);
   }
 
   &[data-highlighted] {

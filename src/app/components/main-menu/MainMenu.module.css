@@ -28,15 +28,17 @@
 }
 
 .subtext {
+  display: flex;
+  align-items: center;
   margin-bottom: 0.5rem;
   color: var(--olive-10);
 }
 
-.button {
-  margin-bottom: 2rem;
-}
-
-.startButton {
+.marginBottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   margin-bottom: 2rem;
 }
 

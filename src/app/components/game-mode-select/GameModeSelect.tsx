@@ -6,7 +6,7 @@ import {
   CaretUp,
   Circle,
 } from "@phosphor-icons/react";
-import styles from "./GameModeSelect.module.css";
+import styles from "../select/Select.module.css";
 
 type SelectProps = {
   disabled: boolean;

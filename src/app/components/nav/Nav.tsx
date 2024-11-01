@@ -28,14 +28,17 @@ export default function Nav({
         6: {
           guesses: [],
           status: "notStarted",
+          hardMode: false,
         },
         7: {
           guesses: [],
           status: "notStarted",
+          hardMode: false,
         },
         8: {
           guesses: [],
           status: "notStarted",
+          hardMode: false,
         },
       },
       showHelp: true,

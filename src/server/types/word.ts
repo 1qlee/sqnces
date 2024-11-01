@@ -76,7 +76,6 @@ export type SplitWordLetter = {
 }
 
 export type CheckedGuess = {
-  isValid: boolean;
   keys: KeysStatus;
   map: LetterData[];
   won: boolean;
