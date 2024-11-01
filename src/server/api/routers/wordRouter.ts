@@ -197,8 +197,10 @@ async function loadCache() {
 
 await loadCache();
 
-const todaysCachedDate = format(todaysCache.date, "MM-dd-yyyy");
-const tomorrowsCachedDate = format(tomorrowsCache.date, "MM-dd-yyyy");
+const todaysCachedDate = todaysCache.date;
+console.log("🚀 ~ todaysCachedDate:", todaysCachedDate)
+const tomorrowsCachedDate = tomorrowsCache.date;
+console.log("🚀 ~ tomorrowsCachedDate:", tomorrowsCachedDate)
 
 const checkGuessSchema = z
   .object({
