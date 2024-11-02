@@ -1,7 +1,6 @@
 // import { auth } from "~/root/auth"
 import { HydrateClient } from "~/trpc/server";
 import Game from "./components/game/Game";
-import { getPuzzle } from "./actions/getPuzzle";
 
 export default async function Home() {
   // const hello = await api.post.hello({ text: "from tRPC" });

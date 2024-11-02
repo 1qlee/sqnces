@@ -27,12 +27,12 @@ function saveCacheToFile() {
 }
 
 async function getWordsForCache() {
-  let todaysCache: CachedPuzzle = {
+  const todaysCache: CachedPuzzle = {
     words: [],
     date: "",
     id: 0,
   };
-  let tomorrowsCache: CachedPuzzle = {
+  const tomorrowsCache: CachedPuzzle = {
     words: [],
     date: "",
     id: 0,
@@ -307,10 +307,10 @@ export const wordRouter = createTRPCRouter({
 
         const clientPuzzle: ClientPuzzle = {
           words: [],
-          id: cachedPuzzle!.id,
-          date: format(cachedPuzzle!.date, "MM-dd-yyyy"),
+          id: cachedPuzzle.id,
+          date: format(cachedPuzzle.date, "MM-dd-yyyy"),
         };
-        clientPuzzle.words = cachedPuzzle!.words.map((cachedWord) => ({
+        clientPuzzle.words = cachedPuzzle.words.map((cachedWord) => ({
           sequence: {
             string: cachedWord.sequence.string,
             index: cachedWord.sequence.index,
@@ -318,7 +318,7 @@ export const wordRouter = createTRPCRouter({
             score: cachedWord.sequence.score.score,
           },
           length: cachedWord.length,
-          puzzleId: cachedPuzzle!.id,
+          puzzleId: cachedPuzzle.id,
         }));
 
         saveCacheToFile();
