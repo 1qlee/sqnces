@@ -37,10 +37,7 @@ export type CachedPuzzle = {
   date: string;
 }
 
-export type PuzzleCache = {
-  today: CachedPuzzle;
-  tomorrow: CachedPuzzle;
-}
+export type PuzzleCache = CachedPuzzle[]
 
 export type LettersMap = { 
   letter: string;

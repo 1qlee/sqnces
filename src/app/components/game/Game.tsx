@@ -17,6 +17,7 @@ import EndgameModal from "../endgame-modal/EndgameModal";
 import Loader from "../loader/Loader";
 import SettingsModal from "../settings-modal/SettingsModal";
 import validGuesses from "../../guesses/guesses.json";
+import toast from "react-hot-toast";
 
 const GUESSES_DB = "guessesDB";
 const STORE_NAME = "guessesStore";
@@ -113,7 +114,7 @@ export default function Game() {
         const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch (error) {
-        console.error(error);
+        
       } finally {
         setLoading(false);
       }

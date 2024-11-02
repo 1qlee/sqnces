@@ -1,40 +1,42 @@
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import {
   createTRPCContext,
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
-import { TRPCError } from "@trpc/server";
 import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
 import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays, subDays } from "date-fns";
 import fs from "fs";
 import path from "path";
+import { TRPCError } from "@trpc/server";
 
-let todaysCache: CachedPuzzle = {
-  words: [],
-  date: "",
-  id: 0,
-};
-let tomorrowsCache: CachedPuzzle = {
-  words: [],
-  date: "",
-  id: 0,
-};
-
+let cache: CachedPuzzle[] = [];
+const yesterdaysServerDate = format(subDays(new Date(), 1), "MM-dd-yyyy");
+console.log("🚀 ~ yesterdaysServerDate:", yesterdaysServerDate);
+const todaysServerDate = format(new Date(), "MM-dd-yyyy");
+console.log("🚀 ~ todaysServerDate:", todaysServerDate);
+const tomorrowsServerDate = format(addDays(new Date(), 1), "MM-dd-yyyy");
+console.log("🚀 ~ tomorrowsServerDate:", tomorrowsServerDate);
+const validDates = [yesterdaysServerDate, todaysServerDate, tomorrowsServerDate];
 const cacheFilePath = path.join(process.cwd(), 'src', 'server', 'cache', 'puzzleCache.json');
 
 // Save cache to file
 function saveCacheToFile() {
-  const cacheData: PuzzleCache = {
-    today: todaysCache,
-    tomorrow: tomorrowsCache,
-  };
-
-  fs.writeFileSync(cacheFilePath, JSON.stringify(cacheData), "utf-8");
+  fs.writeFileSync(cacheFilePath, JSON.stringify(cache), "utf-8");
   console.log("[WORD API] Cache saved to file.");
 }
 
 async function getWordsForCache() {
+  let todaysCache: CachedPuzzle = {
+    words: [],
+    date: "",
+    id: 0,
+  };
+  let tomorrowsCache: CachedPuzzle = {
+    words: [],
+    date: "",
+    id: 0,
+  };
   const ctx = await createTRPCContext({ headers: new Headers() });
   const { db } = ctx;
 
@@ -95,6 +97,8 @@ async function getWordsForCache() {
   });
   todaysCache.id = todaysPuzzle!.id;
   todaysCache.date = format(new Date(todaysPuzzle!.datePlayed).toLocaleDateString(), "MM-dd-yyyy");
+  
+  cache.push(todaysCache);
 
   const tomorrowStart = startOfTomorrow(); // Today at 00:00
   const tomorrowEnd = endOfTomorrow();
@@ -153,6 +157,8 @@ async function getWordsForCache() {
   });
   tomorrowsCache.id = tomorrowsPuzzle!.id;
   tomorrowsCache.date = format(new Date(tomorrowsPuzzle!.datePlayed).toLocaleDateString(), "MM-dd-yyyy");
+
+  cache.push(tomorrowsCache);
 }
 
 // Load words cache from file or create new words if cache is empty
@@ -188,22 +194,12 @@ async function loadCache() {
     return; 
   }
 
-  todaysCache = cacheData.today;
-  tomorrowsCache = cacheData.tomorrow;
+  cache = cacheData;
 
   console.log("[WORD API] Cache loaded.");
-  
 }
 
 await loadCache();
-
-const yesterdaysServerDate = format(subDays(new Date(), 1), "MM-dd-yyyy");
-console.log("🚀 ~ yesterdaysServerDate:", yesterdaysServerDate);
-const todaysServerDate = format(new Date(), "MM-dd-yyyy");
-console.log("🚀 ~ todaysServerDate:", todaysServerDate);
-const tomorrowsServerDate = format(addDays(new Date(), 1), "MM-dd-yyyy");
-console.log("🚀 ~ tomorrowsServerDate:", tomorrowsServerDate);
-const validDates = [yesterdaysServerDate, todaysServerDate, tomorrowsServerDate];
 
 const checkGuessSchema = z
   .object({
@@ -228,23 +224,23 @@ const checkGuessSchema = z
       message: JSON.stringify({
         message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
         code: "INVALID_DATE",
-      })
+      }),
     }),
     length: z.number().refine((val) => [6, 7, 8].includes(val), {
       message: JSON.stringify({
         message: "Word must be 6, 7, or 8 letters long.",
         code: "INVALID_WORD_LENGTH",
-      })
+      }),
     }),
     hardMode: z.boolean(),
-    puzzleId: z.number().refine((val) => val === todaysCache.id || val === tomorrowsCache.id, {
+    puzzleId: z.number().refine((val) => cache.find(puzzle => puzzle.id === val), {
       message: JSON.stringify({
         message: "Could not find this puzzle. Please refresh the page or clear your cache.",
         code: "INVALID_PUZZLE_ID",
-      })
+      }),
     }),
   })
-  .refine((data) => data.puzzleId === (data.usersDate === todaysServerDate ? todaysCache.id : tomorrowsCache.id), {
+  .refine((data) => cache.find(puzzle => puzzle.id === data.puzzleId), {
     message: JSON.stringify({
       message: "Received a request for an old puzzle. Please refresh the page or clear your cache.",
       code: "INVALID_PUZZLE_ID"
@@ -270,15 +266,16 @@ export const wordRouter = createTRPCRouter({
     const { usersDate } = input;
 
     // check if the cached puzzles exist for both today and tomorrow
-    if (todaysCache.words.length > 0 && tomorrowsCache.words.length > 0) {
-      // return the puzzle for today in the cache
-      if (usersDate === todaysServerDate && usersDate === todaysCache.date) {
+    if (cache.length > 0) {
+      const cachedPuzzle = cache.find(puzzle => puzzle.date === usersDate);
+
+      if (cachedPuzzle) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
-          id: todaysCache.id,
-          date: format(todaysCache.date, "MM-dd-yyyy"),
+          id: cachedPuzzle.id,
+          date: format(cachedPuzzle.date, "MM-dd-yyyy"),
         }
-        clientPuzzle.words = todaysCache.words.map((cachedWord) => ({
+        clientPuzzle.words = cachedPuzzle.words.map((cachedWord) => ({
           sequence: {
             string: cachedWord.sequence.string,
             index: cachedWord.sequence.index,
@@ -286,32 +283,10 @@ export const wordRouter = createTRPCRouter({
             score: cachedWord.sequence.score.score,
           },
           length: cachedWord.length,
-          puzzleId: todaysCache.id,
+          puzzleId: cachedPuzzle.id,
         }));
 
-        console.log(`[WORD API] Cache hit for today's words, date: ${format(todaysCache.date, "MM-dd-yyyy")}.`);
-
-        return clientPuzzle;
-      }
-      // return the puzzle for tomorrow in the cache
-      else if (usersDate === tomorrowsServerDate && usersDate === tomorrowsCache.date) {
-        const clientPuzzle: ClientPuzzle = {
-          words: [],
-          id: tomorrowsCache.id,
-          date: format(tomorrowsCache.date, "MM-dd-yyyy"),
-        }
-        clientPuzzle.words = tomorrowsCache.words.map((cachedWord) => ({
-          sequence: {
-            string: cachedWord.sequence.string,
-            index: cachedWord.sequence.index,
-            letters: cachedWord.sequence.letters,
-            score: cachedWord.sequence.score.score,
-          },
-          length: cachedWord.length,
-          puzzleId: tomorrowsCache.id,
-        }));
-
-        console.log(`[WORD API] Cache hit for tomorrow's words, date: ${format(tomorrowsCache.date, "MM-dd-yyyy") }.`);
+        console.log(`[WORD API] Cache hit for today's words, date: ${format(cachedPuzzle.date, "MM-dd-yyyy")}.`);
 
         return clientPuzzle;
       }
@@ -321,10 +296,38 @@ export const wordRouter = createTRPCRouter({
         
         await getWordsForCache();
 
+        const cachedPuzzle = cache.find(puzzle => puzzle.date === usersDate);
+
+        if (!cachedPuzzle) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Invalid date was given.',
+          });
+        }
+
+        const clientPuzzle: ClientPuzzle = {
+          words: [],
+          id: cachedPuzzle!.id,
+          date: format(cachedPuzzle!.date, "MM-dd-yyyy"),
+        };
+        clientPuzzle.words = cachedPuzzle!.words.map((cachedWord) => ({
+          sequence: {
+            string: cachedWord.sequence.string,
+            index: cachedWord.sequence.index,
+            letters: cachedWord.sequence.letters,
+            score: cachedWord.sequence.score.score,
+          },
+          length: cachedWord.length,
+          puzzleId: cachedPuzzle!.id,
+        }));
+
         saveCacheToFile();
+
+        console.log(`[WORD API] Successfully cached words for date: ${usersDate}. Returning puzzle as response.`);
+
+        return clientPuzzle;
       }
     }
-    
   }),
 
   check: publicProcedure
@@ -332,8 +335,8 @@ export const wordRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { guess, usersDate, length, hardMode } = input;
       const guessLength = guess.length;
-      const todaysDate = format(new Date(todaysCache.date).toLocaleDateString(), "MM-dd-yyyy");
-      const word = usersDate === todaysDate ? todaysCache.words.find(word => word.length === length)! : tomorrowsCache.words.find(word => word.length === length)!;
+      const todaysPuzzle = cache.find(puzzle => puzzle.date === usersDate);
+      const word = todaysPuzzle!.words.find(word => word.length === length)!;
       const { sequence } = word;
       const guessIsCorrect = guess === word.word;
       const letters = word.letters;
