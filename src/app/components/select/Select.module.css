@@ -7,7 +7,6 @@
   border-radius: 0.25rem;
   border: none;
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
   position: relative;
   line-height: 1;
   gap: 0.25rem;
@@ -41,12 +40,12 @@
   overflow: hidden;
   border-radius: 0.25rem;
   border: 2px solid var(--foreground);
+  box-shadow: 0 2px 0 var(--foreground);
   z-index: 100;
   width: 100%;
 }
 
 .item {
-  font-size: 1rem;
   display: flex;
   gap: 0.25rem;
   padding: 0.75rem 1rem 0.75rem 1.5rem;
@@ -74,8 +73,8 @@
   width: min-content;
 
   & > svg {
-    border: 1px solid var(--foreground);
     border-radius: 3rem;
+    background-color: var(--grayed);
   }
 }
 

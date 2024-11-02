@@ -60,7 +60,7 @@ export default function GameModeSelect({
         <Select.Content 
           position="popper"
           align="center"
-          sideOffset={2}
+          sideOffset={4}
           className={styles.content}
           onCloseAutoFocus={(event) => {
             event.preventDefault()

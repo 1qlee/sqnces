@@ -18,17 +18,17 @@ import Loader from "../loader/Loader";
 import SettingsModal from "../settings-modal/SettingsModal";
 import validGuesses from "../../guesses/guesses.json";
 
-type GameProps = {
-  initialPuzzleData: ClientPuzzle;
-}
-
 const GUESSES_DB = "guessesDB";
 const STORE_NAME = "guessesStore";
 const CHUNK_SIZE = 500;
 
-export default function Game({ initialPuzzleData }: GameProps) {
+export default function Game() {
   const [loading, setLoading] = useState(true);
-  const [puzzleData, setPuzzleData] = useState(initialPuzzleData);
+  const [puzzleData, setPuzzleData] = useState<ClientPuzzle>({
+    id: 0,
+    words: [],
+    date: "",
+  });
   const [initializing, setInitializing] = useState(true);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [disableGameModeSelect, setDisableGameModeSelect] = useState<boolean>(false);

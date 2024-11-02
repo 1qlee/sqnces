@@ -198,9 +198,7 @@ async function loadCache() {
 await loadCache();
 
 const todaysCachedDate = todaysCache.date;
-console.log("🚀 ~ todaysCachedDate:", todaysCachedDate)
 const tomorrowsCachedDate = tomorrowsCache.date;
-console.log("🚀 ~ tomorrowsCachedDate:", tomorrowsCachedDate)
 
 const checkGuessSchema = z
   .object({
@@ -253,7 +251,6 @@ export const wordRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
     usersDate: z.string().refine((dateString) => {
-      console.log("🚀 ~ usersDate:z.string ~ dateString:", dateString)
       // Validate if the date part matches today or tomorrow
       return dateString === todaysCachedDate || dateString === tomorrowsCachedDate;
     }, {

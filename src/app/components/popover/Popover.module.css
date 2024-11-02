@@ -14,14 +14,16 @@
 }
 
 .content {
-  border-radius: 4px;
-  padding: 20px;
-  width: 260px;
-  background-color: white;
-  box-shadow:
-    hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
-    hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
-  animation-duration: 400ms;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  width: 16rem;
+  line-height: 1.2;
+  background-color: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 2px 0 var(--foreground);
+  border: 2px solid var(--foreground);
+  font-size: 0.875rem;
+  animation-duration: 200ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
 }
@@ -31,65 +33,15 @@
   z-index: 9999;
 }
 
-.content[data-state="open"][data-side="right"] {
-  animation-name: slideLeftAndFade;
-  z-index: 9999;
-}
-
-.content[data-state="open"][data-side="bottom"] {
-  animation-name: slideUpAndFade;
-  z-index: 9999;
-}
-
-.content[data-state="open"][data-side="left"] {
-  animation-name: slideRightAndFade;
-  z-index: 9999;
-}
-
-@keyframes slideUpAndFade {
-  from {
-    opacity: 0;
-    transform: translateY(2px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideRightAndFade {
-  from {
-    opacity: 0;
-    transform: translateX(-2px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
 @keyframes slideDownAndFade {
   from {
     opacity: 0;
-    transform: translateY(-2px);
+    transform: translateY(6px) scale(0.95);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideLeftAndFade {
-  from {
-    opacity: 0;
-    transform: translateX(2px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
   }
 }

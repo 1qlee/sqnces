@@ -134,9 +134,11 @@ export default function MainMenu({
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content
+                side="top"
+                sideOffset={4}
                 className={popoverStyles.content}
               >
-                Some stuff
+                <p>If ON, out of bounds letters won't show additional clues like misplaced and incorrect letters.</p>
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
