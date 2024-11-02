@@ -24,12 +24,15 @@ const CHUNK_SIZE = 500;
 
 export default function Game() {
   const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState({
+    status: true,
+    percent: 0,
+  });
   const [puzzleData, setPuzzleData] = useState<ClientPuzzle>({
     id: 0,
     words: [],
     date: "",
   });
-  const [initializing, setInitializing] = useState(true);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [disableGameModeSelect, setDisableGameModeSelect] = useState<boolean>(false);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
@@ -77,11 +80,16 @@ export default function Game() {
       // Check if data already exists
       const count = await db.count(STORE_NAME);
       if (count === 0) {
-        setInitializing(true);
 
         for (let i = 0; i < validGuesses.length; i += CHUNK_SIZE) {
           const chunk = validGuesses.slice(i, i + CHUNK_SIZE);
           const tx = db.transaction(STORE_NAME, 'readwrite');
+          
+          const percent = Math.min(100, Math.floor((i / validGuesses.length) * 100));
+          setInitializing({
+            status: true,
+            percent,
+          });
 
           await Promise.all(chunk.map((guess) => tx.store.add({ guess })));
 
@@ -89,7 +97,10 @@ export default function Game() {
         }
       }
 
-      setInitializing(false);
+      setInitializing({
+        status: false,
+        percent: 100,
+      });
     };
 
     void initializeDB();
@@ -119,8 +130,8 @@ export default function Game() {
     }
   }, [puzzleData.id, loading])
 
-  if (loading || initializing) {
-    return <Loader />
+  if (loading || initializing.status) {
+    return <Loader percent={initializing.percent} />
   }
 
   return (

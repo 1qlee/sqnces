@@ -6,7 +6,7 @@ import {
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
-import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays } from "date-fns";
+import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays, subDays } from "date-fns";
 import fs from "fs";
 import path from "path";
 
@@ -197,8 +197,13 @@ async function loadCache() {
 
 await loadCache();
 
-const todaysCachedDate = todaysCache.date;
-const tomorrowsCachedDate = tomorrowsCache.date;
+const yesterdaysServerDate = format(subDays(new Date(), 1), "MM-dd-yyyy");
+console.log("🚀 ~ yesterdaysServerDate:", yesterdaysServerDate);
+const todaysServerDate = format(new Date(), "MM-dd-yyyy");
+console.log("🚀 ~ todaysServerDate:", todaysServerDate);
+const tomorrowsServerDate = format(addDays(new Date(), 1), "MM-dd-yyyy");
+console.log("🚀 ~ tomorrowsServerDate:", tomorrowsServerDate);
+const validDates = [yesterdaysServerDate, todaysServerDate, tomorrowsServerDate];
 
 const checkGuessSchema = z
   .object({
@@ -216,9 +221,9 @@ const checkGuessSchema = z
         }),
       }),
     usersDate: z.string().refine((dateString) => {
-      console.log("🚀 ~ CHECK ~ dateString:", dateString)
+      console.log("🚀 ~ CHECK ~ dateString:", dateString);
       // Validate if the date part matches today or tomorrow
-      return dateString === todaysCachedDate || dateString === tomorrowsCachedDate;
+      return validDates.includes(dateString);
     }, {
       message: JSON.stringify({
         message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
@@ -239,7 +244,7 @@ const checkGuessSchema = z
       })
     }),
   })
-  .refine((data) => data.puzzleId === (data.usersDate === todaysCachedDate ? todaysCache.id : tomorrowsCache.id), {
+  .refine((data) => data.puzzleId === (data.usersDate === todaysServerDate ? todaysCache.id : tomorrowsCache.id), {
     message: JSON.stringify({
       message: "Received a request for an old puzzle. Please refresh the page or clear your cache.",
       code: "INVALID_PUZZLE_ID"
@@ -251,8 +256,9 @@ export const wordRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
     usersDate: z.string().refine((dateString) => {
+      console.log("🚀 ~ usersDate:z.string ~ dateString:", dateString);
       // Validate if the date part matches today or tomorrow
-      return dateString === todaysCachedDate || dateString === tomorrowsCachedDate;
+      return validDates.includes(dateString);
     }, {
       message: JSON.stringify({
         message: "Invalid date.",
@@ -266,7 +272,7 @@ export const wordRouter = createTRPCRouter({
     // check if the cached puzzles exist for both today and tomorrow
     if (todaysCache.words.length > 0 && tomorrowsCache.words.length > 0) {
       // return the puzzle for today in the cache
-      if (usersDate === todaysCachedDate) {
+      if (usersDate === todaysServerDate && usersDate === todaysCache.date) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: todaysCache.id,
@@ -288,7 +294,7 @@ export const wordRouter = createTRPCRouter({
         return clientPuzzle;
       }
       // return the puzzle for tomorrow in the cache
-      else if (usersDate === tomorrowsCachedDate) {
+      else if (usersDate === tomorrowsServerDate && usersDate === tomorrowsCache.date) {
         const clientPuzzle: ClientPuzzle = {
           words: [],
           id: tomorrowsCache.id,

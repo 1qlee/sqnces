@@ -1,12 +1,24 @@
 import styles from "./Loader.module.css";
+import * as Progress from "@radix-ui/react-progress";
 
-export default function Loader() {
+type LoaderProps = {
+  percent: number;
+}
+
+export default function Loader({ percent }: LoaderProps) {
+  const perc = 100 - percent;
+
   return (
     <div className={styles.container}>
       <div className={styles.wrapper}>
-        <svg viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="var(--foreground)"><g fill="none" fillRule="evenodd"><g transform="translate(1 1)" strokeWidth="2"><circle strokeOpacity=".5" cx="18" cy="18" r="18" /><path d="M36 18c0-9.94-8.06-18-18-18"><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite" /></path></g></g></svg>
+        <p className={styles.text}>Loading... {percent}%</p>
+        <Progress.Root className={styles.progress} value={percent}>
+          <Progress.Indicator
+            className={styles.indicator}
+            style={{ transform: `translateX(-${perc}%)`, transition: percent === 0 || percent === 100 ? 'none' : 'transform 0.2s ease-out', }}
+          />
+        </Progress.Root>
       </div>
     </div>
-    
   )
 }
