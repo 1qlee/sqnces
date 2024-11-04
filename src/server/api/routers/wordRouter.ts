@@ -11,14 +11,16 @@ import path from "path";
 import { TRPCError } from "@trpc/server";
 
 let cache: CachedPuzzle[] = [];
-const yesterdaysServerDate = format(subDays(new Date(), 1), "MM-dd-yyyy");
-console.log("🚀 ~ yesterdaysServerDate:", yesterdaysServerDate);
-const todaysServerDate = format(new Date(), "MM-dd-yyyy");
-console.log("🚀 ~ todaysServerDate:", todaysServerDate);
-const tomorrowsServerDate = format(addDays(new Date(), 1), "MM-dd-yyyy");
-console.log("🚀 ~ tomorrowsServerDate:", tomorrowsServerDate);
-const validDates = [yesterdaysServerDate, todaysServerDate, tomorrowsServerDate];
 const cacheFilePath = path.join(process.cwd(), 'src', 'server', 'cache', 'puzzleCache.json');
+
+function isValidDate(date: string) {
+  const yesterdaysServerDate = format(subDays(new Date(), 1), "MM-dd-yyyy");
+  const todaysServerDate = format(new Date(), "MM-dd-yyyy");
+  const tomorrowsServerDate = format(addDays(new Date(), 1), "MM-dd-yyyy");
+  const validDates = [yesterdaysServerDate, todaysServerDate, tomorrowsServerDate];
+
+  return validDates.includes(date);
+}
 
 // Save cache to file
 function saveCacheToFile() {
@@ -219,7 +221,7 @@ const checkGuessSchema = z
     usersDate: z.string().refine((dateString) => {
       console.log("🚀 ~ CHECK ~ dateString:", dateString);
       // Validate if the date part matches today or tomorrow
-      return validDates.includes(dateString);
+      return isValidDate(dateString);
     }, {
       message: JSON.stringify({
         message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
@@ -254,7 +256,7 @@ export const wordRouter = createTRPCRouter({
     usersDate: z.string().refine((dateString) => {
       console.log("🚀 ~ usersDate:z.string ~ dateString:", dateString);
       // Validate if the date part matches today or tomorrow
-      return validDates.includes(dateString);
+      return isValidDate(dateString);
     }, {
       message: JSON.stringify({
         message: "Invalid date.",
