@@ -28,7 +28,26 @@ function saveCacheToFile() {
   console.log("[WORD API] Cache saved to file.");
 }
 
+function cleanUpStaleCache(filePath = cacheFilePath) {
+  console.log("[WORD API] Checking cache for stale puzzles.");
+  // Read puzzles data
+  const puzzles = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+
+  // Filter puzzles where date is today or later
+  const validPuzzles = puzzles.filter((puzzle: CachedPuzzle) => {
+    return isValidDate(puzzle.date);
+  });
+
+  // Write filtered puzzles back to the file if there are stale puzzles removed
+  if (validPuzzles.length < puzzles.length) {
+    console.log("[WORD API] Removed stale puzzles.");
+    fs.writeFileSync(filePath, JSON.stringify(validPuzzles, null, 2));
+  }
+}
+
+
 async function getWordsForCache() {
+  cleanUpStaleCache();
   const todaysCache: CachedPuzzle = {
     words: [],
     date: "",
@@ -196,8 +215,9 @@ async function loadCache() {
     return; 
   }
 
-  cache = cacheData;
 
+  cache = cacheData;
+  cleanUpStaleCache();
   console.log("[WORD API] Cache loaded.");
 }
 
