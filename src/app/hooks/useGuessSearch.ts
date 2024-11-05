@@ -31,8 +31,13 @@ function findGuess(arr: Guess[], target: string): boolean {
 export default function useGuessSearch() {
   const searchGuess = useCallback(async (guess: string): Promise<boolean> => {
     try {
-      const db = await openDB(GUESSES_DB, 1);
-
+      const db = await openDB(GUESSES_DB, 1, {
+        upgrade(db) {
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+          }
+        },
+      });
       const tx = db.transaction(STORE_NAME, 'readonly');
 
       // Retrieve all entries from the store
