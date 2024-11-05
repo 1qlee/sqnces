@@ -9,7 +9,7 @@ import {
 import styles from "../select/Select.module.css";
 
 type SelectProps = {
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 export default function GameModeSelect({
@@ -30,7 +30,7 @@ export default function GameModeSelect({
   function handleIconStatus(status: string | undefined) {
     switch(status) {
       case "notStarted":
-        return "var(--foreground)"
+        return "var(--grayed)"
       case "playing":
         return "var(--misplaced)"
       case "won":
@@ -50,7 +50,10 @@ export default function GameModeSelect({
     >
       <Select.Trigger className={styles.trigger} aria-label="Game Mode">
         <Select.Value style={{whiteSpace:"nowrap"}} placeholder="Game Mode">
-          {wordLength} Letters
+          <div className={styles.value}>
+            <Circle size={16} weight="fill" color={handleIconStatus(gameState.games[6].status)} />
+            <span>{wordLength} Letters</span>
+          </div>
         </Select.Value>
         <Select.Icon className={styles.icon}>
           <CaretDown weight="bold" size={14} />

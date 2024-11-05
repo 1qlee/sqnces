@@ -40,9 +40,9 @@ export default function HardModeToggle() {
     >
       <div className={flexStyles.flexCentered}>
         <Circle 
-          size={20} 
+          size={16} 
           weight="fill" 
-          color={isHardModeOn ? "var(--correct)" : "var(--incorrect)"} 
+          color={isHardModeOn ? "var(--on)" : "var(--off)"} 
         />
         <span style={{ fontSize: "1rem" }}>
           {isHardModeOn ? "On" : "Off"}

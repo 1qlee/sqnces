@@ -53,7 +53,7 @@ export default function Nav({
   return (
     <nav className={styles.nav}>
       <div className={styles.section}>
-        <a className={styles.donate} href="https://www.buymeacoffee.com/sqnces" target="_blank" rel="noreferrer noopener"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" /></a>
+        sqnces
       </div>
       <div className={[styles.section, styles.isCentered].join(" ")}>
         <GameModeSelect 

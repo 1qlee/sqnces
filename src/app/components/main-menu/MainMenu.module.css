@@ -30,16 +30,7 @@
 .subtext {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
-  color: var(--olive-10);
-}
-
-.marginBottom {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin-bottom: 2rem;
+  color: var(--foreground);
 }
 
 .time {
@@ -82,4 +73,22 @@
   &:not(:last-child) {
     margin-right: 0.25rem;
   }
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 2px solid var(--foreground);
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  width: 267px;
+}
+
+.settingsItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
 }

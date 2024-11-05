@@ -13,4 +13,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+}
+
+.label {
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
 }

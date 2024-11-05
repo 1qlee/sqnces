@@ -22,11 +22,12 @@ export default function CheckboxComponent({ text, checked, setChecked }: Checkbo
         <Checkbox.Indicator>
           <Check 
             size={16}
+            weight="bold"
             color="var(--foreground)"
           />
         </Checkbox.Indicator>
       </Checkbox.Root>
-      <label className="Label" htmlFor="c1">
+      <label className={styles.label} htmlFor="c1">
         {text}
       </label>
     </div>

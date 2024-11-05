@@ -11,6 +11,8 @@ import GameModeToggle from '../game-mode-toggle/GameModeToggle';
 import styles from './MainMenu.module.css';
 import HardModeToggle from '../toggles/HardModeToggle';
 import * as Popover from "@radix-ui/react-popover";
+import GameModeSelect from '../game-mode-select/GameModeSelect';
+import ColorModeToggle from '../toggles/ColorModeToggle';
 
 type MainMenuProps = {
   setShowMainMenu: Dispatch<SetStateAction<boolean>>;
@@ -119,39 +121,48 @@ export default function MainMenu({
           </p>
         </>
       )}
-      <p className={styles.subtext}>Game mode:</p>
-      <GameModeToggle />
-      <div className={styles.marginBottom}>
-        <p className={styles.subtext}>
-          <span>Hard mode</span> 
-          <Popover.Root>
-            <Popover.Trigger
-              asChild
-            >
-              <button className={popoverStyles.button}>
-                <Info size={16} weight="bold" />
-              </button>
-            </Popover.Trigger>
-            <Popover.Portal>
-              <Popover.Content
-                side="top"
-                sideOffset={4}
-                className={popoverStyles.content}
-              >
-                <p>If ON, out of bounds letters won't show additional clues like misplaced and incorrect letters.</p>
-              </Popover.Content>
-            </Popover.Portal>
-          </Popover.Root>
-        <span>:</span>
-        </p>
-        <HardModeToggle />
-      </div>
-      <Button
-        className={styles.marginBottom}
-        onClick={() => handleButtonClick()}
+      <div
+        className={styles.settings}
       >
-        {handleButtonText()}
-      </Button>
+        <div className={styles.settingsItem}>
+          <p className={styles.subtext}>Game Mode</p>
+          <GameModeSelect />
+        </div>
+        <div className={styles.settingsItem}>
+          <p className={styles.subtext}>
+            <span>Hard Mode</span>
+            <Popover.Root>
+              <Popover.Trigger
+                asChild
+              >
+                <button className={popoverStyles.button}>
+                  <Info size={16} weight="bold" />
+                </button>
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Content
+                  side="top"
+                  sideOffset={4}
+                  className={popoverStyles.content}
+                >
+                  <p>If ON, out of bounds letters won't show additional clues like misplaced and incorrect letters.</p>
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
+          </p>
+          <HardModeToggle />
+        </div>
+        <div className={styles.settingsItem}>
+          <p className={styles.subtext}>Theme</p>
+          <ColorModeToggle />
+        </div>
+        <Button
+          className={styles.marginBottom}
+          onClick={() => handleButtonClick()}
+        >
+          {handleButtonText()}
+        </Button>
+      </div>
       <p
         className={styles.time}
       >

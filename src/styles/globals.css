@@ -20,6 +20,8 @@
   --shadow-normal: rgba(0, 0, 0, 0.3);
   --shadow-active: rgba(0, 0, 0, 0.1);
   --overlay: rgba(0, 0, 0, 0.5);
+  --on: #30A46C;
+  --off: #E5484D;
   --red: #dc2626;
   --correct: #bbf7d0;
   --misplaced: #fef08a;
