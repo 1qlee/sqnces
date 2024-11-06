@@ -34,9 +34,9 @@ export default function GameModeSelect({
       case "playing":
         return "var(--misplaced)"
       case "won":
-        return "var(--correct)"
+        return "var(--on)"
       case "lost":
-        return "var(--incorrect)"
+        return "var(--off)"
       default:
         return "var(--foreground)"
     }
