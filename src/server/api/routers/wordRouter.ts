@@ -31,10 +31,10 @@ function saveCacheToFile() {
 function cleanUpStaleCache(filePath = cacheFilePath) {
   console.log("[WORD API] Checking cache for stale puzzles.");
   // Read puzzles data
-  const puzzles = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  const puzzles = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PuzzleCache;
 
   // Filter puzzles where date is today or later
-  const validPuzzles = puzzles.filter((puzzle: CachedPuzzle) => {
+  const validPuzzles: CachedPuzzle[] = puzzles.filter((puzzle: CachedPuzzle) => {
     return isValidDate(puzzle.date);
   });
 
