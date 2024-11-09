@@ -81,7 +81,6 @@ export default function Game() {
 
       // Check if data already exists
       const count = await db.count(STORE_NAME);
-      console.log("🚀 ~ initializeDB ~ count:", count)
 
       if (count === 0) {
         for (let i = 0; i < validGuesses.length; i += CHUNK_SIZE) {
