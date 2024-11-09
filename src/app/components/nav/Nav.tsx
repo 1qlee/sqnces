@@ -1,5 +1,3 @@
-"use client";
-// import { auth } from "~/root/auth";
 import styles from "./Nav.module.css";
 import HowToPlayToggle from "../toggles/HowToPlayToggle";
 import EndgameToggle from "../toggles/EndgameToggle";
@@ -20,7 +18,6 @@ export default function Nav({
   setShowSettingsModal,
 }: NavProps) {
   const [gameState, setGameState] = useGameState();
-  // const session = await auth();
 
   if (!("games" in gameState) || !("settings" in gameState) || !("wordLength" in gameState) || !("puzzle" in gameState) || !("showHelp" in gameState)) {
     setGameState({

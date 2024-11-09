@@ -17,10 +17,12 @@ import EndgameModal from "../endgame-modal/EndgameModal";
 import Loader from "../loader/Loader";
 import SettingsModal from "../settings-modal/SettingsModal";
 import validGuesses from "../../guesses/guesses.json";
+import toast from "react-hot-toast";
 
 const GUESSES_DB = "guessesDB";
 const STORE_NAME = "guessesStore";
 const CHUNK_SIZE = 500;
+const CACHE_ERR_MSG = "Something went wrong. Your browser's cache might be full. Please try deleting the cache and refresh the page.";
 
 export default function Game() {
   const [loading, setLoading] = useState(true);
@@ -67,7 +69,7 @@ export default function Game() {
   }
 
   useEffect(() => {
-    // create IndexedDB for valid guesses if it doesn't exist
+    // Function to initialize IndexedDB with error handling
     const initializeDB = async () => {
       const db = await openDB(GUESSES_DB, 1, {
         upgrade(db) {
@@ -79,21 +81,50 @@ export default function Game() {
 
       // Check if data already exists
       const count = await db.count(STORE_NAME);
+      console.log("🚀 ~ initializeDB ~ count:", count)
+
       if (count === 0) {
-
         for (let i = 0; i < validGuesses.length; i += CHUNK_SIZE) {
-          const chunk = validGuesses.slice(i, i + CHUNK_SIZE);
-          const tx = db.transaction(STORE_NAME, 'readwrite');
-          
-          const percent = Math.min(100, Math.floor((i / validGuesses.length) * 100));
-          setInitializing({
-            status: true,
-            percent,
-          });
+          try {
+            const chunk = validGuesses.slice(i, i + CHUNK_SIZE);
+            const tx = db.transaction(STORE_NAME, 'readwrite');
 
-          await Promise.all(chunk.map((guess) => tx.store.add({ guess })));
+            const percent = Math.min(100, Math.floor((i / validGuesses.length) * 100));
+            setInitializing({
+              status: true,
+              percent,
+            });
 
-          await tx.done;
+            await Promise.all(chunk.map((guess) => tx.store.add({ guess })));
+            await tx.done;
+          } catch (error) {
+            toast.error(CACHE_ERR_MSG, {
+              duration: Infinity,
+            })
+            return; // Stop further processing if a chunk fails
+          }
+        }
+
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const size = await store.count();
+
+        if (size < validGuesses.length) {
+          toast.error(CACHE_ERR_MSG, {
+            duration: Infinity,
+          })
+        }
+      }
+      else {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const size = await store.count();
+        await tx.done;
+
+        if (size < validGuesses.length) {
+          // Clear the store and reinitialize
+          await db.clear(STORE_NAME);
+          await initializeDB();
         }
       }
 
@@ -103,6 +134,7 @@ export default function Game() {
       });
     };
 
+    // Execute initialization
     void initializeDB();
   }, [])
 

@@ -1,4 +1,3 @@
-"use client"
 import type { ClientPuzzle } from '~/server/types/word';
 import type { Dispatch, SetStateAction } from 'react';
 import type { Game } from '../game/Game.types';
@@ -7,7 +6,6 @@ import popoverStyles from '../popover/Popover.module.css';
 
 import Button from '../button/Button';
 import useGameState from '~/app/hooks/useGameState';
-import GameModeToggle from '../game-mode-toggle/GameModeToggle';
 import styles from './MainMenu.module.css';
 import HardModeToggle from '../toggles/HardModeToggle';
 import * as Popover from "@radix-ui/react-popover";

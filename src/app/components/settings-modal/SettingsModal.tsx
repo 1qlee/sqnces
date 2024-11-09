@@ -1,5 +1,3 @@
-"use client"
-
 import ColorModeToggle from "../toggles/ColorModeToggle";
 import * as Dialog from "@radix-ui/react-dialog";
 import modalStyles from "../info-modal/InfoModal.module.css";

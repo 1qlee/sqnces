@@ -1,5 +1,3 @@
-"use client"
-
 import { type Dispatch, type SetStateAction, useState } from "react"
 import styles from "./EndgameModal.module.css"
 import flexStyles from "../styles/Flex.module.css"

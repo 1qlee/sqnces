@@ -1,5 +1,3 @@
-"use client";
-
 import guessStyles from "../guesses/Guesses.module.css"
 import styles from "./InfoModal.module.css";
 import useGameState from "~/hooks/useGameState";

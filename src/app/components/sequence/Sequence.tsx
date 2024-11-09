@@ -1,5 +1,3 @@
-"use client";
-
 import styles from "./Sequence.module.css";
 import type { ClientWord } from "~/server/types/word";
 

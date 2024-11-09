@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import type { ClientWord } from "~/server/types/word";
 import type { Editing, Game, GameStatus } from "~/app/components/game/Game.types";
@@ -73,7 +71,6 @@ export default function GuessArea({
     key: 0,
   })
   const isGameWonOrLost = currentGame.status === "won" || currentGame.status === "lost";
-
 
   useEffect(() => {
     if (isGameWonOrLost) {

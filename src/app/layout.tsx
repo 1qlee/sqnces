@@ -13,7 +13,6 @@ import "~/styles/toast.css";
 export const metadata: Metadata = {
   title: "sqnces",
   description: "Game where you guess words using a 3 letter sequence.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 export const viewport: Viewport = {
