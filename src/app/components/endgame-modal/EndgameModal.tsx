@@ -108,7 +108,12 @@ function EndgameModal({
     <Dialog.Root
       defaultOpen={false}
       open={showEndgameModal}
-      onOpenChange={(open) => setShowEndgameModal(open)}
+      onOpenChange={(open) => {
+        setShowEndgameModal(open)
+        setTimeout(() => {
+          document.body.style.pointerEvents = '';
+        }, 0);
+      }}
     >
       <Dialog.Portal>
         <Dialog.Overlay className={modalStyles.modalOverlay} />

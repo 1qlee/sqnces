@@ -7,6 +7,7 @@ import {
   Circle,
 } from "@phosphor-icons/react";
 import styles from "../select/Select.module.css";
+import { WordLength } from "../game/Game.types";
 
 type SelectProps = {
   disabled?: boolean;
@@ -51,7 +52,7 @@ export default function GameModeSelect({
       <Select.Trigger className={styles.trigger} aria-label="Game Mode">
         <Select.Value style={{whiteSpace:"nowrap"}} placeholder="Game Mode">
           <div className={styles.value}>
-            <Circle size={16} weight="fill" color={handleIconStatus(gameState.games[6].status)} />
+            <Circle size={16} weight="fill" color={handleIconStatus(gameState.games[+wordLength as WordLength].status)} />
             <span>{wordLength} Letters</span>
           </div>
         </Select.Value>
