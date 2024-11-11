@@ -1,1 +1,200 @@
-[{"words":[{"id":9020,"word":"VOCALIST","length":8,"letters":["","","","A","L","I","S","T"],"sequence":{"id":2519,"string":"VOC","index":0,"letters":["V","O","C"],"score":{"id":4027,"wordLength":8,"score":11,"category":"Hard","sequenceId":2519}}},{"id":3574,"word":"COLLEGE","length":7,"letters":["C","O","L","L","","",""],"sequence":{"id":162,"string":"EGE","index":4,"letters":["E","G","E"],"score":{"id":2379,"wordLength":7,"score":21,"category":"Hard","sequenceId":162}}},{"id":1626,"word":"MEMBER","length":6,"letters":["M","E","","","","R"],"sequence":{"id":596,"string":"MBE","index":2,"letters":["M","B","E"],"score":{"id":596,"wordLength":6,"score":19,"category":"Medium","sequenceId":596}}}],"date":"11-09-2024","id":20},{"words":[{"id":6782,"word":"DETAINEE","length":8,"letters":["D","E","T","A","I","","",""],"sequence":{"id":1420,"string":"NEE","index":5,"letters":["N","E","E"],"score":{"id":4390,"wordLength":8,"score":38,"category":"Medium","sequenceId":1420}}},{"id":3719,"word":"CURIOUS","length":7,"letters":["C","","","","O","U","S"],"sequence":{"id":692,"string":"URI","index":1,"letters":["U","R","I"],"score":{"id":2869,"wordLength":7,"score":40,"category":"Medium","sequenceId":692}}},{"id":2121,"word":"REFORM","length":6,"letters":["R","E","F","","",""],"sequence":{"id":974,"string":"ORM","index":3,"letters":["O","R","M"],"score":{"id":974,"wordLength":6,"score":21,"category":"Medium","sequenceId":974}}}],"date":"11-10-2024","id":21},{"words":[{"id":7974,"word":"OPTICIAN","length":8,"letters":["","","","I","C","I","A","N"],"sequence":{"id":1434,"string":"OPT","index":0,"letters":["O","P","T"],"score":{"id":4007,"wordLength":8,"score":29,"category":"Hard","sequenceId":1434}}},{"id":5962,"word":"VICIOUS","length":7,"letters":["V","","","","O","U","S"],"sequence":{"id":4975,"string":"ICI","index":1,"letters":["I","C","I"],"score":{"id":2948,"wordLength":7,"score":16,"category":"Hard","sequenceId":4975}}},{"id":445,"word":"CASINO","length":6,"letters":["C","A","S","","",""],"sequence":{"id":151,"string":"INO","index":3,"letters":["I","N","O"],"score":{"id":151,"wordLength":6,"score":18,"category":"Medium","sequenceId":151}}}],"date":"11-11-2024","id":22}]
+[
+  {
+    "words": [
+      {
+        "id": 6782,
+        "word": "DETAINEE",
+        "length": 8,
+        "letters": [
+          "D",
+          "E",
+          "T",
+          "A",
+          "I",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 1420,
+          "string": "NEE",
+          "index": 5,
+          "letters": [
+            "N",
+            "E",
+            "E"
+          ],
+          "score": {
+            "id": 4390,
+            "wordLength": 8,
+            "score": 38,
+            "category": "Medium",
+            "sequenceId": 1420
+          }
+        }
+      },
+      {
+        "id": 3719,
+        "word": "CURIOUS",
+        "length": 7,
+        "letters": [
+          "C",
+          "",
+          "",
+          "",
+          "O",
+          "U",
+          "S"
+        ],
+        "sequence": {
+          "id": 692,
+          "string": "URI",
+          "index": 1,
+          "letters": [
+            "U",
+            "R",
+            "I"
+          ],
+          "score": {
+            "id": 2869,
+            "wordLength": 7,
+            "score": 40,
+            "category": "Medium",
+            "sequenceId": 692
+          }
+        }
+      },
+      {
+        "id": 2121,
+        "word": "REFORM",
+        "length": 6,
+        "letters": [
+          "R",
+          "E",
+          "F",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 974,
+          "string": "ORM",
+          "index": 3,
+          "letters": [
+            "O",
+            "R",
+            "M"
+          ],
+          "score": {
+            "id": 974,
+            "wordLength": 6,
+            "score": 21,
+            "category": "Medium",
+            "sequenceId": 974
+          }
+        }
+      }
+    ],
+    "date": "11-10-2024",
+    "id": 21
+  },
+  {
+    "words": [
+      {
+        "id": 7974,
+        "word": "OPTICIAN",
+        "length": 8,
+        "letters": [
+          "",
+          "",
+          "",
+          "I",
+          "C",
+          "I",
+          "A",
+          "N"
+        ],
+        "sequence": {
+          "id": 1434,
+          "string": "OPT",
+          "index": 0,
+          "letters": [
+            "O",
+            "P",
+            "T"
+          ],
+          "score": {
+            "id": 4007,
+            "wordLength": 8,
+            "score": 29,
+            "category": "Hard",
+            "sequenceId": 1434
+          }
+        }
+      },
+      {
+        "id": 5962,
+        "word": "VICIOUS",
+        "length": 7,
+        "letters": [
+          "V",
+          "",
+          "",
+          "",
+          "O",
+          "U",
+          "S"
+        ],
+        "sequence": {
+          "id": 4975,
+          "string": "ICI",
+          "index": 1,
+          "letters": [
+            "I",
+            "C",
+            "I"
+          ],
+          "score": {
+            "id": 2948,
+            "wordLength": 7,
+            "score": 16,
+            "category": "Hard",
+            "sequenceId": 4975
+          }
+        }
+      },
+      {
+        "id": 445,
+        "word": "CASINO",
+        "length": 6,
+        "letters": [
+          "C",
+          "A",
+          "S",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 151,
+          "string": "INO",
+          "index": 3,
+          "letters": [
+            "I",
+            "N",
+            "O"
+          ],
+          "score": {
+            "id": 151,
+            "wordLength": 6,
+            "score": 18,
+            "category": "Medium",
+            "sequenceId": 151
+          }
+        }
+      }
+    ],
+    "date": "11-11-2024",
+    "id": 22
+  }
+]

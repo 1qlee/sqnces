@@ -42,6 +42,7 @@ model Puzzle {
   timesGuessed Int      @default(0) // The number of times the puzzle has been guessed
   timesFailed  Int      @default(0) // The number of times the puzzle has been failed
   timesSolved  Int      @default(0) // The number of times the puzzle has been solved
+  timesPlayed  Int      @default(0)
 
   createdAt  DateTime   @default(now())
   datePlayed DateTime   @unique

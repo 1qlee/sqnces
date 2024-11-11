@@ -125,6 +125,9 @@ function EndgameModal({
             <h2 className={modalStyles.heading}>
               {currentGame.status === "won" ? "You won!" : currentGame.status === "lost" ? "You lost!" : "In Progress"}
             </h2>
+            {currentGame.word && (
+              <p>The word was: <b>{currentGame.word}</b></p>
+            )}
             <div className={flexStyles.flexList}>
               <p>
                 Stats ({gameState.wordLength})

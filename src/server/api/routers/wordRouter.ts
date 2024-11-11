@@ -12,6 +12,8 @@ import { TRPCError } from "@trpc/server";
 
 let cache: CachedPuzzle[] = [];
 const cacheFilePath = path.join(process.cwd(), 'src', 'server', 'cache', 'puzzleCache.json');
+const MAX_LETTERS_USED = 48;
+const MAX_TIMES_GUESSED = 6;
 
 function isValidDate(date: string) {
   const yesterdaysServerDate = format(subDays(new Date(), 1), "MM-dd-yyyy");
@@ -20,6 +22,10 @@ function isValidDate(date: string) {
   const validDates = [yesterdaysServerDate, todaysServerDate, tomorrowsServerDate];
 
   return validDates.includes(date);
+}
+
+function refreshStat(stat: number, newStat: number, played: number): number {
+  return +(((stat * played) + newStat) / (played + 1)).toFixed(2);
 }
 
 // Save cache to file
@@ -238,8 +244,9 @@ const checkGuessSchema = z
           code: "INVALID_CHARACTERS"
         }),
       }),
+    lettersUsed: z.number().refine((val) => val <= MAX_LETTERS_USED), // 8 * 6 = 48
+    timesGuessed: z.number().refine((val) => val <= MAX_TIMES_GUESSED), // 6 guesses 
     usersDate: z.string().refine((dateString) => {
-      console.log("🚀 ~ CHECK ~ dateString:", dateString);
       // Validate if the date part matches today or tomorrow
       return isValidDate(dateString);
     }, {
@@ -274,7 +281,6 @@ export const wordRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
     usersDate: z.string().refine((dateString) => {
-      console.log("🚀 ~ usersDate:z.string ~ dateString:", dateString);
       // Validate if the date part matches today or tomorrow
       return isValidDate(dateString);
     }, {
@@ -354,7 +360,7 @@ export const wordRouter = createTRPCRouter({
 
   check: publicProcedure
     .input(checkGuessSchema)
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { guess, usersDate, length, hardMode } = input;
       const guessLength = guess.length;
       const todaysPuzzle = cache.find(puzzle => puzzle.date === usersDate);
@@ -399,6 +405,7 @@ export const wordRouter = createTRPCRouter({
             letter: letterGuessed,
             used: true,
           };
+
           keys[letterGuessed] = "correct";
           validationMap[i] = { letter: letterGuessed, type: "correct", sequence: false };
         }
@@ -468,11 +475,44 @@ export const wordRouter = createTRPCRouter({
         }
       }
 
+      if (guessIsCorrect || input.timesGuessed === MAX_TIMES_GUESSED) {
+        const { db } = ctx;
+        const puzzleStats = await db.puzzle.findFirst({
+          where: {
+            id: todaysPuzzle!.id,
+          },
+          select: {
+            lettersUsed: true,
+            timesGuessed: true,
+            timesSolved: true,
+            timesPlayed: true,
+            timesFailed: true,
+          }
+        });
+        const played = puzzleStats!.timesPlayed;
+        const lettersUsed = input.lettersUsed;
+        const timesGuessed = input.timesGuessed;
+
+        await db.puzzle.update({
+          where: {
+            id: todaysPuzzle!.id,
+          },
+          data: {
+            timesPlayed: played + 1,
+            lettersUsed: refreshStat(puzzleStats!.lettersUsed, lettersUsed, played),
+            timesGuessed: refreshStat(puzzleStats!.timesGuessed, timesGuessed, played),
+            timesSolved: guessIsCorrect ? puzzleStats!.timesSolved + 1 : puzzleStats!.timesSolved,
+            timesFailed: guessIsCorrect ? puzzleStats!.timesFailed : puzzleStats!.timesFailed + 1,
+          }
+        });
+      }
+
       return {
         status: "SUCCESS",
         keys: keys,
         map: validationMap,
         won: guessIsCorrect,
+        word: !guessIsCorrect ? word.word : "",
       }
     })
   ,

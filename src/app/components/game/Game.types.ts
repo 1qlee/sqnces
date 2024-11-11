@@ -27,6 +27,7 @@ export type Game = {
   guesses: GuessData[];
   status: GameStatus;
   hardMode: boolean;
+  word?: string;
 }
 
 export type Stats = {

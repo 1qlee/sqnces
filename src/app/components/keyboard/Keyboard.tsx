@@ -282,6 +282,7 @@ export default function Keyboard({
         const validateData = await Promise.race([
           checkGuess({
             guess: guessedWord,
+            guesses: currentGame.guesses,
             hardMode: gameState.settings.hardMode,
             length: wordData.length,
             puzzleId: gameState.puzzle!,
@@ -307,7 +308,7 @@ export default function Keyboard({
         if (gameStatus === "won") {
           toast.success("You won!");
         } else if (gameStatus === "lost") {
-          toast.error("You lost!");
+          toast.error(`You lost. The word was ${validateData?.word}.`);
         }
 
         setGameState({
@@ -318,6 +319,7 @@ export default function Keyboard({
               ...currentGame,
               guesses: [...currentGame.guesses, newGuess],
               status: gameStatus,
+              word: (gameStatus === "won" || gameStatus === "lost") ? validateData?.word : "",
             },
           },
         });

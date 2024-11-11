@@ -10,7 +10,7 @@ const config = {
     fetches: {
       fullUrl: true,
     }
-  }
+  },
 };
 
 export default config;

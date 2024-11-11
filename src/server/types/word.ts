@@ -77,6 +77,7 @@ export type CheckedGuess = {
   map: LetterData[];
   won: boolean;
   message?: string;
+  word?: string;
   status: string;
 }
 
