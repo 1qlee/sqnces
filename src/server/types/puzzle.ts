@@ -1,5 +1,4 @@
 import type { Key as ImportedKey, Status as LetterStatus, KeysStatus as ImportedKeysStatus } from "~/app/components/keyboard/Keyboard.types";
-import type { Decimal } from '@prisma/client/runtime/library';
 
 export type Word = {
   id: number;
