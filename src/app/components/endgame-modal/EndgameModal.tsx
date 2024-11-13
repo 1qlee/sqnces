@@ -237,13 +237,13 @@ function EndgameModal({
             <div
               className={styles.footer}
             >
-              <p className={styles.footerText}>sqnces is currently in beta. Please <b><a href="mailto:sqnces@gmail.com">email me</a></b> if you have any feedback or notice any bugs.</p>
               <div
                 className={styles.flex}
               >
                 <a className={styles.donateButton} href="https://www.buymeacoffee.com/sqnces" target="_blank" rel="noreferrer noopener"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" /></a>
                 <p>Support the development of sqnces by buying me a fine cup of coffee!</p>
               </div>
+              <p className={styles.footerText}>sqnces is currently in beta. Please <b><a href="mailto:sqnces@gmail.com">email me</a></b> if you have any feedback or notice any bugs.</p>
             </div>
           </div>
           <VisuallyHidden.Root asChild>
