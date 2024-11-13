@@ -490,6 +490,7 @@ export const puzzleRouter = createTRPCRouter({
         const puzzleStats = await db.puzzleStats.findFirst({
           where: {
             puzzleId: todaysPuzzle!.id,
+            wordLength: length,
           },
           select: {
             id: true,
@@ -523,7 +524,7 @@ export const puzzleRouter = createTRPCRouter({
           await db.puzzleStats.create({
             data: {
               puzzleId: todaysPuzzle!.id,
-              wordLength: wordLength,
+              wordLength: length,
               lettersUsed: new Decimal(input.lettersUsed),
               timesGuessed: new Decimal(input.timesGuessed),
               timesPlayed: 1,

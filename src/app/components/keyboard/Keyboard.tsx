@@ -357,7 +357,6 @@ export default function Keyboard({
         setLoading(false);
 
         if (err instanceof Error) {
-          console.log("🚀 ~ handleGuessSubmit ~ err:", err)
           const response = JSON.parse(err.message) as GetWordResponse;
           const error = response[0];
           
