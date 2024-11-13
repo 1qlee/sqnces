@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { getPuzzle } from "~/app/actions/getPuzzle";
 import { openDB } from "idb";
-import type { ClientPuzzle } from "~/server/types/word";
+import type { ClientPuzzle } from "~/server/types/puzzle";
 import type { WordLength } from "./Game.types";
 import useGameState from "~/app/hooks/useGameState";
 

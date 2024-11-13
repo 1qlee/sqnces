@@ -19,7 +19,7 @@ export type GameState = {
   };
   wordLength: number;
   showHelp: boolean;
-  puzzle: number | undefined;
+  puzzle: number;
   settings: GameSettings;
 }
 

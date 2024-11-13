@@ -3,7 +3,7 @@
 import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
-import type { ClientWord, CheckedGuess, GetWordResponse } from "~/server/types/word";
+import type { ClientWord, CheckedGuess, GetWordResponse } from "~/server/types/puzzle";
 import type { Editing, Game, WordLength } from "../game/Game.types";
 import type { Guess } from "../guess-area/Guess.types";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
@@ -285,7 +285,7 @@ export default function Keyboard({
             guesses: currentGame.guesses,
             hardMode: gameState.settings.hardMode,
             length: wordData.length,
-            puzzleId: gameState.puzzle!,
+            puzzleId: gameState.puzzle,
             usersDate: new Date().toLocaleDateString(),
           }),
           timeoutPromise,

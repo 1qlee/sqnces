@@ -3,10 +3,13 @@
   gap: 0.5rem;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 1rem;
 
   &.alignStart {
     align-items: flex-start;
+  }
+
+  &.alignCenter {
+    align-items: center;
   }
 }
 

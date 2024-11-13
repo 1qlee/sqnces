@@ -1,5 +1,5 @@
 import styles from "./Sequence.module.css";
-import type { ClientWord } from "~/server/types/word";
+import type { ClientWord } from "~/server/types/puzzle";
 
 type SequenceProps = {
   wordData: ClientWord;

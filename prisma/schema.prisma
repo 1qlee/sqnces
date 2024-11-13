@@ -37,17 +37,30 @@ model Puzzle {
   number     Int        @unique @default(autoincrement()) // The number of the puzzle
 
   wordSequences WordSequence[]
-
-  lettersUsed  Int      @default(0) // The number of total letters used to solve the puzzle
-  timesGuessed Int      @default(0) // The number of times the puzzle has been guessed
-  timesFailed  Int      @default(0) // The number of times the puzzle has been failed
-  timesSolved  Int      @default(0) // The number of times the puzzle has been solved
-  timesPlayed  Int      @default(0)
+  puzzleStats   PuzzleStats[]
 
   createdAt  DateTime   @default(now())
   datePlayed DateTime   @unique
 
   @@index([id])
+}
+
+model PuzzleStats {
+  id          Int       @id @default(autoincrement())
+  puzzleId    Int
+  puzzle      Puzzle    @relation(fields: [puzzleId], references: [id])
+  wordLength  Int
+  
+  lettersUsed  Decimal  @db.Decimal(3, 1) // 3 total digits, 1 after the decimal point
+  timesGuessed Decimal  @db.Decimal(2, 1) // 2 total digits, 1 after the decimal point    
+  timesFailed  Int      @default(0) // The number of times the puzzle has been failed
+  timesSolved  Int      @default(0) // The number of times the puzzle has been solved
+  timesPlayed  Int      @default(0)
+
+  createdAt   DateTime  @default(now())
+
+  @@index([puzzleId, wordLength])
+  @@unique([puzzleId, wordLength])
 }
 
 model Word {

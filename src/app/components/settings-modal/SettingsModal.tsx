@@ -1,6 +1,7 @@
 import ColorModeToggle from "../toggles/ColorModeToggle";
 import * as Dialog from "@radix-ui/react-dialog";
 import modalStyles from "../info-modal/InfoModal.module.css";
+import marginStyles from "../styles/Margin.module.css";
 import type { Dispatch, SetStateAction } from "react";
 import flexStyles from "../styles/Flex.module.css";
 import HardModeToggle from "../toggles/HardModeToggle";
@@ -30,7 +31,10 @@ export default function SettingsModal({
         >
           <div className={modalStyles.modalInner}>
             <h2 className={modalStyles.heading}>Settings</h2>
-            <div className={flexStyles.flexList}>
+            <div className={[
+              flexStyles.flexList,
+              marginStyles.mb4,
+            ].join(" ")}>
               <p>Theme</p>
               <ColorModeToggle />
             </div>

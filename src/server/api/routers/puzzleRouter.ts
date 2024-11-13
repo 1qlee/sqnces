@@ -4,11 +4,12 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
-import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/word";
+import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/puzzle";
 import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays, subDays } from "date-fns";
 import fs from "fs";
 import path from "path";
 import { TRPCError } from "@trpc/server";
+import { Decimal } from "@prisma/client/runtime/library";
 
 let cache: CachedPuzzle[] = [];
 const cacheFilePath = path.join(process.cwd(), 'src', 'server', 'cache', 'puzzleCache.json');
@@ -24,9 +25,18 @@ function isValidDate(date: string) {
   return validDates.includes(date);
 }
 
-function refreshStat(stat: number, newStat: number, played: number): number {
-  return +(((stat * played) + newStat) / (played + 1)).toFixed(2);
+function refreshStat(stat: number | Decimal, newStat: number, played: number): Decimal {
+  // Ensure stat is a Decimal, converting it if necessary
+  const statDecimal = Decimal.isDecimal(stat) ? stat : new Decimal(stat);
+  const newStatDecimal = new Decimal(newStat);
+
+  // Calculate the new stat
+  const updatedStat = statDecimal.mul(played).plus(newStatDecimal).div(played + 1);
+
+  // Return the result rounded to 2 decimal places
+  return updatedStat.toDecimalPlaces(2);
 }
+
 
 // Save cache to file
 function saveCacheToFile() {
@@ -277,7 +287,7 @@ const checkGuessSchema = z
     path: ["puzzleId"], // Associates the error with the `usersDate` field
   });
 
-export const wordRouter = createTRPCRouter({
+export const puzzleRouter = createTRPCRouter({
   get: publicProcedure
   .input(z.object({ 
     usersDate: z.string().refine((dateString) => {
@@ -477,11 +487,12 @@ export const wordRouter = createTRPCRouter({
 
       if (guessIsCorrect || input.timesGuessed === MAX_TIMES_GUESSED) {
         const { db } = ctx;
-        const puzzleStats = await db.puzzle.findFirst({
+        const puzzleStats = await db.puzzleStats.findFirst({
           where: {
-            id: todaysPuzzle!.id,
+            puzzleId: todaysPuzzle!.id,
           },
           select: {
+            id: true,
             lettersUsed: true,
             timesGuessed: true,
             timesSolved: true,
@@ -489,22 +500,38 @@ export const wordRouter = createTRPCRouter({
             timesFailed: true,
           }
         });
-        const played = puzzleStats!.timesPlayed;
-        const lettersUsed = input.lettersUsed;
-        const timesGuessed = input.timesGuessed;
 
-        await db.puzzle.update({
-          where: {
-            id: todaysPuzzle!.id,
-          },
-          data: {
-            timesPlayed: played + 1,
-            lettersUsed: refreshStat(puzzleStats!.lettersUsed, lettersUsed, played),
-            timesGuessed: refreshStat(puzzleStats!.timesGuessed, timesGuessed, played),
-            timesSolved: guessIsCorrect ? puzzleStats!.timesSolved + 1 : puzzleStats!.timesSolved,
-            timesFailed: guessIsCorrect ? puzzleStats!.timesFailed : puzzleStats!.timesFailed + 1,
-          }
-        });
+        if (puzzleStats) {
+          const played = puzzleStats.timesPlayed;
+          const lettersUsed = input.lettersUsed;
+          const timesGuessed = input.timesGuessed;
+  
+          await db.puzzleStats.update({
+            where: {
+              id: puzzleStats.id,
+            },
+            data: {
+              timesPlayed: played + 1,
+              lettersUsed: refreshStat(puzzleStats.lettersUsed, lettersUsed, played),
+              timesGuessed: refreshStat(puzzleStats.timesGuessed, timesGuessed, played),
+              timesSolved: guessIsCorrect ? puzzleStats.timesSolved + 1 : puzzleStats.timesSolved,
+              timesFailed: guessIsCorrect ? puzzleStats.timesFailed : puzzleStats.timesFailed + 1,
+            }
+          });
+        }
+        else {
+          await db.puzzleStats.create({
+            data: {
+              puzzleId: todaysPuzzle!.id,
+              wordLength: wordLength,
+              lettersUsed: new Decimal(input.lettersUsed),
+              timesGuessed: new Decimal(input.timesGuessed),
+              timesPlayed: 1,
+              timesSolved: guessIsCorrect ? 1 : 0,
+              timesFailed: guessIsCorrect ? 0 : 1,
+            }
+          });
+        }
       }
 
       return {
@@ -514,6 +541,53 @@ export const wordRouter = createTRPCRouter({
         won: guessIsCorrect,
         word: !guessIsCorrect ? word.word : "",
       }
+    }),
+  
+  getStats: publicProcedure
+    .input(z.object({
+      puzzleId: z.number().refine((val) => cache.find(puzzle => puzzle.id === val), {
+        message: JSON.stringify({
+          message: "Could not find this puzzle. Please refresh the page or clear your cache.",
+          code: "INVALID_PUZZLE_ID",
+        }),
+      }),
+      wordLength: z.number().refine((val) => [6, 7, 8].includes(val), {
+        message: JSON.stringify({
+          message: "Word must be 6, 7, or 8 letters long.",
+          code: "INVALID_WORD_LENGTH",
+        }),
+      }),
+    }))
+    .query(async ({ input, ctx }) => {
+      const { db } = ctx;
+      const puzzleStats = await db.puzzleStats.findFirst({
+        where: {
+          puzzleId: input.puzzleId,
+          wordLength: input.wordLength,
+        },
+        select: {
+          lettersUsed: true,
+          timesGuessed: true,
+          timesSolved: true,
+          timesPlayed: true,
+          timesFailed: true,
+        }
+      });
+
+      if (!puzzleStats) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid puzzle ID was given.',
+        });
+      }
+
+      return {
+        lettersUsed: puzzleStats.lettersUsed.toNumber(),
+        timesGuessed: puzzleStats.timesGuessed.toNumber(),
+        timesPlayed: puzzleStats.timesPlayed,
+        winRate: puzzleStats.timesPlayed > 0 ? Math.round((puzzleStats.timesSolved / puzzleStats.timesPlayed) * 100) : 0,
+        timesSolved: puzzleStats.timesSolved,
+        timesFailed: puzzleStats.timesFailed,
+      };
     })
-  ,
 });

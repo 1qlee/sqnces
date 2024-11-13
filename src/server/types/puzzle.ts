@@ -1,4 +1,5 @@
 import type { Key as ImportedKey, Status as LetterStatus, KeysStatus as ImportedKeysStatus } from "~/app/components/keyboard/Keyboard.types";
+import type { Decimal } from '@prisma/client/runtime/library';
 
 export type Word = {
   id: number;
@@ -13,6 +14,15 @@ export type Word = {
   letters: string[];
   length: number;
 }
+
+export type GlobalStats = {
+  lettersUsed: number | "...";
+  timesGuessed: number | "...";
+  timesPlayed: number | "...";
+  timesSolved: number | "...";
+  timesFailed: number | "...";
+  winRate: number | "...";
+};
 
 export type ClientWord = {
   sequence: {

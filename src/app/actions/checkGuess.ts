@@ -22,7 +22,7 @@ export async function checkGuess({
   const lettersUsed = guesses.reduce((acc, guess) => guess.word.length + acc, 0) + guess.length;
   const timesGuessed = guesses.length + 1;
 
-  const data = await api.word.check({
+  const data = await api.puzzle.check({
     guess,
     lettersUsed,
     timesGuessed,

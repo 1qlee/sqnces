@@ -1,4 +1,4 @@
-import type { ClientPuzzle } from '~/server/types/word';
+import type { ClientPuzzle } from '~/server/types/puzzle';
 import type { Dispatch, SetStateAction } from 'react';
 import type { Game } from '../game/Game.types';
 import { Info } from '@phosphor-icons/react';

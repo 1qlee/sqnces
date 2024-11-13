@@ -1,5 +1,5 @@
 import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
-import type { ClientWord } from "~/server/types/word";
+import type { ClientWord } from "~/server/types/puzzle";
 import type { Editing, Game, GameStatus } from "~/app/components/game/Game.types";
 import type { Guess } from "./Guess.types";
 

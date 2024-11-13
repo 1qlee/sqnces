@@ -1,4 +1,4 @@
-import { wordRouter } from "~/server/api/routers/wordRouter";
+import { puzzleRouter } from "~/server/api/routers/puzzleRouter";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -7,7 +7,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  word: wordRouter,
+  puzzle: puzzleRouter,
 });
 
 // export type definition of API

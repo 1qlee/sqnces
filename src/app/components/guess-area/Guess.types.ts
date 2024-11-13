@@ -1,4 +1,4 @@
-import type { LetterData } from "../../../server/types/word";
+import type { LetterData } from "../../../server/types/puzzle";
 import type { Key } from '../keyboard/Keyboard.types';
 
 export type Guess = { 

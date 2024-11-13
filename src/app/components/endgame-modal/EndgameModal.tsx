@@ -1,19 +1,22 @@
-import { type Dispatch, type SetStateAction, useState } from "react"
 import styles from "./EndgameModal.module.css"
+import modalStyles from "../info-modal/InfoModal.module.css"
+import marginStyles from "../styles/Margin.module.css"
 import flexStyles from "../styles/Flex.module.css"
+
+import toast from "react-hot-toast"
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react"
+import type { ClientPuzzle, GlobalStats } from "~/server/types/puzzle"
+import type { Game, WordLength } from "../game/Game.types"
 import useGameState from "~/app/hooks/useGameState"
 import useUserStats from "~/app/hooks/useUserStats"
+import { XCircle } from '@phosphor-icons/react'
 
 import * as Dialog from '@radix-ui/react-dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import Select from "../select/Select"
 import Button from "../button/Button"
 import Checkbox from "../checkbox/Checkbox"
-import modalStyles from "../info-modal/InfoModal.module.css"
-import toast from "react-hot-toast"
-import type { ClientPuzzle } from "~/server/types/word"
-import type { Game, WordLength } from "../game/Game.types"
-import { XCircle } from '@phosphor-icons/react'
+import { getPuzzleStats } from "~/app/actions/getPuzzleStats"
 
 type EndgameModalProps = {
   currentGame: Game;
@@ -21,6 +24,8 @@ type EndgameModalProps = {
   showEndgameModal: boolean;
   setShowEndgameModal: Dispatch<SetStateAction<boolean>>;
 }
+
+const STAT_PLACEHOLDER = "...";
 
 function EndgameModal({
   currentGame,
@@ -32,16 +37,24 @@ function EndgameModal({
   const [gameState] = useGameState();
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
   const [statsMode, setStatsMode] = useState(gameState.settings.hardMode ? "Hard Mode" : "Easy Mode")
+  const [globalStats, setGlobalStats] = useState<GlobalStats>({
+    timesPlayed: STAT_PLACEHOLDER,
+    lettersUsed: STAT_PLACEHOLDER,
+    timesGuessed: STAT_PLACEHOLDER,
+    timesFailed: STAT_PLACEHOLDER,
+    timesSolved: STAT_PLACEHOLDER,
+    winRate: STAT_PLACEHOLDER,
+  });
   const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
+  const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
+  const totalGuesses = currentGame.guesses.length;
+  const totalLettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0);
   const difficulty = statsMode === "Hard Mode" ? "hardMode" : "easyMode";
   const currentGameStats = userStats.games[gameState.wordLength as WordLength][difficulty];
-  const totalGamesPlayed = Object.values(userStats.games).reduce((total, gameModes) => {
-    return total + Object.values(gameModes).reduce((modeTotal, stats) => modeTotal + stats.played, 0);
-  }, 0);
 
   async function handleCopyToClipboard() {
     if (navigator.clipboard && window.isSecureContext) {
-      let textToCopy = `sqnces.com\n#${puzzleData.id} ${currentPuzzle?.sequence.string} (${gameState.wordLength}) ${currentGame.status?.toUpperCase()}${gameState.games[gameState.wordLength as WordLength].hardMode ? " -Hard" : " -Easy"}\n`;
+      let textToCopy = `sqnces.com\n#${puzzleData.id} ${currentPuzzle?.sequence.string} (${gameState.wordLength}) ${gameState.games[gameState.wordLength as WordLength].hardMode ? "-Hard" : "-Easy"}\n`;
       toast.success("Copied!", { id: "copied" });
 
       currentGame.guesses.forEach(guess => {
@@ -104,6 +117,16 @@ function EndgameModal({
     }
   }
 
+
+  useEffect(() => {
+    async function fetchPuzzleStats() {
+      const data = await getPuzzleStats({ id: puzzleData.id, wordLength: gameState.wordLength });
+      setGlobalStats(data);
+    }
+
+    void fetchPuzzleStats();
+  }, []) 
+
   return (
     <Dialog.Root
       defaultOpen={false}
@@ -128,9 +151,49 @@ function EndgameModal({
             {currentGame.word && (
               <p>The word was: <b>{currentGame.word}</b></p>
             )}
-            <div className={flexStyles.flexList}>
+            {isGameOver && (
+              <>
+                <div className={[flexStyles.flexList, marginStyles.mb4].join(" ")}>
+                  <p>
+                    Puzzle Stats
+                  </p>
+                </div>
+                <div className={[flexStyles.flexList, marginStyles.mb5].join(" ")}>
+                  <div className={flexStyles.flexItem}>
+                    <p className={flexStyles.flexHeading}>Guesses Made</p>
+                    {totalGuesses}
+                  </div>
+                  <div className={flexStyles.flexItem}>
+                    <p className={flexStyles.flexHeading}>Letters Used</p>
+                    {totalLettersUsed}
+                  </div>
+                </div>
+              </>
+            )}
+            <div className={[flexStyles.flexList, marginStyles.mb4].join(" ")}>
+              <p>Global Stats</p>
+            </div>
+            <div className={[flexStyles.flexList, marginStyles.mb5].join(" ")}>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Avg Guesses Made</p>
+                {globalStats?.timesGuessed}
+              </div>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Avg Letters Used</p>
+                {globalStats?.lettersUsed}
+              </div>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Played</p>
+                {globalStats?.timesPlayed}
+              </div>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Win %</p>
+                {globalStats?.winRate}
+              </div>
+            </div>
+            <div className={[flexStyles.flexList, marginStyles.mb4].join(" ")}>
               <p>
-                Stats ({gameState.wordLength})
+                Lifetime Stats ({gameState.wordLength})
               </p>
               <Select
                 value={statsMode}
@@ -138,15 +201,7 @@ function EndgameModal({
                 options={[{ value: "Easy Mode", label: "Easy Mode" }, { value: "Hard Mode", label: "Hard Mode" }]}
               />
             </div>
-            <div className={flexStyles.flexList}>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Played</p>
-                {currentGameStats?.played ?? "N/A"}
-              </div>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Win %</p>
-                {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "N/A"}
-              </div>
+            <div className={[flexStyles.flexList, marginStyles.mb5].join(" ")}>
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Current Streak</p>
                 {currentGameStats?.currentStreak ?? "N/A"}
@@ -154,6 +209,14 @@ function EndgameModal({
               <div className={flexStyles.flexItem}>
                 <p className={flexStyles.flexHeading}>Longest Streak</p>
                 {currentGameStats?.longestStreak ?? "N/A"}
+              </div>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Played</p>
+                {currentGameStats?.played ?? "N/A"}
+              </div>
+              <div className={flexStyles.flexItem}>
+                <p className={flexStyles.flexHeading}>Win %</p>
+                {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "N/A"}
               </div>
             </div>
             {(currentGame.status !== "playing" && currentGame.status !== "notStarted") && (
