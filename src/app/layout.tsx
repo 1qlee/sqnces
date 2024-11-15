@@ -28,7 +28,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning >
+    <html className={GeistSans.className} lang="en" suppressHydrationWarning >
       <Script defer src="https://umami-d8k0o0kso0s44ckw0w0ccwk4.sqnces.com/script.js" data-website-id="20bf5cd1-7624-4e0d-99f5-f352e661064f" />
       <body className={GeistSans.className}>
         <ThemeProvider enableSystem={false}>

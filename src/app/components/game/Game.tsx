@@ -97,9 +97,7 @@ export default function Game() {
             await Promise.all(chunk.map((guess) => tx.store.add({ guess })));
             await tx.done;
           } catch (error) {
-            toast.error(CACHE_ERR_MSG, {
-              duration: Infinity,
-            })
+            toast.error(CACHE_ERR_MSG)
             return; // Stop further processing if a chunk fails
           }
         }
@@ -109,9 +107,7 @@ export default function Game() {
         const size = await store.count();
 
         if (size < validGuesses.length) {
-          toast.error(CACHE_ERR_MSG, {
-            duration: Infinity,
-          })
+          toast.error(CACHE_ERR_MSG)
         }
       }
       else {
