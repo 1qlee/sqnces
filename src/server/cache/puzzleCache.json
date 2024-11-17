@@ -1,1 +1,200 @@
-[{"words":[{"id":7270,"word":"GRADIENT","length":8,"letters":["","","","D","I","E","N","T"],"sequence":{"id":1246,"string":"GRA","index":0,"letters":["G","R","A"],"score":{"id":4049,"wordLength":8,"score":149,"category":"Easy","sequenceId":1246}}},{"id":5229,"word":"RESIDUE","length":7,"letters":["","","","I","D","U","E"],"sequence":{"id":128,"string":"RES","index":0,"letters":["R","E","S"],"score":{"id":1821,"wordLength":7,"score":202,"category":"Easy","sequenceId":128}}},{"id":2195,"word":"REVEAL","length":6,"letters":["","","","E","A","L"],"sequence":{"id":1515,"string":"REV","index":0,"letters":["R","E","V"],"score":{"id":1515,"wordLength":6,"score":16,"category":"Medium","sequenceId":1515}}}],"date":"11-13-2024","id":24},{"words":[{"id":8033,"word":"OVERTAKE","length":8,"letters":["O","","","","T","A","K","E"],"sequence":{"id":94,"string":"VER","index":1,"letters":["V","E","R"],"score":{"id":3927,"wordLength":8,"score":316,"category":"Easy","sequenceId":94}}},{"id":3101,"word":"AGONIST","length":7,"letters":["","","","N","I","S","T"],"sequence":{"id":1062,"string":"AGO","index":0,"letters":["A","G","O"],"score":{"id":1899,"wordLength":7,"score":17,"category":"Hard","sequenceId":1062}}},{"id":2543,"word":"STASIS","length":6,"letters":["S","","","","I","S"],"sequence":{"id":1477,"string":"TAS","index":1,"letters":["T","A","S"],"score":{"id":1477,"wordLength":6,"score":19,"category":"Medium","sequenceId":1477}}}],"date":"11-14-2024","id":25},{"words":[{"id":8972,"word":"VALIDITY","length":8,"letters":["V","A","L","I","D","","",""],"sequence":{"id":75,"string":"ITY","index":5,"letters":["I","T","Y"],"score":{"id":3964,"wordLength":8,"score":124,"category":"Medium","sequenceId":75}}},{"id":5860,"word":"UGLIEST","length":7,"letters":["U","G","","","","S","T"],"sequence":{"id":500,"string":"LIE","index":2,"letters":["L","I","E"],"score":{"id":2202,"wordLength":7,"score":73,"category":"Medium","sequenceId":500}}},{"id":1017,"word":"FINEST","length":6,"letters":["","","","E","S","T"],"sequence":{"id":854,"string":"FIN","index":0,"letters":["F","I","N"],"score":{"id":854,"wordLength":6,"score":29,"category":"Medium","sequenceId":854}}}],"date":"11-15-2024","id":26}]
+[
+  {
+    "words": [
+      {
+        "id": 6931,
+        "word": "EDUCATOR",
+        "length": 8,
+        "letters": [
+          "E",
+          "D",
+          "",
+          "",
+          "",
+          "T",
+          "O",
+          "R"
+        ],
+        "sequence": {
+          "id": 20363,
+          "string": "UCA",
+          "index": 2,
+          "letters": [
+            "U",
+            "C",
+            "A"
+          ],
+          "score": {
+            "id": 5323,
+            "wordLength": 8,
+            "score": 7,
+            "category": "Hard",
+            "sequenceId": 20363
+          }
+        }
+      },
+      {
+        "id": 4526,
+        "word": "LEGALLY",
+        "length": 7,
+        "letters": [
+          "L",
+          "E",
+          "",
+          "",
+          "",
+          "L",
+          "Y"
+        ],
+        "sequence": {
+          "id": 1211,
+          "string": "GAL",
+          "index": 2,
+          "letters": [
+            "G",
+            "A",
+            "L"
+          ],
+          "score": {
+            "id": 3239,
+            "wordLength": 7,
+            "score": 30,
+            "category": "Medium",
+            "sequenceId": 1211
+          }
+        }
+      },
+      {
+        "id": 3,
+        "word": "ABJECT",
+        "length": 6,
+        "letters": [
+          "A",
+          "B",
+          "J",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 6,
+          "string": "ECT",
+          "index": 3,
+          "letters": [
+            "E",
+            "C",
+            "T"
+          ],
+          "score": {
+            "id": 6,
+            "wordLength": 6,
+            "score": 28,
+            "category": "Medium",
+            "sequenceId": 6
+          }
+        }
+      }
+    ],
+    "date": "11-16-2024",
+    "id": 27
+  },
+  {
+    "words": [
+      {
+        "id": 8440,
+        "word": "SAGACITY",
+        "length": 8,
+        "letters": [
+          "S",
+          "",
+          "",
+          "",
+          "C",
+          "I",
+          "T",
+          "Y"
+        ],
+        "sequence": {
+          "id": 1940,
+          "string": "AGA",
+          "index": 1,
+          "letters": [
+            "A",
+            "G",
+            "A"
+          ],
+          "score": {
+            "id": 5756,
+            "wordLength": 8,
+            "score": 16,
+            "category": "Hard",
+            "sequenceId": 1940
+          }
+        }
+      },
+      {
+        "id": 4864,
+        "word": "OXIDANT",
+        "length": 7,
+        "letters": [
+          "O",
+          "X",
+          "",
+          "",
+          "",
+          "N",
+          "T"
+        ],
+        "sequence": {
+          "id": 7567,
+          "string": "IDA",
+          "index": 2,
+          "letters": [
+            "I",
+            "D",
+            "A"
+          ],
+          "score": {
+            "id": 3342,
+            "wordLength": 7,
+            "score": 9,
+            "category": "Hard",
+            "sequenceId": 7567
+          }
+        }
+      },
+      {
+        "id": 344,
+        "word": "BREEZY",
+        "length": 6,
+        "letters": [
+          "B",
+          "R",
+          "",
+          "",
+          "",
+          "Y"
+        ],
+        "sequence": {
+          "id": 642,
+          "string": "EEZ",
+          "index": 2,
+          "letters": [
+            "E",
+            "E",
+            "Z"
+          ],
+          "score": {
+            "id": 642,
+            "wordLength": 6,
+            "score": 8,
+            "category": "Hard",
+            "sequenceId": 642
+          }
+        }
+      }
+    ],
+    "date": "11-17-2024",
+    "id": 28
+  }
+]

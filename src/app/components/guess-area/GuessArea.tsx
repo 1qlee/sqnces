@@ -2,11 +2,11 @@ import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import type { ClientWord } from "~/server/types/puzzle";
 import type { Editing, Game, GameStatus } from "~/app/components/game/Game.types";
 import type { Guess } from "./Guess.types";
+import type { KeysStatus, Status } from "../keyboard/Keyboard.types";
 
 import { Guesses } from "../guesses/Guesses";
 import Keyboard from "../keyboard/Keyboard";
 import useGameState from "~/app/hooks/useGameState";
-import type { KeysStatus, Status } from "../keyboard/Keyboard.types";
 
 type GuessAreaProps = {
   currentGame: Game;
@@ -60,7 +60,6 @@ export default function GuessArea({
 
     return acc;
   }, {} as Record<string, Status>);
-
   const [keysStatus, setKeysStatus] = useState<KeysStatus>(letterStatusMap);
   const [guess, setGuess] = useState<Guess>({
     string: "",
@@ -89,7 +88,10 @@ export default function GuessArea({
   }, [currentGame.status]);
 
   useEffect(() => {
-    if (delayedStatus === "won" || delayedStatus === "lost") {
+    if (delayedStatus === "won") {
+      setShowEndgameModal(true);
+    }
+    else if (delayedStatus === "lost") {
       setShowEndgameModal(true);
     }
     else {

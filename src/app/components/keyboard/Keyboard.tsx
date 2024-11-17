@@ -1,5 +1,3 @@
-"use client"
-
 import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
@@ -10,15 +8,41 @@ import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboa
 import useGameState from "~/app/hooks/useGameState";
 import useGuessSearch from "~/app/hooks/useGuessSearch";
 import useUserStats from "~/app/hooks/useUserStats";
+import { useReward } from "react-rewards";
 import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
-import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react";
 import { checkGuess } from "~/app/actions/checkGuess";
+import { type Dispatch, type SetStateAction, useEffect, useState, useRef, type CSSProperties } from "react";
 
 const KeyboardRows: Key[][] = [
   ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
   ['', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ''],
   ['', '', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Backspace', '']
 ]
+
+const CONFETTI_STYLE: CSSProperties = {
+  position: "absolute",
+  bottom: "0",
+  left: "50%",
+  transform: "translateX(-50%)",
+  display: "block",
+  width: "2px",
+  height: "2px",
+  background: "transparent",
+  zIndex: 1000,
+}
+
+function createConfettiConfig(options = {}) {
+  const defaultConfig = {
+    lifetime: 300,
+    angle: 90,
+    spread: 45,
+    zIndex: 12822,
+    colors: ["#E93D82", "#8E4EC6", "#5B5BD6", "#0090FF", "#12A594", "#46A758", "#F76B15", "#FFE629"],
+  };
+
+  // Merge defaults with options, where options override defaults
+  return { ...defaultConfig, ...options };
+}
 
 interface KeyboardProps {
   editing: Editing;
@@ -53,6 +77,21 @@ export default function Keyboard({
   const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const repeatInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { reward: smallReward } = useReward("confetti-small", "confetti", createConfettiConfig({
+    elementCount: 12,
+    startVelocity: 12,
+    spread: 90,
+    colors: ["#E93D82", "#978365", "#0090FF", "#12A594", "#8B8D98", "#F76B15"],
+  }));
+  const { reward: normalReward } = useReward("confetti-normal", "confetti", createConfettiConfig({
+    elementCount: 30,
+    spread: 60,
+  }));
+  const { reward: goldReward } = useReward("confetti-gold", "confetti", createConfettiConfig({
+    elementCount: 70,
+    spread: 90,
+    colors: ["#FFC53D", "#FFBA18", "#FFE629", "#FFDC00"],
+  }));
 
   function handleKeyInput(key: Key) {
     const capitalizedKey = key !== "Blank" ? key.toUpperCase() as Key : key;
@@ -190,6 +229,68 @@ export default function Keyboard({
     return true;
   }
 
+  function generateWonText(numOfGuesses: number): string {
+    const textCategories = {
+      excited: [
+        "Hot damn, that was fast.",
+        "BOOM! Got 'em.",
+        "Behold, the power of your brain.",
+        "We got a word wiz over here!",
+        "You made it look easy.",
+        "I can be more difficult, I swear!",
+        "Winner, winner, sequenced dinner!",
+        "Sequentastic!",
+        "Are you a dictionary?!",
+        "Here's a 6-letter word for you: W-I-N-N-E-R.",
+      ],
+      normal: [
+        "Nice job!",
+        "Not too shabby!",
+        "You did it. You really did it!",
+        "Bravo!",
+        "Ding ding ding!",
+        "Great work there!",
+        "You got it!",
+        "That'll do the trick!",
+        "A job well done!",
+        "Solid effort!",
+      ],
+      negative: [
+        "That almost went south...",
+        "That was intense!",
+        "WHEW!",
+        "That was a close one.",
+        "You literally almost lost.",
+        "Living on the edge, huh?",
+        "You had me on the edge of my seat!",
+        "I was worried for a second there.",
+        "A real nail-biter!",
+        "For a second, I wasn't sure you'd make it.",
+      ],
+    };
+
+    if (numOfGuesses === 0) {
+      goldReward();
+      return "Word-in-one!";
+    }
+
+    const category = numOfGuesses === 1 ? "excited" : (numOfGuesses <= 4 )? "normal" : "negative";
+
+    if (category) {
+      if (category === "excited" || category === "normal") {
+        normalReward();
+      }
+      else if (category === "negative") {
+        smallReward();
+      }
+
+      const options = textCategories[category];
+      return options[Math.floor(Math.random() * options.length)]!;
+    }
+
+    return "You won!";
+  }
+
   function isKeyActive(key: Key) {
     if (key.length > 0) {
       return activeKeys.includes(key);
@@ -306,7 +407,10 @@ export default function Keyboard({
             : "playing";
 
         if (gameStatus === "won") {
-          toast.success("You won!");
+          const text = generateWonText(currentGame.guesses.length);
+          toast.success(text, {
+            duration: 3000,
+          });
         } else if (gameStatus === "lost") {
           toast.error(`You lost. The word was ${validateData?.word}.`);
         }
@@ -449,6 +553,18 @@ export default function Keyboard({
     <div 
       className={styles.keyboard}
     >
+      <span
+        id="confetti-small"
+        style={CONFETTI_STYLE}
+      ></span>
+      <span
+        id="confetti-normal"
+        style={CONFETTI_STYLE}
+      ></span>
+      <span
+        id="confetti-gold"
+        style={CONFETTI_STYLE}
+      ></span>
       {KeyboardRows.map((row, i) => (
         <div 
           className={styles.row}

@@ -117,7 +117,6 @@ function EndgameModal({
     }
   }
 
-
   useEffect(() => {
     async function fetchPuzzleStats() {
       const data = await getPuzzleStats({ id: puzzleData.id, wordLength: gameState.wordLength });
