@@ -20,13 +20,13 @@ const KeyboardRows: Key[][] = [
 ]
 
 const CONFETTI_STYLE: CSSProperties = {
-  position: "absolute",
+  position: "fixed",
   bottom: "0",
   left: "50%",
   transform: "translateX(-50%)",
-  display: "block",
   width: "2px",
   height: "2px",
+  display: "block",
   background: "transparent",
   zIndex: 1000,
 }
@@ -553,18 +553,20 @@ export default function Keyboard({
     <div 
       className={styles.keyboard}
     >
-      <span
-        id="confetti-small"
-        style={CONFETTI_STYLE}
-      ></span>
-      <span
-        id="confetti-normal"
-        style={CONFETTI_STYLE}
-      ></span>
-      <span
-        id="confetti-gold"
-        style={CONFETTI_STYLE}
-      ></span>
+      <div style={{ overflow: "hidden"}}>
+        <span
+          id="confetti-small"
+          style={CONFETTI_STYLE}
+        ></span>
+        <span
+          id="confetti-normal"
+          style={CONFETTI_STYLE}
+        ></span>
+        <span
+          id="confetti-gold"
+          style={CONFETTI_STYLE}
+        ></span>
+      </div>
       {KeyboardRows.map((row, i) => (
         <div 
           className={styles.row}
