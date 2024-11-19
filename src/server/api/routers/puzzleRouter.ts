@@ -200,6 +200,12 @@ async function getWordsForCache() {
 
 // Load words cache from file or create new words if cache is empty
 async function loadCache() {
+  // Ensure the directory exists
+  const dirPath = path.dirname(cacheFilePath);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true }); // Create the directory, including parent directories
+  }
+  
   if (!fs.existsSync(cacheFilePath)) {
     console.log("[WORD API] No cache file found, creating a new cache file.");
 
