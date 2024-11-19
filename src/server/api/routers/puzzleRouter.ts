@@ -203,9 +203,9 @@ async function loadCache() {
   // Ensure the directory exists
   const dirPath = path.dirname(cacheFilePath);
   if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true }); // Create the directory, including parent directories
+    fs.mkdirSync(path.join(process.cwd(), 'src', 'server', 'cache'), { recursive: true }); // Create the directory, including parent directories
   }
-  
+
   if (!fs.existsSync(cacheFilePath)) {
     console.log("[WORD API] No cache file found, creating a new cache file.");
 
