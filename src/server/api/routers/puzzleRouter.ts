@@ -203,7 +203,7 @@ async function loadCache() {
   if (!fs.existsSync(cacheFilePath)) {
     console.log("[WORD API] No cache file found, creating a new cache file.");
 
-    fs.writeFileSync(cacheFilePath, JSON.stringify({ today: {}, tomorrow: {} }), "utf-8");
+    fs.writeFileSync(cacheFilePath, JSON.stringify([]), "utf-8");
 
     await getWordsForCache();
 
