@@ -430,6 +430,9 @@ export default function Keyboard({
 
         const gameMode = currentGame.hardMode ? 'hardMode' : 'easyMode'
         const gameToModify = userStats.games[wordData.length as WordLength][gameMode];
+        const newTimesPlayed = gameToModify.played + 1;
+        const lettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0) + guessedWord.length;
+        const timesGuessed = currentGame.guesses.length + 1;
 
         if (gameStatus === "won" || gameStatus === "lost") {
           setUserStats({
@@ -442,9 +445,11 @@ export default function Keyboard({
                   ...gameToModify,
                   currentStreak: gameStatus === "won" ? gameToModify.currentStreak += 1 : 0,
                   longestStreak: gameToModify.currentStreak > gameToModify.longestStreak ? gameToModify.currentStreak : gameToModify.longestStreak,
-                  played: gameToModify.played += 1,
-                  lost: gameStatus === "lost" ? gameToModify.lost += 1 : gameToModify.lost,
-                  won: gameStatus === "won" ? gameToModify.won += 1 : gameToModify.won,
+                  played: newTimesPlayed,
+                  timesGuessed: ((gameToModify.timesGuessed ?? 0) + timesGuessed) / newTimesPlayed,
+                  lettersUsed: ((gameToModify.lettersUsed ?? 0) + lettersUsed) / newTimesPlayed,
+                  lost: gameStatus === "lost" ? gameToModify.lost + 1 : gameToModify.lost,
+                  won: gameStatus === "won" ? gameToModify.won + 1 : gameToModify.won,
                 },
               }
             }

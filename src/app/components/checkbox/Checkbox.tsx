@@ -21,7 +21,7 @@ export default function CheckboxComponent({ text, checked, setChecked }: Checkbo
       >
         <Checkbox.Indicator>
           <Check 
-            size={16}
+            size={12}
             weight="bold"
             color="var(--foreground)"
           />

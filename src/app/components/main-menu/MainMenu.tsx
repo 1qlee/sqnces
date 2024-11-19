@@ -88,13 +88,13 @@ export default function MainMenu({
       {status === "won" && (
         <>
           <h1 className={styles.heading}>You won!</h1>
-          <p className={styles.body}>Come back tomorrow for a brand new puzzle. Or, finish the rest of today's puzzles if you haven't already.</p>
+          <p className={styles.body}>Come back tomorrow for a brand new puzzle or finish the rest of today's puzzles.</p>
         </>
       )}
       {status === "lost" && (
         <>
           <h1 className={styles.heading}>You lost...</h1>
-          <p className={styles.body}>Come back tomorrow for a brand new puzzle. Or, finish the rest of today's puzzles if you haven't already.</p>
+          <p className={styles.body}>Come back tomorrow for a brand new puzzle or finish the rest of today's puzzles.</p>
         </>
       )}
       {status === "notStarted" && (

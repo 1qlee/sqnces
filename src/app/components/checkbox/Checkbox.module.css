@@ -1,14 +1,14 @@
 .wrapper {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .checkbox {
   border: 2px solid var(--foreground);
   background-color: var(--background);
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 0.25rem;
   display: flex;
   align-items: center;

@@ -2,18 +2,18 @@ import styles from "./EndgameModal.module.css"
 import modalStyles from "../info-modal/InfoModal.module.css"
 import marginStyles from "../styles/Margin.module.css"
 import flexStyles from "../styles/Flex.module.css"
+import clsx from "clsx"
 
 import toast from "react-hot-toast"
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react"
+import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react"
 import type { ClientPuzzle, GlobalStats } from "~/server/types/puzzle"
 import type { Game, WordLength } from "../game/Game.types"
 import useGameState from "~/app/hooks/useGameState"
 import useUserStats from "~/app/hooks/useUserStats"
-import { XCircle } from '@phosphor-icons/react'
+import { XCircle, CaretUp, CaretDoubleUp, CaretDown, CaretDoubleDown } from '@phosphor-icons/react'
 
 import * as Dialog from '@radix-ui/react-dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
-import Select from "../select/Select"
 import Button from "../button/Button"
 import Checkbox from "../checkbox/Checkbox"
 import { getPuzzleStats } from "~/app/actions/getPuzzleStats"
@@ -26,6 +26,14 @@ type EndgameModalProps = {
 }
 
 const STAT_PLACEHOLDER = "...";
+const placeholderStats: GlobalStats = {
+  timesPlayed: STAT_PLACEHOLDER,
+  lettersUsed: STAT_PLACEHOLDER,
+  timesGuessed: STAT_PLACEHOLDER,
+  timesFailed: STAT_PLACEHOLDER,
+  timesSolved: STAT_PLACEHOLDER,
+  winRate: STAT_PLACEHOLDER,
+}
 
 function EndgameModal({
   currentGame,
@@ -35,22 +43,16 @@ function EndgameModal({
 }: EndgameModalProps) {
   const [userStats] = useUserStats();
   const [gameState] = useGameState();
+  const [statsScrolledToEnd, setStatsScrolledToEnd] = useState(true);
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
-  const [statsMode, setStatsMode] = useState(gameState.settings.hardMode ? "Hard Mode" : "Easy Mode")
-  const [globalStats, setGlobalStats] = useState<GlobalStats>({
-    timesPlayed: STAT_PLACEHOLDER,
-    lettersUsed: STAT_PLACEHOLDER,
-    timesGuessed: STAT_PLACEHOLDER,
-    timesFailed: STAT_PLACEHOLDER,
-    timesSolved: STAT_PLACEHOLDER,
-    winRate: STAT_PLACEHOLDER,
-  });
+  const [globalStats, setGlobalStats] = useState<GlobalStats>(placeholderStats);
   const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
   const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const totalGuesses = currentGame.guesses.length;
   const totalLettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0);
-  const difficulty = statsMode === "Hard Mode" ? "hardMode" : "easyMode";
+  const difficulty = gameState.settings.hardMode ? "hardMode" : "easyMode";
   const currentGameStats = userStats.games[gameState.wordLength as WordLength][difficulty];
+  const statsGridRef = useRef<HTMLDivElement>(null);
 
   async function handleCopyToClipboard() {
     if (navigator.clipboard && window.isSecureContext) {
@@ -117,6 +119,40 @@ function EndgameModal({
     }
   }
 
+  function checkScrollPosition() {
+    if (statsGridRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = statsGridRef.current;
+      const hasNotReachedEnd = scrollLeft + clientWidth < scrollWidth;
+      setStatsScrolledToEnd(hasNotReachedEnd);
+    }
+  };
+
+  function statIndicator(userStat: number, globalStat: number, threshold = 0.5) {
+    if (!globalStat) {
+      return;
+    }
+
+    if (userStat === globalStat) {
+      return;
+    }
+    else if (userStat > globalStat) {
+      if (userStat - globalStat > threshold) {
+        return <CaretDoubleUp size={12} color="var(--off)" weight="fill" />;
+      }
+      else {
+        return <CaretUp size={12} color="var(--off)" weight="fill" />;
+      }
+    }
+    else {
+      if (globalStat - userStat > threshold) {
+        return <CaretDoubleDown size={12} color="var(--on)" weight="fill" />;
+      }
+      else {
+        return <CaretDown size={12} color="var(--on)" weight="fill" />;
+      }
+    }
+  }
+
   useEffect(() => {
     async function fetchPuzzleStats() {
       const data = await getPuzzleStats({ id: puzzleData.id, wordLength: gameState.wordLength });
@@ -150,98 +186,141 @@ function EndgameModal({
             {currentGame.word && (
               <p>The word was: <b>{currentGame.word}</b></p>
             )}
-            {isGameOver && (
-              <>
-                <div className={[flexStyles.flexList, marginStyles.mb4].join(" ")}>
-                  <p>
-                    Puzzle Stats
-                  </p>
-                </div>
-                <div className={[flexStyles.flexList, marginStyles.mb5].join(" ")}>
-                  <div className={flexStyles.flexItem}>
-                    <p className={flexStyles.flexHeading}>Guesses Made</p>
-                    {totalGuesses}
-                  </div>
-                  <div className={flexStyles.flexItem}>
-                    <p className={flexStyles.flexHeading}>Letters Used</p>
-                    {totalLettersUsed}
-                  </div>
-                </div>
-              </>
-            )}
-            <div className={[flexStyles.flexList, marginStyles.mb4].join(" ")}>
-              <p>Global Stats</p>
-            </div>
-            <div className={[flexStyles.flexList, marginStyles.mb5].join(" ")}>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Avg Guesses Made</p>
-                {globalStats?.timesGuessed}
-              </div>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Avg Letters Used</p>
-                {globalStats?.lettersUsed}
-              </div>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Played</p>
-                {globalStats?.timesPlayed}
-              </div>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Win %</p>
-                {globalStats?.winRate}
-              </div>
-            </div>
             <div className={[flexStyles.flexList, marginStyles.mb4].join(" ")}>
               <p>
-                Lifetime Stats ({gameState.wordLength})
+                Puzzle Stats ({gameState.wordLength} Letters)
               </p>
-              <Select
-                value={statsMode}
-                onChange={val => setStatsMode(val)}
-                options={[{ value: "Easy Mode", label: "Easy Mode" }, { value: "Hard Mode", label: "Hard Mode" }]}
-              />
             </div>
-            <div className={[flexStyles.flexList, marginStyles.mb5].join(" ")}>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Current Streak</p>
-                {currentGameStats?.currentStreak ?? "N/A"}
+            <div 
+              ref={statsGridRef}
+              className={clsx(styles.grid, {
+                [styles.notScrolledToEnd!]: statsScrolledToEnd, // Apply this class if true
+              })}
+              onScroll={checkScrollPosition}
+            >
+              <div className={clsx(styles.gridColumn, styles.isFixed)}>
+                <div className={clsx(styles.gridItem, styles.isSpaced)}> 
+                  
+                </div>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  You
+                </div>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Others
+                </div>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Lifetime
+                </div>
               </div>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Longest Streak</p>
-                {currentGameStats?.longestStreak ?? "N/A"}
+              <div className={styles.gridColumn}>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Guesses Made
+                </div>
+                <div className={styles.gridItem}>
+                  <span className={styles.stat}>
+                    <span className={styles.statIndicator}>{statIndicator(totalGuesses, +globalStats?.timesGuessed)}</span>
+                    {isGameOver && totalGuesses} 
+                  </span>
+                </div>
+                <div className={styles.gridItem}>
+                  {globalStats?.timesGuessed}
+                </div>
+                <div className={styles.gridItem}>
+                  <span className={styles.stat}>
+                    <span className={styles.statIndicator}>{statIndicator(totalGuesses, currentGameStats?.timesGuessed)}</span>
+                    {currentGameStats?.timesGuessed ?? "N/A"}
+                  </span>
+                </div>
               </div>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Played</p>
-                {currentGameStats?.played ?? "N/A"}
+              <div className={styles.gridColumn}>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Letters Used
+                </div>
+                <div className={styles.gridItem}>
+                  <span className={styles.stat}>
+                    <span className={styles.statIndicator}>{statIndicator(totalLettersUsed, +globalStats?.lettersUsed, 3)}</span>
+                    {isGameOver && totalLettersUsed}
+                  </span>
+                </div>
+                <div className={styles.gridItem}>
+                  {globalStats?.lettersUsed}
+                </div>
+                <div className={styles.gridItem}>
+                  <span className={styles.stat}>
+                    <span className={styles.statIndicator}>{statIndicator(totalLettersUsed, currentGameStats?.lettersUsed, 1)}</span>
+                    {currentGameStats?.lettersUsed ?? "N/A"}
+                  </span>
+                </div>
               </div>
-              <div className={flexStyles.flexItem}>
-                <p className={flexStyles.flexHeading}>Win %</p>
-                {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "N/A"}
+              <div className={styles.gridColumn}>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Times Played
+                </div>
+                <div className={clsx(styles.gridItem, styles.isEmpty)}>
+                  -
+                </div>
+                <div className={styles.gridItem}>
+                  {globalStats?.timesPlayed}
+                </div>
+                <div className={styles.gridItem}>
+                  {currentGameStats?.played ?? "N/A"}
+                </div>
+              </div>
+              <div className={styles.gridColumn}>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Win %
+                </div>
+                <div className={clsx(styles.gridItem, styles.isEmpty)}>
+                  -
+                </div>
+                <div className={styles.gridItem}>
+                  {globalStats?.winRate}%
+                </div>
+                <div className={styles.gridItem}>
+                  {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "N/A"}
+                </div>
+              </div>
+              <div className={styles.gridColumn}>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Current Streak
+                </div>
+                <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
+                <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
+                <div className={styles.gridItem}>
+                  {currentGameStats?.currentStreak ?? "N/A"}
+                </div>
+              </div>
+              <div className={styles.gridColumn}>
+                <div className={clsx(styles.gridItem, styles.statHeading)}>
+                  Longest Streak
+                </div>
+                <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
+                <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
+                <div className={styles.gridItem}>
+                  {currentGameStats?.longestStreak ?? "N/A"}
+                </div>
               </div>
             </div>
             {(currentGame.status !== "playing" && currentGame.status !== "notStarted") && (
               <div className={styles.flex}>
-                <Checkbox
-                  text="Hide spoilers"
-                  checked={hideSpoilers}
-                  setChecked={setHideSpoilers}
-                />
                 <Button
                   onClick={async () => await handleCopyToClipboard()}
                   className={styles.button}
                 >
                   Share results
                 </Button>
+                <Checkbox
+                  text="Hide spoilers"
+                  checked={hideSpoilers}
+                  setChecked={setHideSpoilers}
+                />
               </div>
             )}
             <div
               className={styles.footer}
             >
-              <div
-                className={styles.flex}
-              >
-                <a className={styles.donateButton} href="https://www.buymeacoffee.com/sqnces" target="_blank" rel="noreferrer noopener"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" /></a>
-                <p>Support the development of sqnces by buying me a fine cup of coffee!</p>
-              </div>
+              <a className={styles.donateButton} href="https://www.buymeacoffee.com/sqnces" target="_blank" rel="noreferrer noopener"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" /></a>
+              <p>Support the development of sqnces by buying me a fine cup of coffee!</p>
               <p className={styles.footerText}>sqnces is currently in beta. Please <b><a href="mailto:sqnces@gmail.com">email me</a></b> if you have any feedback or notice any bugs.</p>
             </div>
           </div>

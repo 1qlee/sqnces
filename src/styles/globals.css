@@ -16,7 +16,7 @@
   --olive-12: #1d211c;
   --background: var(--olive-1);
   --foreground: var(--olive-12);
-  --grayed: var(--olive-3);
+  --grayed: var(--olive-4);
   --shadow-normal: rgba(0, 0, 0, 0.3);
   --shadow-active: rgba(0, 0, 0, 0.1);
   --overlay: rgba(0, 0, 0, 0.5);
@@ -35,7 +35,7 @@
   --background: var(--olive-12);
   --foreground: var(--olive-1);
   --border-color: var(--olive-1);
-  --grayed: var(--olive-10);
+  --grayed: var(--olive-11);
   --shadow-normal: rgba(255, 255, 255, 0.3);
   --shadow-active: rgba(255, 255, 255, 0.1);
   --overlay: rgba(0, 0, 0, 0.8);  
