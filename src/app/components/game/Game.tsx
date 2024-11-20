@@ -140,7 +140,7 @@ export default function Game() {
         const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch (error) {
-        
+
       } finally {
         setLoading(false);
       }
@@ -163,7 +163,7 @@ export default function Game() {
 
   return (
     <>
-      <Nav 
+      <Nav
         disableGameModeSelect={disableGameModeSelect}
         setShowEndgameModal={setShowEndgameModal}
         setShowSettingsModal={setShowSettingsModal}
@@ -198,7 +198,7 @@ export default function Game() {
               />
             )}
             {showSettingsModal && (
-              <SettingsModal 
+              <SettingsModal
                 showSettingsModal={showSettingsModal}
                 setShowSettingsModal={setShowSettingsModal}
               />
