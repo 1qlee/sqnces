@@ -391,6 +391,7 @@ export default function Keyboard({
           }),
           timeoutPromise,
         ]) as CheckedGuess;
+        console.log(validateData);
 
         setKeysStatus((prev) => ({ ...prev, ...validateData.keys }));
 
