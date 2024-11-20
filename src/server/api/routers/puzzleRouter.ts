@@ -1,9 +1,9 @@
 import { z } from "zod";
 import {
-  createTRPCContext,
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
+import { db } from "~/server/db";
 import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/puzzle";
 import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays, subDays } from "date-fns";
 import fs from "fs";
@@ -74,9 +74,6 @@ async function getWordsForCache() {
     date: "",
     id: 0,
   };
-  const ctx = await createTRPCContext({ headers: new Headers() });
-  const { db } = ctx;
-
   const todayStart = startOfToday(); // Today at 00:00
   const todayEnd = endOfToday();
 
@@ -203,7 +200,7 @@ async function loadCache() {
   // Ensure the directory exists
   const dirPath = path.dirname(cacheFilePath);
   if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(path.join(process.cwd(), 'src', 'server', 'cache'), { recursive: true }); // Create the directory, including parent directories
+    fs.mkdirSync(dirPath, { recursive: true }); // Create the directory, including parent directories
   }
 
   if (!fs.existsSync(cacheFilePath)) {
