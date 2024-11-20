@@ -25,16 +25,6 @@ type EndgameModalProps = {
   setShowEndgameModal: Dispatch<SetStateAction<boolean>>;
 }
 
-const STAT_PLACEHOLDER = "...";
-const placeholderStats: GlobalStats = {
-  timesPlayed: STAT_PLACEHOLDER,
-  lettersUsed: STAT_PLACEHOLDER,
-  timesGuessed: STAT_PLACEHOLDER,
-  timesFailed: STAT_PLACEHOLDER,
-  timesSolved: STAT_PLACEHOLDER,
-  winRate: STAT_PLACEHOLDER,
-}
-
 function EndgameModal({
   currentGame,
   puzzleData,
@@ -45,9 +35,8 @@ function EndgameModal({
   const [gameState] = useGameState();
   const [statsScrolledToEnd, setStatsScrolledToEnd] = useState(true);
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
-  const [globalStats, setGlobalStats] = useState<GlobalStats>(placeholderStats);
+  const [globalStats, setGlobalStats] = useState<GlobalStats>();
   const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
-  const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const totalGuesses = currentGame.guesses.length;
   const totalLettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0);
   const difficulty = gameState.settings.hardMode ? "hardMode" : "easyMode";
@@ -128,7 +117,7 @@ function EndgameModal({
   };
 
   function statIndicator(userStat: number, globalStat: number, threshold = 0.5) {
-    if (!globalStat) {
+    if (!globalStat || !userStat) {
       return;
     }
 
@@ -218,17 +207,16 @@ function EndgameModal({
                 </div>
                 <div className={styles.gridItem}>
                   <span className={styles.stat}>
-                    <span className={styles.statIndicator}>{statIndicator(totalGuesses, +globalStats?.timesGuessed)}</span>
-                    {isGameOver && totalGuesses} 
+                    <span className={styles.statIndicator}>{statIndicator(totalGuesses, +(globalStats?.timesGuessed ?? 0), 1)}</span>
+                    {totalGuesses}
                   </span>
                 </div>
                 <div className={styles.gridItem}>
-                  {globalStats?.timesGuessed}
+                  {globalStats?.timesGuessed ?? "-"}
                 </div>
                 <div className={styles.gridItem}>
                   <span className={styles.stat}>
-                    <span className={styles.statIndicator}>{statIndicator(totalGuesses, currentGameStats?.timesGuessed)}</span>
-                    {currentGameStats?.timesGuessed ?? "N/A"}
+                    {currentGameStats?.timesGuessed ?? "-"}
                   </span>
                 </div>
               </div>
@@ -238,17 +226,16 @@ function EndgameModal({
                 </div>
                 <div className={styles.gridItem}>
                   <span className={styles.stat}>
-                    <span className={styles.statIndicator}>{statIndicator(totalLettersUsed, +globalStats?.lettersUsed, 3)}</span>
-                    {isGameOver && totalLettersUsed}
+                    <span className={styles.statIndicator}>{statIndicator(totalLettersUsed, +(globalStats?.timesGuessed ?? 0), 3)}</span>
+                    {totalLettersUsed ?? "-"}
                   </span>
                 </div>
                 <div className={styles.gridItem}>
-                  {globalStats?.lettersUsed}
+                  {globalStats?.lettersUsed ?? "-"}
                 </div>
                 <div className={styles.gridItem}>
                   <span className={styles.stat}>
-                    <span className={styles.statIndicator}>{statIndicator(totalLettersUsed, currentGameStats?.lettersUsed, 1)}</span>
-                    {currentGameStats?.lettersUsed ?? "N/A"}
+                    {currentGameStats?.lettersUsed ?? "-"}
                   </span>
                 </div>
               </div>
@@ -260,10 +247,10 @@ function EndgameModal({
                   -
                 </div>
                 <div className={styles.gridItem}>
-                  {globalStats?.timesPlayed}
+                  {globalStats?.timesPlayed ?? "-"}
                 </div>
                 <div className={styles.gridItem}>
-                  {currentGameStats?.played ?? "N/A"}
+                  {currentGameStats?.played ?? "-"}
                 </div>
               </div>
               <div className={styles.gridColumn}>
@@ -274,10 +261,10 @@ function EndgameModal({
                   -
                 </div>
                 <div className={styles.gridItem}>
-                  {globalStats?.winRate}%
+                  {globalStats?.winRate ? `${globalStats.winRate}%` : "-"}
                 </div>
                 <div className={styles.gridItem}>
-                  {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "N/A"}
+                  {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "-"}
                 </div>
               </div>
               <div className={styles.gridColumn}>
@@ -287,7 +274,7 @@ function EndgameModal({
                 <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
                 <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
                 <div className={styles.gridItem}>
-                  {currentGameStats?.currentStreak ?? "N/A"}
+                  {currentGameStats?.currentStreak ?? "-"}
                 </div>
               </div>
               <div className={styles.gridColumn}>
@@ -297,7 +284,7 @@ function EndgameModal({
                 <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
                 <div className={clsx(styles.gridItem, styles.isEmpty)}>-</div>
                 <div className={styles.gridItem}>
-                  {currentGameStats?.longestStreak ?? "N/A"}
+                  {currentGameStats?.longestStreak ?? "-"}
                 </div>
               </div>
             </div>

@@ -579,10 +579,14 @@ export const puzzleRouter = createTRPCRouter({
       });
 
       if (!puzzleStats) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Invalid puzzle ID was given.',
-        });
+        return {
+          lettersUsed: 0,
+          timesGuessed: 0,
+          timesPlayed: 0,
+          winRate: 0,
+          timesSolved: 0,
+          timesFailed: 0,
+        }
       }
 
       return {
