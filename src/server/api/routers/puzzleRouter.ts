@@ -4,8 +4,8 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key } from "~/server/types/puzzle";
-import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays, subDays } from "date-fns";
+import type { CachedPuzzle, PuzzleCache, ClientPuzzle, LettersMap, SplitWordLetter, LetterData, KeysStatus, Key, WordSequences } from "~/server/types/puzzle";
+import { endOfToday, endOfTomorrow, format, startOfToday, startOfTomorrow, addDays, subDays, startOfYesterday, endOfYesterday } from "date-fns";
 import fs from "fs";
 import path from "path";
 import { TRPCError } from "@trpc/server";
@@ -49,7 +49,7 @@ function cleanUpStaleCache(filePath = cacheFilePath) {
   // Read puzzles data
   const puzzles = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PuzzleCache;
 
-  // Filter puzzles where date is today or later
+  // Filter puzzles where date is older than yesterday
   const validPuzzles: CachedPuzzle[] = puzzles.filter((puzzle: CachedPuzzle) => {
     return isValidDate(puzzle.date);
   });
@@ -64,136 +64,97 @@ function cleanUpStaleCache(filePath = cacheFilePath) {
 
 async function getWordsForCache() {
   cleanUpStaleCache();
-  const todaysCache: CachedPuzzle = {
-    words: [],
-    date: "",
-    id: 0,
-  };
-  const tomorrowsCache: CachedPuzzle = {
-    words: [],
-    date: "",
-    id: 0,
-  };
-  const todayStart = startOfToday(); // Today at 00:00
-  const todayEnd = endOfToday();
 
-  const todaysPuzzle = await db.puzzle.findFirst({
-    where: {
-      datePlayed: {
-        gte: todayStart,
-        lt: todayEnd,
-      }
+  const cacheData = [
+    {
+      start: startOfYesterday(),
+      end: endOfYesterday(),
     },
-    select: {
-      id: true,
-      datePlayed: true,
-      wordSequences: {
-        select: {
-          word: {
-            select: {
-              id: true,
-              word: true,
-              length: true,
-            }
-          },
-          sequence: {
-            select: {
-              id: true,
-              letters: true,
-              scores: true,
-            }
-          }
-        }
-      },
-    }
-  });
-
-  todaysCache.words = todaysPuzzle!.wordSequences.map((wordSequence) => {
-    const sequenceLetters = wordSequence.sequence.letters
-    const indexOfSequence = wordSequence.word.word.indexOf(sequenceLetters);
-    const wordWithoutSequence = wordSequence.word.word.substring(0, indexOfSequence) + wordSequence.word.word.substring(indexOfSequence + 3);
-    const letters = wordWithoutSequence.split('');
-    letters.splice(indexOfSequence, 0, "", "", "");
-    
-    return {
-      id: wordSequence.word.id,
-      word: wordSequence.word.word,
-      length: wordSequence.word.length,
-      letters: letters,
-      sequence: {
-        id: wordSequence.sequence.id,
-        string: sequenceLetters,
-        index: indexOfSequence,
-        letters: sequenceLetters.split(''),
-        score: wordSequence.sequence.scores.find(score => score.wordLength === wordSequence.word.length)!,
-      },
-    }
-  });
-  todaysCache.id = todaysPuzzle!.id;
-  todaysCache.date = format(new Date(todaysPuzzle!.datePlayed).toLocaleDateString(), "MM-dd-yyyy");
-  
-  cache.push(todaysCache);
-
-  const tomorrowStart = startOfTomorrow(); // Today at 00:00
-  const tomorrowEnd = endOfTomorrow();
-
-  const tomorrowsPuzzle = await db.puzzle.findFirst({
-    where: {
-      datePlayed: {
-        gte: tomorrowStart,
-        lt: tomorrowEnd,
-      }
+    {
+      start: startOfToday(),
+      end: endOfToday(),
     },
-    select: {
-      id: true,
-      datePlayed: true,
-      wordSequences: {
-        select: {
-          word: {
-            select: {
-              id: true,
-              word: true,
-              length: true,
-            }
-          },
-          sequence: {
-            select: {
-              id: true,
-              letters: true,
-              scores: true,
-            }
-          }
-        }
-      },
-    }
-  });
+    {
+      start: startOfTomorrow(),
+      end: endOfTomorrow(),
+    },
+  ];
 
-  tomorrowsCache.words = tomorrowsPuzzle!.wordSequences.map((wordSequence) => {
-    const sequenceLetters = wordSequence.sequence.letters
-    const indexOfSequence = wordSequence.word.word.indexOf(sequenceLetters);
-    const wordWithoutSequence = wordSequence.word.word.substring(0, indexOfSequence) + wordSequence.word.word.substring(indexOfSequence + 3);
-    const letters = wordWithoutSequence.split('');
-    letters.splice(indexOfSequence, 0, "", "", "");
+  for (const { start, end } of cacheData) {
+    const puzzle = await getPuzzleForCache(start, end);
+    if (!puzzle) continue;
 
-    return {
-      id: wordSequence.word.id,
-      word: wordSequence.word.word,
-      length: wordSequence.word.length,
-      letters: letters,
-      sequence: {
-        id: wordSequence.sequence.id,
-        string: sequenceLetters,
-        index: indexOfSequence,
-        letters: sequenceLetters.split(''),
-        score: wordSequence.sequence.scores.find(score => score.wordLength === wordSequence.word.length)!,
-      },
-    }
-  });
-  tomorrowsCache.id = tomorrowsPuzzle!.id;
-  tomorrowsCache.date = format(new Date(tomorrowsPuzzle!.datePlayed).toLocaleDateString(), "MM-dd-yyyy");
+    const cachedPuzzle: CachedPuzzle = {
+      words: mapWordSequences(puzzle.wordSequences),
+      id: puzzle.id,
+      date: format(new Date(puzzle.datePlayed).toLocaleDateString(), "MM-dd-yyyy"),
+    };
 
-  cache.push(tomorrowsCache);
+    cache.push(cachedPuzzle);
+  }
 }
+
+async function getPuzzleForCache(start: Date, end: Date) {
+  return await db.puzzle.findFirst({
+    where: {
+      datePlayed: {
+        gte: start,
+        lt: end,
+      },
+    },
+    select: {
+      id: true,
+      datePlayed: true,
+      wordSequences: {
+        select: {
+          word: {
+            select: {
+              id: true,
+              word: true,
+              length: true,
+            },
+          },
+          sequence: {
+            select: {
+              id: true,
+              letters: true,
+              scores: true,
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function mapWordSequences(wordSequences: WordSequences) {
+  return wordSequences.map((wordSequence) => {
+    const sequenceLetters = wordSequence.sequence.letters;
+    const indexOfSequence = wordSequence.word.word.indexOf(sequenceLetters);
+    const wordWithoutSequence =
+      wordSequence.word.word.substring(0, indexOfSequence) +
+      wordSequence.word.word.substring(indexOfSequence + 3);
+    const letters = wordWithoutSequence.split("");
+    letters.splice(indexOfSequence, 0, "", "", "");
+
+    return {
+      id: wordSequence.word.id,
+      word: wordSequence.word.word,
+      length: wordSequence.word.length,
+      letters: letters,
+      sequence: {
+        id: wordSequence.sequence.id,
+        string: sequenceLetters,
+        index: indexOfSequence,
+        letters: sequenceLetters.split(""),
+        score: wordSequence.sequence.scores.find(
+          (score) => score.wordLength === wordSequence.word.length
+        )!,
+      },
+    };
+  });
+}
+
 
 // Load words cache from file or create new words if cache is empty
 async function loadCache() {

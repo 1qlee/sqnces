@@ -1,18 +1,39 @@
 import type { Key as ImportedKey, Status as LetterStatus, KeysStatus as ImportedKeysStatus } from "~/app/components/keyboard/Keyboard.types";
 
+export type Sequence = {
+  id: number;
+  string: string;
+  index: number;
+  letters: string[];
+  score: Score;
+}
+
 export type Word = {
   id: number;
   word: string;
-  sequence: {
-    id: number;
-    string: string;
-    index: number;
-    letters: string[];
-    score: Score;
-  };
+  sequence: Sequence;
   letters: string[];
   length: number;
 }
+
+export type WordSequences = {
+  word: {
+    word: string;
+    length: number;
+    id: number;
+  };
+  sequence: {
+    id: number;
+    letters: string;
+    scores: {
+      score: number;
+      id: number;
+      sequenceId: number;
+      wordLength: number;
+      category: string;
+    }[];
+  };
+}[]
 
 export type GlobalStats = {
   lettersUsed: number | "...";
@@ -52,14 +73,6 @@ export type LettersMap = {
   letter: string;
   used: boolean;
 }[]
-
-export type Sequence = {
-  id: number; 
-  lastUsed: Date | null; 
-  timesUsed: number; 
-  letters: string;
-  scores: Score[];
-}
 
 export type Score = {
   id: number;
