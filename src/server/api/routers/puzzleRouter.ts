@@ -339,7 +339,7 @@ export const puzzleRouter = createTRPCRouter({
         await getWordsForCache();
 
         const cachedPuzzle = cache.find(puzzle => puzzle.date === usersDate);
-        console.log("🚀 ~ .query ~ cachedPuzzle:", cachedPuzzle)
+        console.log("🚀 ~ .query ~ cache:", cache)
 
         if (!cachedPuzzle) {
           throw new TRPCError({
