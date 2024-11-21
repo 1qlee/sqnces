@@ -305,6 +305,7 @@ export const puzzleRouter = createTRPCRouter({
   }))
   .query(async ({ input }) => {
     const { usersDate } = input;
+    console.log("🚀 ~ .query ~ usersDate:", usersDate)
 
     // check if the cached puzzles exist for both today and tomorrow
     if (cache.length > 0) {
@@ -338,6 +339,7 @@ export const puzzleRouter = createTRPCRouter({
         await getWordsForCache();
 
         const cachedPuzzle = cache.find(puzzle => puzzle.date === usersDate);
+        console.log("🚀 ~ .query ~ cachedPuzzle:", cachedPuzzle)
 
         if (!cachedPuzzle) {
           throw new TRPCError({
