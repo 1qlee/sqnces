@@ -342,7 +342,7 @@ export const puzzleRouter = createTRPCRouter({
         if (!cachedPuzzle) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'Invalid date was given.',
+            message: 'Invalid date was given.', 
           });
         }
 
