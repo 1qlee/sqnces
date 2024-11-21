@@ -38,7 +38,7 @@ export default function Game() {
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
   const [disableGameModeSelect, setDisableGameModeSelect] = useState<boolean>(false);
   const [showEndgameModal, setShowEndgameModal] = useState<boolean>(false);
-  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
+  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false); 
   const [gameState, setGameState] = useGameState();
   const currentGame = gameState?.games && gameState.games[gameState.wordLength as WordLength];
   const wordData = puzzleData.words.find(word => word.length === gameState.wordLength)!;
@@ -52,16 +52,19 @@ export default function Game() {
           guesses: [],
           status: "notStarted",
           hardMode: false,
+          word: "",
         },
         7: {
           guesses: [],
           status: "notStarted",
           hardMode: false,
+          word: "",
         },
         8: {
           guesses: [],
           status: "notStarted",
           hardMode: false,
+          word: "",
         },
       },
       wordLength: 6,

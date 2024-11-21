@@ -17,35 +17,6 @@ export default function Nav({
   setShowEndgameModal,
   setShowSettingsModal,
 }: NavProps) {
-  const [gameState, setGameState] = useGameState();
-
-  if (!("games" in gameState) || !("settings" in gameState) || !("wordLength" in gameState) || !("puzzle" in gameState) || !("showHelp" in gameState)) {
-    setGameState({
-      games: {
-        6: {
-          guesses: [],
-          status: "notStarted",
-          hardMode: false,
-        },
-        7: {
-          guesses: [],
-          status: "notStarted",
-          hardMode: false,
-        },
-        8: {
-          guesses: [],
-          status: "notStarted",
-          hardMode: false,
-        },
-      },
-      showHelp: true,
-      wordLength: 6,
-      puzzle: 0,
-      settings: {
-        hardMode: false,
-      }
-    })
-  }
 
   return (
     <nav className={styles.nav}>

@@ -107,6 +107,7 @@ export default function GuessArea({
             guesses: [...gameState.games[gameState.wordLength as keyof typeof gameState.games].guesses],
             status: "playing",
             hardMode: gameState.settings.hardMode,
+            word: "",
           },
         }
       })

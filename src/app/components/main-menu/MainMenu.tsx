@@ -41,6 +41,7 @@ export default function MainMenu({
               ...currentGame,
               status: "playing",
               hardMode: gameState.settings.hardMode,
+              word: "",
             },
           },
           puzzle: puzzleData.id,

@@ -48,13 +48,10 @@ function validateGameState(obj: GameState): boolean {
       Object.keys(clone.games).forEach((lengthKey) => {
         const numberedKey = +lengthKey as WordLength;
         const game: Game = clone.games[numberedKey];
-        if (typeof game !== "object") {
-          invalid = true;
-          return;
-        }
 
         gameKeys.forEach((requiredKey) => {
           if (!(requiredKey in game)) {
+            console.log("Missing key", requiredKey, "in game", numberedKey);
             invalid = true;
           }
         });
@@ -87,6 +84,8 @@ export default function useGameState() {
       const isGameStateInvalid = validateGameState(parsedGameState);
 
       if (isGameStateInvalid) {
+        console.log(parsedGameState);
+        console.log("Invalid game state, resetting to default");
         cachedGameState.current = defaultGameState;
         setGameState({
           ...defaultGameState,
