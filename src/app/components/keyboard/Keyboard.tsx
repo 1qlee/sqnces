@@ -391,7 +391,6 @@ export default function Keyboard({
           }),
           timeoutPromise,
         ]) as CheckedGuess;
-        console.log(validateData);
 
         setKeysStatus((prev) => ({ ...prev, ...validateData.keys }));
 
@@ -429,13 +428,19 @@ export default function Keyboard({
           },
         });
 
-        const gameMode = currentGame.hardMode ? 'hardMode' : 'easyMode'
-        const gameToModify = userStats.games[wordData.length as WordLength][gameMode];
-        const newTimesPlayed = gameToModify.played + 1;
-        const lettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0) + guessedWord.length;
-        const timesGuessed = currentGame.guesses.length + 1;
+        // clear guess
+        setGuess({
+          string: "",
+          letters: [],
+        });
 
         if (gameStatus === "won" || gameStatus === "lost") {
+          const gameMode = currentGame.hardMode ? 'hardMode' : 'easyMode'
+          const gameToModify = userStats.games[wordData.length as WordLength][gameMode];
+          const newTimesPlayed = gameToModify.played + 1;
+          const lettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0) + guessedWord.length;
+          const timesGuessed = currentGame.guesses.length + 1;
+          
           setUserStats({
             ...userStats,
             games: {
@@ -456,11 +461,6 @@ export default function Keyboard({
             }
           })
         }
-
-        setGuess({
-          string: "",
-          letters: [],
-        });
 
         setLoading(false);
       } catch (err: unknown) {

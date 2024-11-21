@@ -543,7 +543,7 @@ export const puzzleRouter = createTRPCRouter({
         keys: keys,
         map: validationMap,
         won: guessIsCorrect,
-        word: !guessIsCorrect ? word.word : "",
+        word: guessIsCorrect ? word.word : "",
       }
     }),
   

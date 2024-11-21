@@ -1,5 +1,5 @@
 import { useSyncExternalStore, useRef } from "react";
-import type { GameState } from "../components/game/Game.types";
+import type { Game, GameState, WordLength } from "../components/game/Game.types";
 
 const defaultGameState: GameState = {
   games: {
@@ -7,16 +7,19 @@ const defaultGameState: GameState = {
       guesses: [],
       status: "notStarted",
       hardMode: false,
+      word: "",
     },
     7: {
       guesses: [],
       status: "notStarted",
       hardMode: false,
+      word: "",
     },
     8: {
       guesses: [],
       status: "notStarted",
       hardMode: false,
+      word: "",
     },
   },
   showHelp: true,
@@ -26,6 +29,41 @@ const defaultGameState: GameState = {
     hardMode: false,
   }
 };
+
+function validateGameState(obj: GameState): boolean {
+  const gameStateKeys = ["games", "showHelp", "wordLength", "puzzle", "settings"];
+  const gameKeys = ["guesses", "status", "hardMode", "word"];
+  let invalid = false;
+
+  const clone = structuredClone(obj);
+
+  // Check top-level keys
+  gameStateKeys.forEach((key) => {
+    if (!(key in clone)) {
+      invalid = true;
+    }
+
+    // If "games", validate its structure
+    if (key === "games" && typeof clone.games === "object") {
+      Object.keys(clone.games).forEach((lengthKey) => {
+        const numberedKey = +lengthKey as WordLength;
+        const game: Game = clone.games[numberedKey];
+        if (typeof game !== "object") {
+          invalid = true;
+          return;
+        }
+
+        gameKeys.forEach((requiredKey) => {
+          if (!(requiredKey in game)) {
+            invalid = true;
+          }
+        });
+      });
+    }
+  });
+
+  return invalid;
+}
 
 export default function useGameState() {
   const cachedGameState = useRef<GameState>();
@@ -46,18 +84,22 @@ export default function useGameState() {
 
     if (gameState) {
       const parsedGameState = JSON.parse(gameState) as GameState;
-      
-      if ("games" in parsedGameState || !("settings" in parsedGameState)) {
-        const isStateCached = JSON.stringify(cachedGameState.current) === gameState;
-        // if no cache or cache is different from localStorage
-        if (!cachedGameState.current || !isStateCached) {
-          cachedGameState.current = parsedGameState;
-        }
+      const isGameStateInvalid = validateGameState(parsedGameState);
+
+      if (isGameStateInvalid) {
+        cachedGameState.current = defaultGameState;
+        setGameState({
+          ...defaultGameState,
+        });
 
         return cachedGameState.current;
       }
       
-      cachedGameState.current = defaultGameState
+      const isStateCached = JSON.stringify(cachedGameState.current) === gameState;
+      // if no cache or cache is different from localStorage
+      if (!cachedGameState.current || !isStateCached) {
+        cachedGameState.current = parsedGameState;
+      }
 
       return cachedGameState.current;
     }

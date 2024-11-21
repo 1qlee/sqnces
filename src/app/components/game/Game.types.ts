@@ -40,6 +40,11 @@ export type Stats = {
   longestStreak: number;
 }
 
+export type GameMode = {
+  easyMode: Stats;
+  hardMode: Stats;
+}
+
 export type UserStats = {
   games: {
     [key in WordLength]: {

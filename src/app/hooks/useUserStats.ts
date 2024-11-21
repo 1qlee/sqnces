@@ -1,5 +1,5 @@
 import { useSyncExternalStore, useRef } from "react";
-import type { UserStats } from "../components/game/Game.types";
+import type { GameMode, Stats, UserStats, WordLength } from "../components/game/Game.types";
 
 const defaultUserStats: UserStats = {
   games: {
@@ -66,6 +66,39 @@ const defaultUserStats: UserStats = {
   },
 };
 
+function validateAndCompleteStats(obj: UserStats): boolean {
+  const requiredKeys = [
+    "played",
+    "won",
+    "lost",
+    "timesGuessed",
+    "lettersUsed",
+    "currentStreak",
+    "longestStreak",
+  ];
+  let invalid = false;
+  const clone = structuredClone(obj);
+
+  // Loop through each "num" in games
+  for (const gameKey in clone.games) {
+    const numberedKey = +gameKey as WordLength;
+    const game: GameMode = clone.games[numberedKey];
+
+    // Check both easyMode and hardMode
+    (["easyMode", "hardMode"] as const).forEach((mode) => {
+      if (game[mode]) {
+        requiredKeys.forEach((key) => {
+          if (!(key in game[mode])) {
+            invalid = true;
+          }
+        });
+      }
+    });
+  }
+
+  return invalid;
+}
+
 export default function useUserStats() {
   const cachedUserStats = useRef<UserStats>();
 
@@ -85,18 +118,22 @@ export default function useUserStats() {
 
     if (userStats) {
       const parsedUserStats = JSON.parse(userStats) as UserStats;
+      const areStatsInvalid = validateAndCompleteStats(parsedUserStats);
 
-      if ("games" in parsedUserStats) {
-        const isStateCached = JSON.stringify(cachedUserStats.current) === userStats;
-        // if no cache or cache is different from localStorage
-        if (!cachedUserStats.current || !isStateCached) {
-          cachedUserStats.current = parsedUserStats;
-        }
+      if (areStatsInvalid) {
+        cachedUserStats.current = defaultUserStats;
+        setUserStats({
+          ...defaultUserStats,
+        });
 
         return cachedUserStats.current;
       }
 
-      cachedUserStats.current = defaultUserStats
+      const isStateCached = JSON.stringify(cachedUserStats.current) === userStats;
+      // if no cache or cache is different from localStorage
+      if (!cachedUserStats.current || !isStateCached) {
+        cachedUserStats.current = parsedUserStats;
+      }
 
       return cachedUserStats.current;
     }

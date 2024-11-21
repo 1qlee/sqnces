@@ -117,7 +117,7 @@ function EndgameModal({
   };
 
   function statIndicator(userStat: number, globalStat: number, threshold = 0.5) {
-    if (!globalStat || !userStat) {
+    if (!globalStat || !userStat || globalStat === 0 || userStat === 0) { 
       return;
     }
 
@@ -173,7 +173,7 @@ function EndgameModal({
               {currentGame.status === "won" ? "You won!" : currentGame.status === "lost" ? "You lost!" : "In Progress"}
             </h2>
             {currentGame.word && (
-              <p>The word was: <b>{currentGame.word}</b></p>
+              <p className={marginStyles.mb4}>The word was: <b>{currentGame.word}</b></p>
             )}
             <div className={[flexStyles.flexList, marginStyles.mb4].join(" ")}>
               <p>
@@ -226,7 +226,7 @@ function EndgameModal({
                 </div>
                 <div className={styles.gridItem}>
                   <span className={styles.stat}>
-                    <span className={styles.statIndicator}>{statIndicator(totalLettersUsed, +(globalStats?.timesGuessed ?? 0), 3)}</span>
+                    <span className={styles.statIndicator}>{statIndicator(totalLettersUsed, +(globalStats?.lettersUsed ?? 0), 3)}</span>
                     {totalLettersUsed ?? "-"}
                   </span>
                 </div>
