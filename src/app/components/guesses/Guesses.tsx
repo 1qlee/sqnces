@@ -1,6 +1,7 @@
 "use client";
 
 import { type Dispatch, memo, type SetStateAction, useRef, useEffect } from "react";
+import { useGameContext, useGameDispatch } from "~/app/contexts/GameProvider";
 
 import styles from "./Guesses.module.css";
 import type { Editing, Game } from "~/app/components/game/Game.types";
@@ -9,9 +10,7 @@ import { X, Empty, Check, ArrowsLeftRight, Pen } from "@phosphor-icons/react";
 
 type GuessesProps = {
   guess: Guess;
-  editing: Editing;
   currentGame: Game;
-  setEditing: Dispatch<SetStateAction<Editing>>;
   setGuess: Dispatch<SetStateAction<Guess>>;
 }
 
@@ -52,11 +51,13 @@ function parseLetterIcon(type: string) {
 export const Guesses = memo(({
   currentGame,
   guess,
-  editing,
-  setEditing,
   setGuess,
 }: GuessesProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
+  const dispatch = useGameDispatch();
+  const context = useGameContext();
+  const { editing } = context;
 
   useEffect(() => {
     if (wrapperRef.current) {
@@ -78,13 +79,14 @@ export const Guesses = memo(({
 
   function handleEditCurrGuess(index: number) {
     if (editing.key === index) {
-      setEditing({
-        toggled: !editing.toggled,
+      dispatch({
+        type: "editKey",
         key: index,
       });
     }
     else {
-      setEditing({
+      dispatch({
+        type: "editKey",
         toggled: true,
         key: index,
       });
@@ -98,7 +100,8 @@ export const Guesses = memo(({
       string: guess.word,
       letters: letters,
     })
-    setEditing({
+    dispatch({
+      type: "editKey",
       toggled: true,
       key: index,
     });
@@ -115,7 +118,7 @@ export const Guesses = memo(({
             <span
               key={i}
               className={`${styles.letter} ${styles.noAnimation} ${parseLetterStyle(char.type)}`}
-              onPointerDown={() => handleEditPrevGuess(guess, i)}
+              {...(!isGameOver && { onPointerDown: () => handleEditPrevGuess(guess, index) })}
             >
               {char.letter}
               {char.type === "misplacedEmpty" ? (
@@ -145,7 +148,7 @@ export const Guesses = memo(({
                 styles.isCurrentGuess,
                 editing.toggled && editing.key === i ? styles.isEditing : "",
               ].filter(Boolean).join(" ")}
-              onPointerDown={() => handleEditCurrGuess(i)}
+              {...(!isGameOver && { onPointerDown: () => handleEditCurrGuess(i) })}
             >
               <span>{char === "Blank" ? "" : char}</span>
               <span className={styles.icon}>{editing.toggled && editing.key === i && <Pen size={10} />}</span>

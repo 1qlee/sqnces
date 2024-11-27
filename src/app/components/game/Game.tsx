@@ -6,6 +6,7 @@ import { openDB } from "idb";
 import type { ClientPuzzle } from "~/server/types/puzzle";
 import type { WordLength } from "./Game.types";
 import useGameState from "~/app/hooks/useGameState";
+import { GameProvider } from "~/app/contexts/GameProvider";
 
 import Nav from "../nav/Nav";
 import styles from "./Game.module.css";
@@ -165,7 +166,7 @@ export default function Game() {
   }
 
   return (
-    <>
+    <GameProvider>
       <Nav
         disableGameModeSelect={disableGameModeSelect}
         setShowEndgameModal={setShowEndgameModal}
@@ -209,6 +210,6 @@ export default function Game() {
           </>
         )}
       </main>
-    </>
+    </GameProvider>
   )
 }

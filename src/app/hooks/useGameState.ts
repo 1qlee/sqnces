@@ -26,7 +26,7 @@ const defaultGameState: GameState = {
   wordLength: 6,
   puzzle: 0,
   settings: {
-    hardMode: false,
+    hardMode: true,
   }
 };
 

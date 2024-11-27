@@ -65,10 +65,6 @@ export default function GuessArea({
     string: "",
     letters: [],
   });
-  const [editing, setEditing] = useState<Editing>({
-    toggled: false,
-    key: 0,
-  })
   const isGameWonOrLost = currentGame.status === "won" || currentGame.status === "lost";
 
   useEffect(() => {
@@ -124,18 +120,14 @@ export default function GuessArea({
     <>
       <Guesses
         currentGame={currentGame}
-        editing={editing}
         guess={guess}
-        setEditing={setEditing}
         setGuess={setGuess}
       />
       <Keyboard
         currentGame={currentGame}
-        editing={editing}
         guess={guess}
         keysStatus={keysStatus}
         wordData={wordData}
-        setEditing={setEditing}
         setGuess={setGuess}
         setKeysStatus={setKeysStatus}
       />

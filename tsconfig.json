@@ -32,6 +32,7 @@
       "~/components/*": ["./src/app/components/*"],
       "~/api/*": ["./src/app/api/*"],
       "~/actions/*": ["./src/app/actions/*"],
+      "~/helpers/*": ["./src/app/helpers/*"],
     }
   },
   "include": [

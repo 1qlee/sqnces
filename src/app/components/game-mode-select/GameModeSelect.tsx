@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import styles from "../select/Select.module.css";
 import { WordLength } from "../game/Game.types";
+import { useGameDispatch } from "~/app/contexts/GameProvider";
 
 type SelectProps = {
   disabled?: boolean;
@@ -18,9 +19,16 @@ export default function GameModeSelect({
 }: SelectProps) {
   const [gameState, setGameState] = useGameState();
   const wordLength = String(gameState.wordLength);
+  const dispatch = useGameDispatch();
 
   function handleSelectChange(value: string) {
     const wordLength = +value;
+
+    dispatch({
+      type: "editKey",
+      toggled: false,
+      key: 0,
+    })
     
     setGameState({ 
       ...gameState, 

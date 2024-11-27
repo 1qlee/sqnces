@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'sqnces',
     short_name: 'sqnces',
-    description: 'Game where you guess words using a 3 letter sequence.',
+    description: 'A word-guessing game where you use a 3-letter sequence to uncover the hidden word.',
     display: 'minimal-ui',
     theme_color: '#1d211c',
     icons: [

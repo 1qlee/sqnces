@@ -5,13 +5,16 @@ import type { ClientWord, CheckedGuess, GetWordResponse } from "~/server/types/p
 import type { Editing, Game, WordLength } from "../game/Game.types";
 import type { Guess } from "../guess-area/Guess.types";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
-import useGameState from "~/app/hooks/useGameState";
-import useGuessSearch from "~/app/hooks/useGuessSearch";
-import useUserStats from "~/app/hooks/useUserStats";
+import { type Dispatch, type SetStateAction, useEffect, useState, useRef, type CSSProperties } from "react";
+import useGameState from "~/hooks/useGameState";
+import useGuessSearch from "~/hooks/useGuessSearch";
+import useUserStats from "~/hooks/useUserStats";
+import { generateDateString } from "~/app/helpers/formatters/dates";
+import { validateAlpha } from "~/app/helpers/validators/text";
 import { useReward } from "react-rewards";
 import { X, Check, ArrowsLeftRight, KeyReturn, Square } from "@phosphor-icons/react";
 import { checkGuess } from "~/app/actions/checkGuess";
-import { type Dispatch, type SetStateAction, useEffect, useState, useRef, type CSSProperties } from "react";
+import { useGameContext, useGameDispatch } from "~/app/contexts/GameProvider";
 
 const KeyboardRows: Key[][] = [
   ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -45,13 +48,11 @@ function createConfettiConfig(options = {}) {
 }
 
 interface KeyboardProps {
-  editing: Editing;
   currentGame: Game;
   keysStatus: KeysStatus;
   guess: Guess;
   wordData: ClientWord;
   setKeysStatus: Dispatch<SetStateAction<KeysStatus>>
-  setEditing: Dispatch<SetStateAction<Editing>>;
   setGuess: Dispatch<SetStateAction<{
     string: string;
     letters: Key[];
@@ -62,13 +63,14 @@ export default function Keyboard({
   guess,
   currentGame,
   keysStatus,
-  editing,
   wordData,
-  setEditing,
   setGuess,
   setKeysStatus,
 }: KeyboardProps) {
   const searchGuess = useGuessSearch();
+  const context = useGameContext();
+  const { editing } = context;
+  const dispatch = useGameDispatch();
   const [userStats, setUserStats] = useUserStats();
   const [activeKeys, setActiveKeys] = useState<Key[]>([]);
   const [gameState, setGameState] = useGameState();
@@ -132,7 +134,8 @@ export default function Keyboard({
           string: prev.string.slice(0, editing.key) + " " + prev.string.slice(editing.key + 1),
           letters: prev.letters.map((letter, i) => (i === editing.key ? "Blank" : letter)),
         }));
-        setEditing({
+        dispatch({
+          type: "editKey",
           toggled: false,
           key: 0,
         });
@@ -156,7 +159,8 @@ export default function Keyboard({
         string: prev.string.slice(0, editing.key) + prev.string.slice(editing.key + 1),
         letters: prev.letters.filter((_, i) => i !== editing.key),
       }));
-      setEditing({
+      dispatch({
+        type: "editKey",
         toggled: false,
         key: 0,
       });
@@ -191,7 +195,8 @@ export default function Keyboard({
           handleBackspace(event);
         } 
         else if (key === 'Escape') {
-          setEditing({
+          dispatch({
+            type: "editKey",
             toggled: false,
             key: 0,
           })
@@ -220,15 +225,6 @@ export default function Keyboard({
   }, [loading, gameState, editing])
   
   // ***** HELPERS ***** //\
-  function validateAlpha(char: string) {
-    // if char is not an alpha character
-    if (!/^[a-zA-Z]$/.test(char)) {
-      return false;
-    }
-
-    return true;
-  }
-
   function generateWonText(numOfGuesses: number): string {
     const textCategories = {
       excited: [
@@ -343,7 +339,8 @@ export default function Keyboard({
     const guessedWord = guessRef.current.string;
 
     if (editing.toggled) {
-      return setEditing({
+      return dispatch({
+        type: "editKey",
         toggled: false,
         key: 0,
       });
@@ -435,12 +432,17 @@ export default function Keyboard({
         });
 
         if (gameStatus === "won" || gameStatus === "lost") {
+          const today = new Date();
+          const yesterday = today.setDate(today.getDate() - 1);
+          const yesterdayDateString = generateDateString(new Date(yesterday));
           const gameMode = currentGame.hardMode ? 'hardMode' : 'easyMode'
           const gameToModify = userStats.games[wordData.length as WordLength][gameMode];
           const newTimesPlayed = gameToModify.played + 1;
           const lettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0) + guessedWord.length;
           const timesGuessed = currentGame.guesses.length + 1;
-          
+          const modifiedStreak = gameToModify?.lastPlayed === yesterdayDateString ? gameToModify.currentStreak + 1 : !gameToModify?.lastPlayed ? 1 : 0;
+          const newCurrentStreak = gameStatus === "won" ? modifiedStreak : 0;
+
           setUserStats({
             ...userStats,
             games: {
@@ -449,12 +451,13 @@ export default function Keyboard({
                 ...userStats.games[wordData.length as WordLength],
                 [gameMode]: {
                   ...gameToModify,
-                  currentStreak: gameStatus === "won" ? gameToModify.currentStreak += 1 : 0,
-                  longestStreak: gameToModify.currentStreak > gameToModify.longestStreak ? gameToModify.currentStreak : gameToModify.longestStreak,
+                  currentStreak: newCurrentStreak,
+                  lastPlayed: generateDateString(),
+                  lettersUsed: parseFloat((((gameToModify.lettersUsed ?? 0) + lettersUsed) / newTimesPlayed).toFixed(2)),
+                  longestStreak: newCurrentStreak > gameToModify.longestStreak ? newCurrentStreak : gameToModify.longestStreak,
+                  lost: gameStatus === "lost" ? gameToModify.lost + 1 : gameToModify.lost,
                   played: newTimesPlayed,
                   timesGuessed: parseFloat((((gameToModify.timesGuessed ?? 0) + timesGuessed) / newTimesPlayed).toFixed(2)),
-                  lettersUsed: parseFloat((((gameToModify.lettersUsed ?? 0) + lettersUsed) / newTimesPlayed).toFixed(2)),
-                  lost: gameStatus === "lost" ? gameToModify.lost + 1 : gameToModify.lost,
                   won: gameStatus === "won" ? gameToModify.won + 1 : gameToModify.won,
                 },
               }

@@ -1,67 +1,32 @@
 import { useSyncExternalStore, useRef } from "react";
 import type { GameMode, Stats, UserStats, WordLength } from "../components/game/Game.types";
 
+function createDefaultStats(): Stats {
+  return {
+    currentStreak: 0,
+    lastPlayed: null,
+    lettersUsed: 0,
+    longestStreak: 0,
+    lost: 0,
+    played: 0,
+    timesGuessed: 0,
+    won: 0,
+  }
+};
+
 const defaultUserStats: UserStats = {
   games: {
     6: {
-      easyMode: {
-        played: 0,
-        won: 0,
-        lost: 0,
-        timesGuessed: 0,
-        lettersUsed: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-      },
-      hardMode: {
-        played: 0,
-        won: 0,
-        lost: 0,
-        timesGuessed: 0,
-        lettersUsed: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-      },
+      easyMode: createDefaultStats(),
+      hardMode: createDefaultStats(),
     },
     7: {
-      easyMode: {
-        played: 0,
-        won: 0,
-        lost: 0,
-        timesGuessed: 0,
-        lettersUsed: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-      },
-      hardMode: {
-        played: 0,
-        won: 0,
-        lost: 0,
-        timesGuessed: 0,
-        lettersUsed: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-      },
+      easyMode: createDefaultStats(),
+      hardMode: createDefaultStats(),
     },
     8: {
-      easyMode: {
-        played: 0,
-        won: 0,
-        lost: 0,
-        timesGuessed: 0,
-        lettersUsed: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-      },
-      hardMode: {
-        played: 0,
-        won: 0,
-        lost: 0,
-        timesGuessed: 0,
-        lettersUsed: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-      },
+      easyMode: createDefaultStats(),
+      hardMode: createDefaultStats(),
     },
   },
 };
@@ -75,6 +40,7 @@ function validateAndCompleteStats(obj: UserStats): boolean {
     "lettersUsed",
     "currentStreak",
     "longestStreak",
+    "lastPlayed",
   ];
   let invalid = false;
   const clone = structuredClone(obj);

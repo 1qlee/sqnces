@@ -31,13 +31,14 @@ export type Game = {
 }
 
 export type Stats = {
-  played: number;
-  won: number;
-  lost: number;
-  timesGuessed: number;
-  lettersUsed: number;
   currentStreak: number;
+  lastPlayed: string | null;
+  lettersUsed: number;
   longestStreak: number;
+  lost: number;
+  played: number;
+  timesGuessed: number;
+  won: number;
 }
 
 export type GameMode = {
