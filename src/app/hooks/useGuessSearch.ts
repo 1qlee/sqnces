@@ -1,6 +1,7 @@
 // useGuessSearch.js
 import { useCallback } from 'react';
 import { openDB } from 'idb';
+import validGuesses from '../utils/guessProvider';
 
 const GUESSES_DB = "guessesDB";
 const STORE_NAME = "guessesStore";
@@ -36,11 +37,18 @@ export default function useGuessSearch() {
       const tx = db.transaction(STORE_NAME, 'readonly');
 
       // Retrieve all entries from the store
-      const guesses: Guess[] = await tx.store.getAll() as Guess[];
+      const guesses = await tx.store.getAll() as Guess[];
+      const size = guesses.length;
+
+      if (size < validGuesses.length) {
+        throw new Error("indexdDB has an incomplete word list.");
+      }
 
       return findGuess(guesses, guess);
     } catch (error) {
-      return false;
+      // If an error occurs, search the json word list directly
+      const guesses = validGuesses.map((guess, index) => ({ guess, id: index })) as Guess[];
+      return findGuess(guesses, guess);
     }
   }, []);
 

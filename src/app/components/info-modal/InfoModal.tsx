@@ -16,169 +16,182 @@ const Rule = ({ text }: { text: string }) => {
   )
 }
 
+function exampleGuesses(isHardMode: boolean) {
+  return [
+    {
+      text: <p className={styles.guessText}><b>V</b> does not exist in the hidden word, however a letter does exist in that position.</p>,
+      letters: [
+        {
+          letter: "V",
+          type: "isIncorrect",
+          icon: <X size={10} weight="bold" />,
+        },
+        {
+          letter: "E",
+          type: "isSequence",
+          icon: null,
+        },
+        {
+          letter: "N",
+          type: "isSequence",
+          icon: null,
+        },
+        {
+          letter: "T",
+          type: "isSequence",
+          icon: null,
+        },
+      ],
+    },
+    {
+      text: (
+        <p className={styles.guessText}>
+          <b>E and R</b> are in positions where there are no letters. In this case, they exceed the length of the hidden word.
+          {isHardMode
+            ? ""
+            : (
+              <>
+                Also, <b>R</b> exists elsewhere in the hidden word.
+              </>
+            )}
+        </p>
+      ),
+      letters: [
+        {
+          letter: "E",
+          type: "isSequence",
+          icon: null,
+        },
+        {
+          letter: "N",
+          type: "isSequence",
+          icon: null,
+        },
+        {
+          letter: "T",
+          type: "isSequence",
+          icon: null,
+        },
+        {
+          letter: "E",
+          type: "isEmpty",
+          icon: <Empty size={10} weight="bold" />,
+        },
+        {
+          letter: "R",
+          type: isHardMode ? "isEmpty" : "isMisplacedEmpty",
+          icon: <Empty size={10} weight="bold" />,
+        },
+      ],
+    },
+    {
+      text: <p className={styles.guessText}><b>P</b> exists in the hidden word, but is in the wrong position.</p>,
+      letters: [
+        {
+          letter: "S",
+          type: "isIncorrect",
+          icon: <X size={10} weight="bold" />,
+        },
+        {
+          letter: "P",
+          type: "isMisplaced",
+          icon: <ArrowsLeftRight size={10} weight="bold" />,
+        },
+        {
+          letter: "E",
+          type: "sequence",
+          icon: null,
+        },
+        {
+          letter: "N",
+          type: "sequence",
+          icon: null,
+        },
+        {
+          letter: "T",
+          type: "sequence",
+          icon: null,
+        },
+      ],
+    },
+    {
+      text: <p className={styles.guessText}><b>P</b> is in the correct position.</p>,
+      letters: [
+        {
+          letter: "P",
+          type: "isCorrect",
+          icon: <Check size={10} weight="bold" />,
+        },
+        {
+          letter: "O",
+          type: "isIncorrect",
+          icon: <X size={10} weight="bold" />,
+        },
+        {
+          letter: "T",
+          type: "isIncorrect",
+          icon: <X size={10} weight="bold" />,
+        },
+        {
+          letter: "E",
+          type: "sequence",
+          icon: null,
+        },
+        {
+          letter: "N",
+          type: "sequence",
+          icon: null,
+        },
+        {
+          letter: "T",
+          type: "sequence",
+          icon: null,
+        },
+      ],
+    },
+    {
+      text: <p className={styles.guessText}>The correct word was PARENT!</p>,
+      letters: [
+        {
+          letter: "P",
+          type: "isCorrect",
+          icon: <Check size={10} weight="bold" />,
+        },
+        {
+          letter: "A",
+          type: "isCorrect",
+          icon: <Check size={10} weight="bold" />,
+        },
+        {
+          letter: "R",
+          type: "isCorrect",
+          icon: <Check size={10} weight="bold" />,
+        },
+        {
+          letter: "E",
+          type: "isCorrect",
+          icon: <Check size={10} weight="bold" />,
+        },
+        {
+          letter: "N",
+          type: "isCorrect",
+          icon: <Check size={10} weight="bold" />,
+        },
+        {
+          letter: "T",
+          type: "isCorrect",
+          icon: <Check size={10} weight="bold" />,
+        },
+      ],
+    },
+  ]
+}
+
 const rules = [
   "Guesses MUST include the sequence in its entirety and in its original order.",
   "Guesses MUST be at least 4 letters long.",
   "Guesses CANNOT exceed the length of the hidden word."
 ];
-
-const exampleGuesses = [
-  {
-    text: <p className={styles.guessText}><b>V</b> does not exist in the hidden word, however a letter does exist in that position.</p>,
-    letters: [
-      {
-        letter: "V",
-        type: "isIncorrect",
-        icon: <X size={10} weight="bold" />,
-      },
-      {
-        letter: "E",
-        type: "isSequence",
-        icon: null,
-      },
-      {
-        letter: "N",
-        type: "isSequence",
-        icon: null,
-      },
-      {
-        letter: "T",
-        type: "isSequence",
-        icon: null,
-      },
-    ],
-  },
-  {
-    text: <p className={styles.guessText}><b>E and R</b> are in positions where there are no letters - they exceed the length of the hidden word. Also, <b>R</b> exists elsewhere in the hidden word.</p>,
-    letters: [
-      {
-        letter: "E",
-        type: "isSequence",
-        icon: null,
-      },
-      {
-        letter: "N",
-        type: "isSequence",
-        icon: null,
-      },
-      {
-        letter: "T",
-        type: "isSequence",
-        icon: null,
-      },
-      {
-        letter: "E",
-        type: "isEmpty",
-        icon: <Empty size={10} weight="bold" />,
-      },
-      {
-        letter: "R",
-        type: "isMisplacedEmpty",
-        icon: <Empty size={10} weight="bold" />,
-      },
-    ],
-  },
-  {
-    text: <p className={styles.guessText}><b>P</b> exists in the hidden word, but is in the wrong position.</p>,
-    letters: [
-      {
-        letter: "S",
-        type: "isIncorrect",
-        icon: <X size={10} weight="bold" />,
-      },
-      {
-        letter: "P",
-        type: "isMisplaced",
-        icon: <ArrowsLeftRight size={10} weight="bold" />,
-      },
-      {
-        letter: "E",
-        type: "sequence",
-        icon: null,
-      },
-      {
-        letter: "N",
-        type: "sequence",
-        icon: null,
-      },
-      {
-        letter: "T",
-        type: "sequence",
-        icon: null,
-      },
-    ],
-  },
-  {
-    text: <p className={styles.guessText}><b>P</b> is in the correct position.</p>,
-    letters: [
-      {
-        letter: "P",
-        type: "isCorrect",
-        icon: <Check size={10} weight="bold" />,
-      },
-      {
-        letter: "O",
-        type: "isIncorrect",
-        icon: <X size={10} weight="bold" />,
-      },
-      {
-        letter: "T",
-        type: "isIncorrect",
-        icon: <X size={10} weight="bold" />,
-      },
-      {
-        letter: "E",
-        type: "sequence",
-        icon: null,
-      },
-      {
-        letter: "N",
-        type: "sequence",
-        icon: null,
-      },
-      {
-        letter: "T",
-        type: "sequence",
-        icon: null,
-      },
-    ],
-  },
-  {
-    text: <p className={styles.guessText}>The correct word was PARENT!</p>,
-    letters: [
-      {
-        letter: "P",
-        type: "isCorrect",
-        icon: <Check size={10} weight="bold" />,
-      },
-      {
-        letter: "A",
-        type: "isCorrect",
-        icon: <Check size={10} weight="bold" />,
-      },
-      {
-        letter: "R",
-        type: "isCorrect",
-        icon: <Check size={10} weight="bold" />,
-      },
-      {
-        letter: "E",
-        type: "isCorrect",
-        icon: <Check size={10} weight="bold" />,
-      },
-      {
-        letter: "N",
-        type: "isCorrect",
-        icon: <Check size={10} weight="bold" />,
-      },
-      {
-        letter: "T",
-        type: "isCorrect",
-        icon: <Check size={10} weight="bold" />,
-      },
-    ],
-  },
-]
 
 const shortcuts = [
   {
@@ -212,6 +225,7 @@ const tips = [
 
 const InfoModal = () => {
   const [gameState, setGameState] = useGameState();
+  const isHardMode = gameState.settings.hardMode;
 
   return (
     <Dialog.Root
@@ -286,9 +300,9 @@ const InfoModal = () => {
                     />
                   ))}
                 </ul>
-                <h3 className={styles.subtitle}>Example Guesses (non hard mode)</h3>
+                <h3 className={styles.subtitle}>Example Guesses ({isHardMode ? "Hard mode" : "Easy mode"})</h3>
                 <p className={styles.text}>For a 6-letter hidden word:</p>
-                {exampleGuesses.map((guess, index) => (
+                {exampleGuesses(isHardMode).map((guess, index) => (
                   <div className={styles.example} key={index}>
                     <div
                       key={index}
@@ -363,7 +377,7 @@ const InfoModal = () => {
                 ))}
               </Tabs.Content>
               <div className={styles.footer}>
-                sqnces is currently in beta. Please <b><a href="mailto:sqnces@gmail.com">email me</a></b> if you have any feedback or notice any bugs.
+                Please <b><a href="mailto:sqnces.game@gmail.com">email me</a></b> if you have any feedback or notice any bugs.
               </div>
             </div>
           </Tabs.Root>

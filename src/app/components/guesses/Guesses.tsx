@@ -118,7 +118,7 @@ export const Guesses = memo(({
             <span
               key={i}
               className={`${styles.letter} ${styles.noAnimation} ${parseLetterStyle(char.type)}`}
-              {...(!isGameOver && { onPointerDown: () => handleEditPrevGuess(guess, index) })}
+              {...(!isGameOver && { onPointerDown: () => handleEditPrevGuess(guess, i) })}
             >
               {char.letter}
               {char.type === "misplacedEmpty" ? (

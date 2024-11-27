@@ -5,12 +5,18 @@
   background-color: transparent;
   border: 2px solid var(--foreground);
   border-radius: 0.25rem;
-  transition: border-color 0.2s;
+  box-shadow: var(--shadow-interactive);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   padding: 0.25rem;
 
   &:hover {
     cursor: pointer;
     background-color: var(--olive-3);
+  }
+  
+  &:active {
+    box-shadow: none;
+    transform: translateY(2px);
   }
 }
 

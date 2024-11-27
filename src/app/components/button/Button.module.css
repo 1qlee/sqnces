@@ -1,14 +1,21 @@
 .button {
-  background-color: var(--foreground);
-  color: var(--background);
+  background-color: var(--background);
+  color: var(--foreground);
   padding: 0.5rem 2rem;
-  border-radius: 2rem;
-  border: none;
+  border-radius: 0.5rem;
+  border: 2px solid var(--foreground);
+  box-shadow: 0 2px 0 var(--foreground);
   text-align: center;
   white-space: nowrap;
   font-size: 1.125rem;
+  transition: transform 0.2s, box-shadow 0.2s;
 
   &:hover {
     cursor: pointer;
+  }
+
+  &:active {
+    box-shadow: none;
+    transform: translateY(2px);
   }
 }

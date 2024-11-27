@@ -12,12 +12,16 @@
   gap: 0.25rem;
   background-color: var(--background);
   border: 2px solid var(--foreground);
+  box-shadow: var(--shadow-interactive);
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
 
   & > span {
     white-space: nowrap;
   }
 
   &[data-state="open"] {
+    box-shadow: none;
+    transform: translateY(2px);
     .icon {
       transform: rotate(180deg);
     }
@@ -32,6 +36,11 @@
   &:hover {
     cursor: pointer;
     background-color: var(--grayed);
+  }
+
+  &:active, &:focus {
+    box-shadow: none;
+    transform: translateY(2px);
   }
 }
 

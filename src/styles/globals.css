@@ -19,6 +19,7 @@
   --grayed: var(--olive-4);
   --shadow-normal: rgba(0, 0, 0, 0.3);
   --shadow-active: rgba(0, 0, 0, 0.1);
+  --shadow-interactive: 0 2px 0 var(--foreground);
   --overlay: rgba(0, 0, 0, 0.5);
   --on: #30A46C;
   --off: #E5484D;

@@ -22,7 +22,7 @@ export default function GameModeSelect({
   const dispatch = useGameDispatch();
 
   function handleSelectChange(value: string) {
-    const wordLength = +value;
+    const wordLength = +value as WordLength;
 
     dispatch({
       type: "editKey",
@@ -33,6 +33,9 @@ export default function GameModeSelect({
     setGameState({ 
       ...gameState, 
       wordLength: wordLength,
+      settings: {
+        hardMode: gameState.games[wordLength].hardMode,
+      }
     })
   }
 
