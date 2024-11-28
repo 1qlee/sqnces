@@ -217,7 +217,7 @@ const tips = [
   "There are no proper nouns in any hidden word list. Not on purpose, anyway. If you find one, please contact me for its removal.",
   "Plural forms of words that simply add an 'S' or 'ES' to the end of a word are not in any hidden word list.",
   "Past-tense conjugations of words that simply add a 'D' or 'ED' to the end of a word are not in any hidden word list.",
-  "Words that end in 'ING' only exist in the 6-letter hidden word list.",
+  "Words that end in 'ING' do not exist in any hidden word list.",
   "You can input a blank placeholder tile by pressing Space.",
   "Press any tile in your guess to replace the entire letter or delete it.",
   "Press any tile in any previous guess to copy it to your current guess. Doing this will also enable edit mode on the tile you selected.",
