@@ -39,6 +39,7 @@ export default function Game() {
     timeout: 500,
     initialEntered: true,
     preEnter: true,
+    mountOnEnter: true,
     unmountOnExit: true,
   });
   const currentGame = gameState?.games && gameState.games[gameState.wordLength as WordLength];
