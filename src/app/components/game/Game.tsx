@@ -160,7 +160,7 @@ export default function Game() {
     }
   }, [puzzleData.id, toggle])
 
-  if (loading || isMounted) {
+  if (isMounted) {
     return <Loader transition={status} />
   }
 
