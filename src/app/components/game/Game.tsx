@@ -160,6 +160,10 @@ export default function Game() {
     }
   }, [puzzleData.id, toggle])
 
+  if (loading || isMounted) {
+    return <Loader transition={status} />
+  }
+
   return (
     <GameProvider>
       <Nav
@@ -167,7 +171,6 @@ export default function Game() {
         setShowEndgameModal={setShowEndgameModal}
         setShowSettingsModal={setShowSettingsModal}
       />
-      {(loading || isMounted) && <Loader transition={status} />}
       <main
         className={styles.game}
       >
