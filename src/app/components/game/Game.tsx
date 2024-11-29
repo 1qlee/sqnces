@@ -36,7 +36,7 @@ export default function Game() {
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false); 
   const [gameState, setGameState] = useGameState();
   const [{ status, isMounted }, toggle] = useTransitionState({
-    timeout: 700,
+    timeout: 1000,
     initialEntered: true,
     preEnter: true,
     mountOnEnter: true,
