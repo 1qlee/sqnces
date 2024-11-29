@@ -161,7 +161,7 @@ export default function Game() {
       console.log("Reset")
       resetGameState();
     }
-  }, [puzzleData.id])
+  }, [])
 
   if (isMounted) {
     return <Loader transition={status} />
