@@ -15,10 +15,6 @@
   &.exiting {
     opacity: 0;
   }
-
-  &.exited {
-    display: none;
-  }
 }
 
 .letter {
