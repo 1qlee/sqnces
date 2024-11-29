@@ -1,1 +1,200 @@
-[{"words":[{"id":7315,"word":"SYMBOLIC","length":8,"letters":["S","Y","M","B","O","","",""],"sequence":{"id":1542,"string":"LIC","index":5,"letters":["L","I","C"],"score":{"id":4398,"wordLength":8,"score":139,"category":"Medium","sequenceId":1542}}},{"id":4838,"word":"TOOLBOX","length":7,"letters":["T","","","","B","O","X"],"sequence":{"id":1735,"string":"OOL","index":1,"letters":["O","O","L"],"score":{"id":2713,"wordLength":7,"score":55,"category":"Medium","sequenceId":1735}}},{"id":5,"word":"ABOARD","length":6,"letters":["A","B","O","","",""],"sequence":{"id":16,"string":"ARD","index":3,"letters":["A","R","D"],"score":{"id":16,"wordLength":6,"score":67,"category":"Easy","sequenceId":16}}}],"id":1,"date":"11-26-2024"},{"words":[{"id":7089,"word":"SEDIMENT","length":8,"letters":["S","E","D","I","M","","",""],"sequence":{"id":31,"string":"ENT","index":5,"letters":["E","N","T"],"score":{"id":4090,"wordLength":8,"score":475,"category":"Easy","sequenceId":31}}},{"id":2962,"word":"CLEANSE","length":7,"letters":["C","","","","N","S","E"],"sequence":{"id":836,"string":"LEA","index":1,"letters":["L","E","A"],"score":{"id":2810,"wordLength":7,"score":135,"category":"Easy","sequenceId":836}}},{"id":1831,"word":"RETOLD","length":6,"letters":["","","","O","L","D"],"sequence":{"id":2943,"string":"RET","index":0,"letters":["R","E","T"],"score":{"id":1178,"wordLength":6,"score":63,"category":"Easy","sequenceId":2943}}}],"id":2,"date":"11-27-2024"}]
+[
+  {
+    "words": [
+      {
+        "id": 5870,
+        "word": "EXTENDER",
+        "length": 8,
+        "letters": [
+          "E",
+          "X",
+          "T",
+          "E",
+          "N",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 736,
+          "string": "DER",
+          "index": 5,
+          "letters": [
+            "D",
+            "E",
+            "R"
+          ],
+          "score": {
+            "id": 4730,
+            "wordLength": 8,
+            "score": 421,
+            "category": "Easy",
+            "sequenceId": 736
+          }
+        }
+      },
+      {
+        "id": 4016,
+        "word": "OATMEAL",
+        "length": 7,
+        "letters": [
+          "O",
+          "A",
+          "T",
+          "M",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 280,
+          "string": "EAL",
+          "index": 4,
+          "letters": [
+            "E",
+            "A",
+            "L"
+          ],
+          "score": {
+            "id": 2884,
+            "wordLength": 7,
+            "score": 96,
+            "category": "Medium",
+            "sequenceId": 280
+          }
+        }
+      },
+      {
+        "id": 2409,
+        "word": "UPSIDE",
+        "length": 6,
+        "letters": [
+          "U",
+          "P",
+          "S",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 748,
+          "string": "IDE",
+          "index": 3,
+          "letters": [
+            "I",
+            "D",
+            "E"
+          ],
+          "score": {
+            "id": 485,
+            "wordLength": 6,
+            "score": 84,
+            "category": "Easy",
+            "sequenceId": 748
+          }
+        }
+      }
+    ],
+    "id": 3,
+    "date": "11-28-2024"
+  },
+  {
+    "words": [
+      {
+        "id": 6124,
+        "word": "HEREDITY",
+        "length": 8,
+        "letters": [
+          "H",
+          "E",
+          "",
+          "",
+          "",
+          "I",
+          "T",
+          "Y"
+        ],
+        "sequence": {
+          "id": 1872,
+          "string": "RED",
+          "index": 2,
+          "letters": [
+            "R",
+            "E",
+            "D"
+          ],
+          "score": {
+            "id": 4135,
+            "wordLength": 8,
+            "score": 539,
+            "category": "Easy",
+            "sequenceId": 1872
+          }
+        }
+      },
+      {
+        "id": 2634,
+        "word": "ANTIWAR",
+        "length": 7,
+        "letters": [
+          "",
+          "",
+          "",
+          "I",
+          "W",
+          "A",
+          "R"
+        ],
+        "sequence": {
+          "id": 250,
+          "string": "ANT",
+          "index": 0,
+          "letters": [
+            "A",
+            "N",
+            "T"
+          ],
+          "score": {
+            "id": 1946,
+            "wordLength": 7,
+            "score": 189,
+            "category": "Easy",
+            "sequenceId": 250
+          }
+        }
+      },
+      {
+        "id": 197,
+        "word": "BEFALL",
+        "length": 6,
+        "letters": [
+          "B",
+          "E",
+          "F",
+          "",
+          "",
+          ""
+        ],
+        "sequence": {
+          "id": 171,
+          "string": "ALL",
+          "index": 3,
+          "letters": [
+            "A",
+            "L",
+            "L"
+          ],
+          "score": {
+            "id": 137,
+            "wordLength": 6,
+            "score": 105,
+            "category": "Easy",
+            "sequenceId": 171
+          }
+        }
+      }
+    ],
+    "id": 4,
+    "date": "11-29-2024"
+  }
+]

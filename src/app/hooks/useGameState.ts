@@ -6,19 +6,19 @@ const defaultGameState: GameState = {
     6: {
       guesses: [],
       status: "notStarted",
-      hardMode: false,
+      hardMode: true,
       word: "",
     },
     7: {
       guesses: [],
       status: "notStarted",
-      hardMode: false,
+      hardMode: true,
       word: "",
     },
     8: {
       guesses: [],
       status: "notStarted",
-      hardMode: false,
+      hardMode: true,
       word: "",
     },
   },
