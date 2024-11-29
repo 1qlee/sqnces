@@ -145,11 +145,13 @@ export default function Game() {
         const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch (error) {
+        console.log("🚀 ~ fetchPuzzle ~ error:", error)
         setLoading(false);
-        toggle();
+        toggle(false);
       } finally {
+        console.log("Finally")
         setLoading(false);
-        toggle();
+        toggle(false);
       }
     }
 
