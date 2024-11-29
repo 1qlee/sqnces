@@ -13,7 +13,6 @@ export default function Loader({ percent, transition }: LoaderProps) {
 
   return (
     <div className={clsx(styles.container, transition && styles[transition])}>
-      <h1>{transition}</h1>
       <div className={styles.wrapper}>
         <div className={wordStyles.word}>
           <span className={clsx(wordStyles.letter, styles.letter)}>S</span>
