@@ -24,7 +24,7 @@ import SettingsModal from "../settings-modal/SettingsModal";
 // const CACHE_ERR_MSG = "Something went wrong. Your browser's cache might be full. Please try deleting the cache and refresh the page.";
 
 export default function Game() {
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [puzzleData, setPuzzleData] = useState<ClientPuzzle>({
     id: 0,
     words: [],
@@ -144,8 +144,10 @@ export default function Game() {
         const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch (error) {
+        setLoading(false);
         toggle();
       } finally {
+        setLoading(false);
         toggle();
       }
     }
@@ -159,14 +161,12 @@ export default function Game() {
 
   return (
     <GameProvider>
-      {isMounted && (
-        <Loader transition={status} />
-      )}
       <Nav
         disableGameModeSelect={disableGameModeSelect}
         setShowEndgameModal={setShowEndgameModal}
         setShowSettingsModal={setShowSettingsModal}
       />
+      {(loading || isMounted) && <Loader transition={status} />}
       <main
         className={styles.game}
       >
