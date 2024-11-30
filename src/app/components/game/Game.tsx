@@ -155,13 +155,16 @@ export default function Game() {
       }
     }
 
-    void fetchPuzzle();
-
-    if (puzzleData.id !== gameState.puzzle) {
-      console.log("Reset")
-      resetGameState();
+    if (loading) {
+      void fetchPuzzle();
     }
-  }, [])
+    else {
+      if (puzzleData.id !== gameState.puzzle) {
+        console.log("Reset")
+        resetGameState();
+      }
+    }
+  }, [puzzleData.id, loading])
 
   if (isMounted) {
     return <Loader transition={status} />
