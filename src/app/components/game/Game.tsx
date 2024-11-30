@@ -36,7 +36,7 @@ export default function Game() {
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false); 
   const [gameState, setGameState] = useGameState();
   const [{ status, isMounted }, toggle] = useTransitionState({
-    timeout: 750,
+    timeout: 500,
     initialEntered: true,
     preEnter: true,
     mountOnEnter: true,
@@ -169,11 +169,13 @@ export default function Game() {
 
   return (
     <GameProvider>
-      <Nav
-        disableGameModeSelect={disableGameModeSelect}
-        setShowEndgameModal={setShowEndgameModal}
-        setShowSettingsModal={setShowSettingsModal}
-      />
+      {!showMainMenu && (
+        <Nav
+          disableGameModeSelect={disableGameModeSelect}
+          setShowEndgameModal={setShowEndgameModal}
+          setShowSettingsModal={setShowSettingsModal}
+        />
+      )}
       <main
         className={styles.game}
       >
