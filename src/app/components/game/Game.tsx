@@ -145,11 +145,9 @@ export default function Game() {
         const puzzleData = await getPuzzle(date);
         setPuzzleData(puzzleData);
       } catch (error) {
-        console.log("🚀 ~ fetchPuzzle ~ error:", error)
         setLoading(false);
         toggle(false);
       } finally {
-        console.log("Finally")
         setLoading(false);
         toggle(false);
       }
@@ -160,7 +158,6 @@ export default function Game() {
     }
     else {
       if (puzzleData.id !== gameState.puzzle) {
-        console.log("Reset")
         resetGameState();
       }
     }
@@ -172,6 +169,7 @@ export default function Game() {
 
   return (
     <GameProvider>
+      <h1>{isMounted}</h1>
       {!showMainMenu && (
         <Nav
           disableGameModeSelect={disableGameModeSelect}

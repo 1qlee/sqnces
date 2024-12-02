@@ -8,7 +8,7 @@ function createDefaultStats(): Stats {
     lettersUsed: 0,
     longestStreak: 0,
     lost: 0,
-    played: 0,
+    timesPlayed: 0,
     timesGuessed: 0,
     won: 0,
   }
@@ -33,9 +33,9 @@ const defaultUserStats: UserStats = {
 
 function validateAndCompleteStats(obj: UserStats): boolean {
   const requiredKeys = [
-    "played",
     "won",
     "lost",
+    "timesPlayed",
     "timesGuessed",
     "lettersUsed",
     "currentStreak",

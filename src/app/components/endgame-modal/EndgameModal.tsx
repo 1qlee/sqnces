@@ -250,7 +250,7 @@ function EndgameModal({
                   {globalStats?.timesPlayed ?? "-"}
                 </div>
                 <div className={styles.gridItem}>
-                  {currentGameStats?.played ?? "-"}
+                  {currentGameStats?.timesPlayed ?? "-"}
                 </div>
               </div>
               <div className={styles.gridColumn}>
@@ -264,7 +264,7 @@ function EndgameModal({
                   {globalStats?.winRate ? `${globalStats.winRate}%` : "-"}
                 </div>
                 <div className={styles.gridItem}>
-                  {currentGameStats?.played > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.played) * 100)}%` : "-"}
+                  {currentGameStats?.timesPlayed > 0 ? `${Math.round((currentGameStats?.won / currentGameStats?.timesPlayed) * 100)}%` : "-"}
                 </div>
               </div>
               <div className={styles.gridColumn}>

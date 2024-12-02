@@ -437,9 +437,13 @@ export default function Keyboard({
           const yesterdayDateString = generateDateString(new Date(yesterday));
           const gameMode = currentGame.hardMode ? 'hardMode' : 'easyMode'
           const gameToModify = userStats.games[wordData.length as WordLength][gameMode];
-          const newTimesPlayed = gameToModify.played + 1;
+          const newTimesPlayed = gameToModify.timesPlayed + 1;
           const lettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0) + guessedWord.length;
+          const totalLettersUsed = gameToModify.lettersUsed * gameToModify.timesPlayed;
+          const newLettersUsed = parseFloat(((totalLettersUsed + lettersUsed) / newTimesPlayed).toFixed(1));
           const timesGuessed = currentGame.guesses.length + 1;
+          const totalTimesGuessed = gameToModify.timesGuessed * gameToModify.timesPlayed;
+          const newTimesGuessed = parseFloat(((totalTimesGuessed + timesGuessed) / newTimesPlayed).toFixed(1));
           const modifiedStreak = gameToModify?.lastPlayed === yesterdayDateString ? gameToModify.currentStreak + 1 : !gameToModify?.lastPlayed ? 1 : 0;
           const newCurrentStreak = gameStatus === "won" ? modifiedStreak : 0;
 
@@ -453,11 +457,11 @@ export default function Keyboard({
                   ...gameToModify,
                   currentStreak: newCurrentStreak,
                   lastPlayed: generateDateString(),
-                  lettersUsed: parseFloat((((gameToModify.lettersUsed ?? 0) + lettersUsed) / newTimesPlayed).toFixed(2)),
+                  lettersUsed: newLettersUsed,
                   longestStreak: newCurrentStreak > gameToModify.longestStreak ? newCurrentStreak : gameToModify.longestStreak,
                   lost: gameStatus === "lost" ? gameToModify.lost + 1 : gameToModify.lost,
-                  played: newTimesPlayed,
-                  timesGuessed: parseFloat((((gameToModify.timesGuessed ?? 0) + timesGuessed) / newTimesPlayed).toFixed(2)),
+                  timesPlayed: newTimesPlayed,
+                  timesGuessed: newTimesGuessed,
                   won: gameStatus === "won" ? gameToModify.won + 1 : gameToModify.won,
                 },
               }

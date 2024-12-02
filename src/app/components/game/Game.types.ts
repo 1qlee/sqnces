@@ -36,7 +36,7 @@ export type Stats = {
   lettersUsed: number;
   longestStreak: number;
   lost: number;
-  played: number;
+  timesPlayed: number;
   timesGuessed: number;
   won: number;
 }
