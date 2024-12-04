@@ -84,19 +84,31 @@ export default function MainMenu({
     }
   }
 
-  function handleHeadingText() {
-    switch(status) {
-      case "notStarted":
-        return "New Game";
-      case "playing":
-        return "Continue Game";
-      case "won":
-        return "You won!";
-      case "lost":
-        return "You lost...";
-      default:
-        return "Loading...";
-    }
+  function resetGameState() {
+    setGameState({
+      ...gameState,
+      games: {
+        6: {
+          guesses: [],
+          status: "notStarted",
+          hardMode: true,
+          word: "",
+        },
+        7: {
+          guesses: [],
+          status: "notStarted",
+          hardMode: true,
+          word: "",
+        },
+        8: {
+          guesses: [],
+          status: "notStarted",
+          hardMode: true,
+          word: "",
+        },
+      },
+      wordLength: 6,
+    })
   }
 
   return (
@@ -199,6 +211,7 @@ export default function MainMenu({
             {puzzle.date}
           </p>
           <p>Puzzle #{puzzle.id}</p>
+            <small style={{ width: "267px", fontSize: "0.75rem", marginTop: "0.5rem", lineHeight: "1.2" }}>Earlier today, there was a bug that might have prevented your game state from resetting. If you think this is the case for you, <b style={{cursor: "pointer"}} onClick={() => resetGameState()}>please click here to reset your game state</b>. <br /><br /> WARNING: This will wipe all existing guesses from your current games. It will not affect your stats.</small>
         </div>
       )}
     </div>
