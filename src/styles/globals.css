@@ -30,6 +30,7 @@
   --sequence: #dcfce7;
   --empty: var(--olive-6);
   --highlight: rgb(37 99 235 / 40%);
+  --coffee-yellow: #ffdd04;
 }
 
 [data-theme='dark'] {

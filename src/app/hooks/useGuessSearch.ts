@@ -46,7 +46,6 @@ export default function useGuessSearch() {
 
       return findGuess(guesses, guess);
     } catch (error) {
-      console.log("FALLBACK")
       // If an error occurs, search the json word list directly
       const guesses = validGuesses.map((guess, index) => ({ guess, id: index })) as Guess[];
       return findGuess(guesses, guess);

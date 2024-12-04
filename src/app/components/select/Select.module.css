@@ -10,6 +10,7 @@
   position: relative;
   line-height: 1;
   gap: 0.25rem;
+  font-size: 0.875rem;
   background-color: var(--background);
   border: 2px solid var(--foreground);
   box-shadow: var(--shadow-interactive);
@@ -63,20 +64,36 @@
 .item {
   display: flex;
   gap: 0.25rem;
-  padding: 0.75rem 1rem 0.75rem 1.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
   align-items: center;
   position: relative;
   user-select: none;
-
-  &[data-state="checked"] {
-    background-color: var(--foreground);
-    color: var(--background);
-  }
+  margin-bottom: 0.25rem;
 
   &[data-highlighted] {
     &:not([data-state="checked"]) {
       background-color: var(--grayed);
     }
+  }
+}
+
+.itemStatus {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  transform: translateY(-50%);
+  width: 8px;
+  border-radius: 50%;
+  height: 8px;
+  z-index: 120;
+
+  &.notStarted {
+    background-color: var(--olive-12);
+  }
+
+  &.playing {
+    background-color: yellow;
   }
 }
 

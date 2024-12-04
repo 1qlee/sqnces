@@ -2,7 +2,7 @@ import "~/styles/toast.css";
 import styles from "./Keyboard.module.css";
 import toast from "react-hot-toast";
 import type { ClientWord, CheckedGuess, GetWordResponse } from "~/server/types/puzzle";
-import type { Editing, Game, WordLength } from "../game/Game.types";
+import type { Game, WordLength } from "../game/Game.types";
 import type { Guess } from "../guess-area/Guess.types";
 import type { Status, KeysStatus, Key, KeyStyleOrIcon } from "../keyboard/Keyboard.types";
 import { type Dispatch, type SetStateAction, useEffect, useState, useRef, type CSSProperties } from "react";
@@ -229,7 +229,7 @@ export default function Keyboard({
     const textCategories = {
       excited: [
         "Hot damn, that was fast.",
-        "BOOM! Got 'em.",
+        "You got me. You boomed me. You're so good (x4).",
         "Behold, the power of your brain.",
         "We got a word wiz over here!",
         "You made it look easy.",
@@ -237,12 +237,12 @@ export default function Keyboard({
         "Winner, winner, sequenced dinner!",
         "Sequentastic!",
         "Are you a dictionary?!",
-        "Here's a 6-letter word for you: W-I-N-N-E-R.",
+        "Here's a word for you: W-I-N-N-E-R.",
       ],
       normal: [
         "Nice job!",
         "Not too shabby!",
-        "You did it. You really did it!",
+        "You did it! You really did it!",
         "Bravo!",
         "Ding ding ding!",
         "Great work there!",
@@ -383,7 +383,7 @@ export default function Keyboard({
             guesses: currentGame.guesses,
             hardMode: gameState.settings.hardMode,
             length: wordData.length,
-            puzzleId: gameState.puzzle,
+            puzzleId: gameState.puzzle.id,
             usersDate: new Date().toLocaleDateString(),
           }),
           timeoutPromise,

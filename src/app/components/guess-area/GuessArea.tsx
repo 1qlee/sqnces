@@ -22,7 +22,7 @@ export default function GuessArea({
   setDisableGameModeSelect,
 }: GuessAreaProps) {
   const [gameState, setGameState] = useGameState(); 
-  const [delayedStatus, setDelayedStatus] = useState<GameStatus>(undefined);
+  const [delayedStatus, setDelayedStatus] = useState<GameStatus>();
   const guesses = currentGame.guesses;
   const letterStatusMap: Record<string, Status> = guesses.reduce((acc, guess) => {
     // Temporary map to store the highest priority type for each letter in the current guess

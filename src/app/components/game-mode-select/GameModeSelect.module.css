@@ -1,0 +1,23 @@
+.ticker {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  gap: 1px;
+  left: 1rem;
+  width: 4rem;
+}
+
+.tick {
+  flex: 1;
+  background-color: var(--grayed);
+  height: 4px;
+  transition: background-color 0.3s;
+
+  &.isFilled {
+    background-color: var(--foreground);
+  }
+
+  &.isCorrect {
+    background-color: var(--correct);
+  }
+}

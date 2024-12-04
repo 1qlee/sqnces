@@ -4,7 +4,6 @@ import useGameState from "~/app/hooks/useGameState";
 import flexStyles from "../styles/Flex.module.css";
 
 import Toggle from "../toggle/Toggle";
-import { Circle } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import type { WordLength } from "../game/Game.types";
 
@@ -39,12 +38,7 @@ export default function HardModeToggle() {
       onClick={() => handleToggle()}
     >
       <div className={flexStyles.flexCentered}>
-        <Circle 
-          size={16} 
-          weight="fill" 
-          color={isHardModeOn ? "var(--on)" : "var(--off)"} 
-        />
-        <span style={{ fontSize: "1rem" }}>
+        <span>
           {isHardModeOn ? "On" : "Off"}
         </span>
       </div>

@@ -6,7 +6,7 @@ import clsx from "clsx"
 
 import toast from "react-hot-toast"
 import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react"
-import type { ClientPuzzle, GlobalStats } from "~/server/types/puzzle"
+import type { GlobalStats } from "~/server/types/puzzle"
 import type { Game, WordLength } from "../game/Game.types"
 import useGameState from "~/app/hooks/useGameState"
 import useUserStats from "~/app/hooks/useUserStats"
@@ -15,33 +15,34 @@ import { XCircle, CaretUp, CaretDoubleUp, CaretDown, CaretDoubleDown } from '@ph
 import * as Dialog from '@radix-ui/react-dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import Button from "../button/Button"
+import buttonStyles from "../button/Button.module.css"
 import Checkbox from "../checkbox/Checkbox"
 import { getPuzzleStats } from "~/app/actions/getPuzzleStats"
 
 type EndgameModalProps = {
   currentGame: Game;
-  puzzleData: ClientPuzzle;
   showEndgameModal: boolean;
   setShowEndgameModal: Dispatch<SetStateAction<boolean>>;
 }
 
 function EndgameModal({
   currentGame,
-  puzzleData,
   showEndgameModal,
   setShowEndgameModal,
 }: EndgameModalProps) {
   const [userStats] = useUserStats();
-  const [gameState] = useGameState();
+  const [gameState, setGameState] = useGameState();
   const [statsScrolledToEnd, setStatsScrolledToEnd] = useState(true);
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
   const [globalStats, setGlobalStats] = useState<GlobalStats>();
+  const puzzleData = gameState.puzzle;
   const currentPuzzle = puzzleData.words.find(word => word.length === gameState.wordLength)!;
   const totalGuesses = currentGame.guesses.length;
   const totalLettersUsed = currentGame.guesses.reduce((acc, guess) => guess.word.length + acc, 0);
   const difficulty = gameState.settings.hardMode ? "hardMode" : "easyMode";
   const currentGameStats = userStats.games[gameState.wordLength as WordLength][difficulty];
   const statsGridRef = useRef<HTMLDivElement>(null);
+  const bannerData = createBannerData();
 
   async function handleCopyToClipboard() {
     if (navigator.clipboard && window.isSecureContext) {
@@ -115,6 +116,29 @@ function EndgameModal({
       setStatsScrolledToEnd(hasNotReachedEnd);
     }
   };
+  
+  function createBannerData() {
+    let unfinishedGames = 2;
+
+    const games = Object.entries(gameState.games).reduce((acc, [key, value]) => {
+      if (+key === gameState.wordLength) {
+        return acc; // Skip this iteration
+      }
+
+      if (value.status === "won" || value.status === "lost") {
+        unfinishedGames--;
+        return acc; // Skip this iteration
+      }
+
+      acc.push(key); // Add valid key
+      return acc;
+    }, [] as string[]);
+    
+    return {
+      unfinishedGames,
+      games,
+    };
+  }
 
   function statIndicator(userStat: number, globalStat: number, threshold = 0.5) {
     if (!globalStat || !userStat || globalStat === 0 || userStat === 0) { 
@@ -303,6 +327,30 @@ function EndgameModal({
                 />
               </div>
             )}
+            <div className={styles.banner}>
+              {bannerData.unfinishedGames ? (
+                <h2 className={styles.bannerHeading}>Finish all of today's puzzles:</h2>
+              ) : (
+                <h2>🎉 You've completed all the puzzles! 🎉</h2>
+              )}
+              <div className={styles.bannerButtonWrapper}>
+                {bannerData.games.map((key, i) => (
+                  <Button
+                    key={key}
+                    className={buttonStyles.isSmall}
+                    onClick={() => setGameState({
+                      ...gameState,
+                      wordLength: +key as WordLength,
+                      settings: {
+                        hardMode: gameState.games[+key as WordLength].hardMode,
+                      }
+                    })}
+                  >
+                    Play {key} Letter
+                  </Button>
+                ))}
+              </div>
+            </div>
             <div
               className={styles.footer}
             >

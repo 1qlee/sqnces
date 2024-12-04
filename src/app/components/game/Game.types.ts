@@ -1,3 +1,4 @@
+import { ClientWord } from "~/server/types/puzzle";
 import type { GuessData } from "../guess-area/Guess.types";
 
 export type Editing = {
@@ -11,7 +12,12 @@ export type GameSettings = {
   hardMode: boolean;
 }
 
-export type GameStatus = "won" | "lost" | "playing" | "notStarted" | undefined;
+export type GameStatus = "won" | "lost" | "playing" | "notStarted";
+export type Puzzle = {
+  id: number;
+  date: string;
+  words: ClientWord[];
+}
 
 export type GameState = {
   games: {
@@ -19,7 +25,7 @@ export type GameState = {
   };
   wordLength: number;
   showHelp: boolean;
-  puzzle: number;
+  puzzle: Puzzle;
   settings: GameSettings;
 }
 

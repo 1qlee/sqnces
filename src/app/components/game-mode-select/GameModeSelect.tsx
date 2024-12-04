@@ -4,14 +4,39 @@ import {
   Check,
   CaretDown,
   CaretUp,
-  Circle,
 } from "@phosphor-icons/react";
-import styles from "../select/Select.module.css";
-import { WordLength } from "../game/Game.types";
+import styles from "./GameModeSelect.module.css";
+import selectStyles from "../select/Select.module.css";
+import { Game, WordLength } from "../game/Game.types";
 import { useGameDispatch } from "~/app/contexts/GameProvider";
+import clsx from "clsx";
 
 type SelectProps = {
   disabled?: boolean;
+}
+
+const dummyGuesses = [
+  "", "", "", "", "", ""
+]
+
+function Ticker({ game }: { game: Game }) {
+  return (
+    <div className={styles.ticker}>
+      {dummyGuesses.map((_, i) => (
+        <span 
+          key={i} 
+          className={
+            clsx(
+              styles.tick, 
+              game.guesses[i] && styles.isFilled,
+              game?.word === game.guesses[i]?.word && styles.isCorrect,
+
+            )
+          }>
+        </span>
+      ))}
+    </div>
+  )
 }
 
 export default function GameModeSelect({
@@ -20,6 +45,9 @@ export default function GameModeSelect({
   const [gameState, setGameState] = useGameState();
   const wordLength = String(gameState.wordLength);
   const dispatch = useGameDispatch();
+  const sixLetterGame = gameState.games[6];
+  const sevenLetterGame = gameState.games[7];
+  const eightLetterGame = gameState.games[8];
 
   function handleSelectChange(value: string) {
     const wordLength = +value as WordLength;
@@ -39,35 +67,19 @@ export default function GameModeSelect({
     })
   }
 
-  function handleIconStatus(status: string | undefined) {
-    switch(status) {
-      case "notStarted":
-        return "var(--grayed)"
-      case "playing":
-        return "var(--misplaced)"
-      case "won":
-        return "var(--on)"
-      case "lost":
-        return "var(--off)"
-      default:
-        return "var(--foreground)"
-    }
-  }
-
   return (
     <Select.Root
       value={wordLength}
       onValueChange={(value) => handleSelectChange(value)}
       disabled={disabled}
     >
-      <Select.Trigger className={styles.trigger} aria-label="Game Mode">
+      <Select.Trigger className={selectStyles.trigger} aria-label="Game Mode">
         <Select.Value style={{whiteSpace:"nowrap"}} placeholder="Game Mode">
-          <div className={styles.value}>
-            <Circle size={16} weight="fill" color={handleIconStatus(gameState.games[+wordLength as WordLength].status)} />
+          <div className={selectStyles.value}>
             <span>{wordLength} Letters</span>
           </div>
         </Select.Value>
-        <Select.Icon className={styles.icon}>
+        <Select.Icon className={selectStyles.icon}>
           <CaretDown weight="bold" size={14} />
         </Select.Icon>
       </Select.Trigger>
@@ -76,37 +88,40 @@ export default function GameModeSelect({
           position="popper"
           align="center"
           sideOffset={4}
-          className={styles.content}
+          className={selectStyles.content}
           onCloseAutoFocus={(event) => {
             event.preventDefault()
           }}
         >
-          <Select.ScrollUpButton className={styles.scrollUp}>
+          <Select.ScrollUpButton className={selectStyles.scrollUp}>
             <CaretUp />
           </Select.ScrollUpButton>
           <Select.Viewport className="SelectViewport">
-            <Select.Item value="6" className={styles.item}>
-              <span className={styles.tag}>
-                <Circle size={10} weight="fill" color={handleIconStatus(gameState.games[6].status)} />
-              </span>
+            <Select.Item 
+              value="6"
+              className={selectStyles.item}
+            >
               <Select.ItemText>6 Letters</Select.ItemText>
               <Select.ItemIndicator className="SelectItemIndicator">
                 <Check />
               </Select.ItemIndicator>
+              <Ticker 
+                game={sixLetterGame}
+              />
             </Select.Item>
-            <Select.Item value="7" className={styles.item}>
-              <span className={styles.tag}>
-                <Circle size={10} weight="fill" color={handleIconStatus(gameState.games[7].status)} />
-              </span>
+            <Select.Item value="7" className={selectStyles.item}>
+              <Ticker
+                game={sevenLetterGame}
+              />
               <Select.ItemText>7 Letters</Select.ItemText>
               <Select.ItemIndicator className="SelectItemIndicator">
                 <Check />
               </Select.ItemIndicator>
             </Select.Item>
-            <Select.Item value="8" className={styles.item}>
-              <span className={styles.tag}>
-                <Circle size={10} weight="fill" color={handleIconStatus(gameState.games[8].status)} />
-              </span>
+            <Select.Item value="8" className={selectStyles.item}>
+              <Ticker
+                game={eightLetterGame}
+              />
               <Select.ItemText>8 Letters</Select.ItemText>
               <Select.ItemIndicator className="SelectItemIndicator">
                 <Check />

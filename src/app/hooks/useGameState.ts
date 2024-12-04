@@ -24,7 +24,11 @@ const defaultGameState: GameState = {
   },
   showHelp: true,
   wordLength: 6,
-  puzzle: 0,
+  puzzle: {
+    id: 0,
+    date: "",
+    words: [],
+  },
   settings: {
     hardMode: true,
   }
@@ -51,11 +55,25 @@ function validateGameState(obj: GameState): boolean {
 
         gameKeys.forEach((requiredKey) => {
           if (!(requiredKey in game)) {
-            console.log("Missing key", requiredKey, "in game", numberedKey);
             invalid = true;
           }
         });
       });
+    }
+
+    if (key === "puzzle") {
+      if (typeof clone.puzzle === "object") {
+        const puzzleKeys = ["id", "date", "words"];
+
+        puzzleKeys.forEach((requiredKey) => {
+          if (!(requiredKey in clone.puzzle)) {
+            invalid = true;
+          }
+        });
+      }
+      else {
+        invalid = true;
+      }
     }
   });
 
@@ -63,7 +81,7 @@ function validateGameState(obj: GameState): boolean {
 }
 
 export default function useGameState() {
-  const cachedGameState = useRef<GameState>();
+  const cachedGameState = useRef<GameState | null>(null);
 
   const setGameState = (newGameState: GameState) => {
     const stringifiedState = JSON.stringify(newGameState);
@@ -84,8 +102,6 @@ export default function useGameState() {
       const isGameStateInvalid = validateGameState(parsedGameState);
 
       if (isGameStateInvalid) {
-        console.log(parsedGameState);
-        console.log("Invalid game state, resetting to default");
         cachedGameState.current = defaultGameState;
         setGameState({
           ...defaultGameState,
@@ -108,12 +124,22 @@ export default function useGameState() {
         ...defaultGameState,
       });
 
-      return defaultGameState;
+      return cachedGameState.current;
     }
   };
 
   const getServerSnapshot = () => {
-    return defaultGameState;
+    // Return cached state for stability
+    if (cachedGameState.current !== null) return cachedGameState.current;
+
+    // If SSR, use defaultGameState
+    if (typeof window === "undefined") return defaultGameState;
+
+    // During hydration, read from localStorage
+    const storedState = window.localStorage.getItem("gameState");
+    cachedGameState.current = storedState ? (JSON.parse(storedState) as GameState) : defaultGameState;
+
+    return cachedGameState.current;
   }
 
   const subscribe = (listener: () => void) => {

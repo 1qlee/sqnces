@@ -5,6 +5,7 @@
   margin-left: 0.125rem;
   background-color: transparent;
   border-radius: 0.25rem;
+  border: none;
   color: var(--olive-10);
 
   &:hover {

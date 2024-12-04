@@ -46,7 +46,7 @@ function exampleGuesses(isHardMode: boolean) {
     {
       text: (
         <p className={styles.guessText}>
-          <b>E and R</b> are in positions where there are no letters. In this case, they exceed the length of the hidden word.
+          <b>E and R</b> are in positions where there are no letters. In this case, they exceed the length of the hidden word. Therefore, the hidden word must end in ENT.
           {isHardMode
             ? ""
             : (
@@ -188,9 +188,9 @@ function exampleGuesses(isHardMode: boolean) {
 }
 
 const rules = [
-  "Guesses MUST include the sequence in its entirety and in its original order.",
-  "Guesses MUST be at least 4 letters long.",
-  "Guesses CANNOT exceed the length of the hidden word."
+  "Guesses must include the sequence in its entirety and in its original order.",
+  "Guesses must be at least 4 letters long.",
+  "Guesses cannot exceed the length of the hidden word."
 ];
 
 const shortcuts = [

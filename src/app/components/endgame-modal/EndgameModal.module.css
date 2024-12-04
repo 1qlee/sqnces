@@ -83,7 +83,9 @@
 }
 
 .footer {
-  margin-top: 2rem;
+  border-top: 2px solid var(--foreground);
+  padding-top: 1rem;
+  margin-top: 1rem;
   font-size: 0.875rem;
 
   & > p {
@@ -103,5 +105,34 @@
   &>img {
     width: 144px;
     height: 40px;
+  }
+}
+
+.banner {
+  color: var(--foreground);
+  background-color: var(--background);
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+}
+
+.bannerHeading {
+  margin-bottom: 0.5rem;
+}
+
+.bannerButtonWrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bannerButton {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  background-color: var(--grayed);
+  border: none;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
   }
 }
