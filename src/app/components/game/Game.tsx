@@ -79,51 +79,51 @@ export default function Game() {
   }, [loading])
 
   return (
-    <GameProvider>
-      {!showMainMenu && (
-        <Nav
-          disableGameModeSelect={disableGameModeSelect}
-          setShowEndgameModal={setShowEndgameModal}
-          setShowSettingsModal={setShowSettingsModal}
+    <>
+      {showMainMenu ? (
+        <MainMenu
+          setShowMainMenu={setShowMainMenu}
+          currentGame={currentGame}
+          loading={loading}
         />
-      )}
-      <main
-        className={styles.game}
-      >
-        {showMainMenu ? (
-          <MainMenu
-            setShowMainMenu={setShowMainMenu}
-            currentGame={currentGame}
-            loading={loading}
+      ) : (
+        <>
+          <Nav
+            disableGameModeSelect={disableGameModeSelect}
+            setShowEndgameModal={setShowEndgameModal}
+            setShowSettingsModal={setShowSettingsModal}
           />
-        ) : (
-          <>
-            <InfoModal />
-            <Sequence
-              wordData={wordData}
-            />
-            <GuessArea
-              currentGame={currentGame}
-              wordData={wordData}
-              setDisableGameModeSelect={setDisableGameModeSelect}
-              setShowEndgameModal={setShowEndgameModal}
-            />
-            {showEndgameModal && (
-              <EndgameModal
+          <GameProvider>
+            <main
+              className={styles.game}
+            >
+              <InfoModal />
+              <Sequence
+                wordData={wordData}
+              />
+              <GuessArea
                 currentGame={currentGame}
-                showEndgameModal={showEndgameModal}
+                wordData={wordData}
+                setDisableGameModeSelect={setDisableGameModeSelect}
                 setShowEndgameModal={setShowEndgameModal}
               />
-            )}
-            {showSettingsModal && (
-              <SettingsModal
-                showSettingsModal={showSettingsModal}
-                setShowSettingsModal={setShowSettingsModal}
-              />
-            )}
-          </>
-        )}
-      </main>
-    </GameProvider>
+              {showEndgameModal && (
+                <EndgameModal
+                  currentGame={currentGame}
+                  showEndgameModal={showEndgameModal}
+                  setShowEndgameModal={setShowEndgameModal}
+                />
+              )}
+              {showSettingsModal && (
+                <SettingsModal
+                  showSettingsModal={showSettingsModal}
+                  setShowSettingsModal={setShowSettingsModal}
+                />
+              )}
+            </main>
+          </GameProvider>
+        </>
+      )}
+    </>
   )
 }

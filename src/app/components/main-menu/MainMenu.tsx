@@ -1,4 +1,3 @@
-import type { ClientPuzzle } from '~/server/types/puzzle';
 import type { Dispatch, SetStateAction } from 'react';
 import type { Game } from '../game/Game.types';
 import { Info } from '@phosphor-icons/react';
@@ -211,7 +210,6 @@ export default function MainMenu({
             {puzzle.date}
           </p>
           <p>Puzzle #{puzzle.id}</p>
-            <small style={{ width: "267px", fontSize: "0.75rem", marginTop: "0.5rem", lineHeight: "1.2" }}>Earlier today, there was a bug that might have prevented your game state from resetting. If you think this is the case for you, <b style={{cursor: "pointer"}} onClick={() => resetGameState()}>please click here to reset your game state</b>. <br /><br /> WARNING: This will wipe all existing guesses from your current games. It will not affect your stats.</small>
         </div>
       )}
     </div>

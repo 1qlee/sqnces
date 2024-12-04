@@ -35,7 +35,7 @@
   line-height: 1.5;
   margin-bottom: 1rem;
   font-size: 1.25rem;
-  max-width: 400px;
+  width: 267px;
 }
 
 .subtext {
@@ -113,7 +113,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: var(--grayed);
+  background-color: var(--grayed-background);
   border-radius: 0.25rem;
   padding: 1rem;
   margin: 1rem 0 2rem;
