@@ -35,6 +35,27 @@ export default function Game() {
         const puzzleData = await getPuzzle(date);
         setGameState({
           ...gameState,
+          games: {
+            6: {
+              guesses: [],
+              status: "notStarted",
+              hardMode: true,
+              word: "",
+            },
+            7: {
+              guesses: [],
+              status: "notStarted",
+              hardMode: true,
+              word: "",
+            },
+            8: {
+              guesses: [],
+              status: "notStarted",
+              hardMode: true,
+              word: "",
+            },
+          },
+          wordLength: 6,
           puzzle: {
             id: puzzleData.id,
             date: puzzleData.date,
