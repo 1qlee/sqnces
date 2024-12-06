@@ -9,27 +9,7 @@ export default async function Home() {
   
   return (
     <HydrateClient>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "100vw",
-          flexDirection: "column",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "var(--grayed)",
-            padding: "1rem",
-            borderRadius: "0.25rem",
-            width: "320px",
-          }}
-        >
-          <h1>sqnces is currently down for maintenance. We will be back shortly!</h1>
-        </div>
-      </div>
+      <Game />
     </HydrateClient>
   );
 }

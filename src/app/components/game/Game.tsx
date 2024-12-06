@@ -69,6 +69,11 @@ export default function Game() {
       }
     }
 
+    // temporary fix for puzzle change - remove after 12/6/24
+    if (!gameState.puzzle.words.find(word => word.sequence.string === "VAR")) {
+      void fetchPuzzle();
+    }
+
     // refresh stale localStorage puzzle data
     if (gameState.puzzle.date !== todaysDate) {
       void fetchPuzzle();
