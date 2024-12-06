@@ -46,5 +46,3 @@ yarn-error.log*
 .idea
 
 # cache
-/src/server/cache/*
-/src/server/cache/puzzleCache.json
