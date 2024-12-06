@@ -55,7 +55,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  animation: dropIn 0.5s ease-out forwards;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
 .word {
@@ -76,9 +76,11 @@
   border-radius: 0.25rem;
   box-shadow: var(--shadow-interactive);
 
-  animation: dropIn 0.2s ease-out forwards;
-  opacity: 0;
-  transform: translateY(-1rem);
+  &.isAnimating {
+    animation: dropIn 1.5s ease-out alternate infinite;
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
   
   &:nth-child(1) {
     animation-delay: 0s;
@@ -132,9 +134,27 @@
 }
 
 @keyframes dropIn {
-  to {
+  0% {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+
+  50% {
     opacity: 1;
     transform: translateY(0);
-    /* End at original position */
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(-1rem);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

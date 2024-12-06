@@ -7,7 +7,7 @@ import {
 } from "@phosphor-icons/react";
 import styles from "./GameModeSelect.module.css";
 import selectStyles from "../select/Select.module.css";
-import { Game, WordLength } from "../game/Game.types";
+import type { Game, WordLength } from "../game/Game.types";
 import { useGameDispatch } from "~/app/contexts/GameProvider";
 import clsx from "clsx";
 

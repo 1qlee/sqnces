@@ -1,4 +1,4 @@
-import { ClientWord } from "~/server/types/puzzle";
+import type { ClientWord } from "~/server/types/puzzle";
 import type { GuessData } from "../guess-area/Guess.types";
 
 export type Editing = {

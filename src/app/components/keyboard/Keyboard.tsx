@@ -69,12 +69,11 @@ export default function Keyboard({
 }: KeyboardProps) {
   const searchGuess = useGuessSearch();
   const context = useGameContext();
-  const { editing } = context;
+  const { editing, loading } = context;
   const dispatch = useGameDispatch();
   const [userStats, setUserStats] = useUserStats();
   const [activeKeys, setActiveKeys] = useState<Key[]>([]);
   const [gameState, setGameState] = useGameState();
-  const [loading, setLoading] = useState(false);
   const guessRef = useRef(guess); // Create a ref to store the guess value
   const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -362,11 +361,17 @@ export default function Keyboard({
       toast.error("Word must include the sequence.");
     }
     else {
-      setLoading(true);
+      dispatch({
+        type: "loading",
+        loading: true,
+      });
       const isGuessValid = await searchGuess(guessedWord);
 
       if (!isGuessValid) {
-        setLoading(false);
+        dispatch({
+          type: "loading",
+          loading: false,
+        });
         toast.dismiss();
         return toast.error("Invalid word");
       };
@@ -469,9 +474,15 @@ export default function Keyboard({
           })
         }
 
-        setLoading(false);
+        dispatch({
+          type: "loading",
+          loading: false,
+        });
       } catch (err: unknown) {
-        setLoading(false);
+        dispatch({
+          type: "loading",
+          loading: false,
+        });
 
         if (err instanceof Error) {
           const response = JSON.parse(err.message) as GetWordResponse;

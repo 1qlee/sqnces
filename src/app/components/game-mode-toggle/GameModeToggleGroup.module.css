@@ -1,0 +1,37 @@
+.group {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  border-radius: 0.25rem;
+  position: relative;
+}
+
+.item {
+  border: none;
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background-color: var(--grayed);
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.selector {
+  position: absolute;
+  width: calc(100% / 3 - 0.375rem);
+  height: calc(100%);
+  background-color: var(--on);
+  color: white;
+  transition: transform 0.2s;
+  font-size: 0.875rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.25rem;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 9;
+}

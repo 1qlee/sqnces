@@ -1,11 +1,12 @@
 import { createContext, useReducer, useContext, type ReactNode } from "react";
-import { GameContextDispatch, GameContextState, GameAction } from "./GameProvider.types";
+import type { GameContextDispatch, GameContextState, GameAction } from "./GameProvider.types";
 
 const defaultGameContext = {
   editing: {
     toggled: false,
     key: 0,
-  }
+  },
+  loading: false,
 }
 
 function gameReducer(state: GameContextState, action: GameAction): GameContextState {
@@ -17,6 +18,11 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           toggled: action.toggled ?? !state.editing.toggled,
           key: action.key,
         }
+      }
+    case "loading":
+      return {
+        ...state,
+        loading: action.loading,
       }
     default:
       return state;

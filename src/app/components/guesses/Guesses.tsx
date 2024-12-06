@@ -4,9 +4,10 @@ import { type Dispatch, memo, type SetStateAction, useRef, useEffect } from "rea
 import { useGameContext, useGameDispatch } from "~/app/contexts/GameProvider";
 
 import styles from "./Guesses.module.css";
-import type { Editing, Game } from "~/app/components/game/Game.types";
+import type { Game } from "~/app/components/game/Game.types";
 import type { GuessData, Guess } from "../guess-area/Guess.types";
 import { X, Empty, Check, ArrowsLeftRight, Pen } from "@phosphor-icons/react";
+import clsx from "clsx";
 
 type GuessesProps = {
   guess: Guess;
@@ -57,7 +58,7 @@ export const Guesses = memo(({
   const isGameOver = currentGame.status === "won" || currentGame.status === "lost";
   const dispatch = useGameDispatch();
   const context = useGameContext();
-  const { editing } = context;
+  const { editing, loading } = context;
 
   useEffect(() => {
     if (wrapperRef.current) {
@@ -143,11 +144,12 @@ export const Guesses = memo(({
           {guess?.letters.map((char, i) => (
             <span
               key={i}
-              className={[
+              className={clsx(
                 styles.letter,
                 styles.isCurrentGuess,
                 editing.toggled && editing.key === i ? styles.isEditing : "",
-              ].filter(Boolean).join(" ")}
+                loading && styles.isLoading,
+              )}
               {...(!isGameOver && { onPointerDown: () => handleEditCurrGuess(i) })}
             >
               <span>{char === "Blank" ? "" : char}</span>

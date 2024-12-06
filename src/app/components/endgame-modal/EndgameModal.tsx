@@ -1,23 +1,23 @@
-import styles from "./EndgameModal.module.css"
-import modalStyles from "../info-modal/InfoModal.module.css"
-import marginStyles from "../styles/Margin.module.css"
-import flexStyles from "../styles/Flex.module.css"
-import clsx from "clsx"
+import styles from "./EndgameModal.module.css";
+import modalStyles from "../info-modal/InfoModal.module.css";
+import marginStyles from "../styles/Margin.module.css";
+import flexStyles from "../styles/Flex.module.css";
+import clsx from "clsx";
+import { getPuzzleStats } from "~/app/actions/getPuzzleStats";
 
 import toast from "react-hot-toast"
-import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react"
-import type { GlobalStats } from "~/server/types/puzzle"
-import type { Game, WordLength } from "../game/Game.types"
-import useGameState from "~/app/hooks/useGameState"
-import useUserStats from "~/app/hooks/useUserStats"
-import { XCircle, CaretUp, CaretDoubleUp, CaretDown, CaretDoubleDown } from '@phosphor-icons/react'
+import { type Dispatch, type SetStateAction, useEffect, useState, useRef } from "react";
+import type { GlobalStats } from "~/server/types/puzzle";
+import type { Game, WordLength } from "../game/Game.types";
+import useGameState from "~/app/hooks/useGameState";
+import useUserStats from "~/app/hooks/useUserStats";
+import { XCircle, CaretUp, CaretDoubleUp, CaretDown, CaretDoubleDown } from '@phosphor-icons/react';
 
-import * as Dialog from '@radix-ui/react-dialog'
-import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
-import Button from "../button/Button"
-import buttonStyles from "../button/Button.module.css"
-import Checkbox from "../checkbox/Checkbox"
-import { getPuzzleStats } from "~/app/actions/getPuzzleStats"
+import * as Dialog from '@radix-ui/react-dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
+import Button from "../button/Button";
+import Checkbox from "../checkbox/Checkbox";
+import GameModeToggleGroup from "../game-mode-toggle/GameModeToggleGroup";
 
 type EndgameModalProps = {
   currentGame: Game;
@@ -31,7 +31,7 @@ function EndgameModal({
   setShowEndgameModal,
 }: EndgameModalProps) {
   const [userStats] = useUserStats();
-  const [gameState, setGameState] = useGameState();
+  const [gameState] = useGameState();
   const [statsScrolledToEnd, setStatsScrolledToEnd] = useState(true);
   const [hideSpoilers, setHideSpoilers] = useState<boolean | "indeterminate">(true);
   const [globalStats, setGlobalStats] = useState<GlobalStats>();
@@ -328,28 +328,10 @@ function EndgameModal({
               </div>
             )}
             <div className={styles.banner}>
-              {bannerData.unfinishedGames ? (
-                <h2 className={styles.bannerHeading}>Finish all of today's puzzles:</h2>
-              ) : (
-                <h2>🎉 You've completed all the puzzles! 🎉</h2>
-              )}
-              <div className={styles.bannerButtonWrapper}>
-                {bannerData.games.map((key, i) => (
-                  <Button
-                    key={key}
-                    className={buttonStyles.isSmall}
-                    onClick={() => setGameState({
-                      ...gameState,
-                      wordLength: +key as WordLength,
-                      settings: {
-                        hardMode: gameState.games[+key as WordLength].hardMode,
-                      }
-                    })}
-                  >
-                    Play {key} Letter
-                  </Button>
-                ))}
-              </div>
+              <h2 className={styles.bannerHeading}>
+                {bannerData.unfinishedGames ? "Finish all of today's puzzles:" : "Review today's puzzles:"}
+              </h2>
+              <GameModeToggleGroup />
             </div>
             <div
               className={styles.footer}

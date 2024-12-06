@@ -336,7 +336,7 @@ export const puzzleRouter = createTRPCRouter({
   check: publicProcedure
     .input(checkGuessSchema)
     .query(async ({ input, ctx }) => {
-      const { guess, usersDate, length, hardMode } = input;
+      const { guess, usersDate, length, hardMode, timesGuessed } = input;
       const guessLength = guess.length;
       const todaysPuzzle = cache.find(puzzle => puzzle.date === usersDate);
       const word = todaysPuzzle!.words.find(word => word.length === length)!;
@@ -505,7 +505,7 @@ export const puzzleRouter = createTRPCRouter({
         keys: keys,
         map: validationMap,
         won: guessIsCorrect,
-        word: guessIsCorrect ? word.word : "",
+        word: (guessIsCorrect || timesGuessed === 6)? word.word : "",
       }
     }),
   

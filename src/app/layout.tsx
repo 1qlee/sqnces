@@ -12,7 +12,7 @@ import "~/styles/toast.css";
 
 export const metadata: Metadata = {
   title: "sqnces",
-  description: "Game where you guess words using a 3 letter sequence.",
+  description: "A word-guessing game where you use a 3-letter sequence to uncover the hidden word.",
 };
 
 export const viewport: Viewport = {
@@ -45,7 +45,7 @@ export default function RootLayout({
           toastOptions={{
             // Define default options
             className: '',
-            duration: 1500,
+            duration: 2000,
             style: {
               background: 'var(--background)',
               color: 'var(--foreground)',

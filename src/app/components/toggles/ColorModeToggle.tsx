@@ -5,7 +5,6 @@ import { useTheme } from "next-themes";
 import flexStyles from "../styles/Flex.module.css";
 
 import Toggle from "../toggle/Toggle";
-import { Sun, Moon, Dot } from "@phosphor-icons/react";
 
 export default function ColorModeToggle({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
