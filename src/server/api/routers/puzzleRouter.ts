@@ -221,11 +221,12 @@ const checkGuessSchema = z
     lettersUsed: z.number().refine((val) => val <= MAX_LETTERS_USED), // 8 * 6 = 48
     timesGuessed: z.number().refine((val) => val <= MAX_TIMES_GUESSED), // 6 guesses 
     usersDate: z.string().refine((dateString) => {
+      console.log("🚀 ~ usersDate:z.string ~ dateString:", dateString)
       // Validate if the date part matches today or tomorrow
       return isValidDate(dateString);
     }, {
       message: JSON.stringify({
-        message: "You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.",
+        message: `You are trying to submit a guess for an old puzzle. Please refresh the page or clear your cache.`,
         code: "INVALID_DATE",
       }),
     }),
