@@ -18,6 +18,18 @@ import SettingsModal from "../settings-modal/SettingsModal";
 
 const todaysDate = generateDateString(new Date());
 
+function formatDate(date: Date): string {
+  const month = date.getMonth() + 1; // Months are zero-based, so add 1
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  // Pad single digits with a leading zero
+  const formattedMonth = month < 10 ? `0${month}` : month;
+  const formattedDay = day < 10 ? `0${day}` : day;
+
+  return `${formattedMonth}-${formattedDay}-${year}`;
+}
+
 export default function Game() {
   const [loading, setLoading] = useState(true);
   const [showMainMenu, setShowMainMenu] = useState<boolean>(true);
@@ -31,7 +43,7 @@ export default function Game() {
   useEffect(() => {
     async function fetchPuzzle() {
       try {
-        const date = new Date().toLocaleDateString();
+        const date = formatDate(new Date());
         const puzzleData = await getPuzzle(date);
         setGameState({
           ...gameState,
