@@ -21,12 +21,13 @@ export async function checkGuess({
 }) {
   const lettersUsed = guesses.reduce((acc, guess) => guess.word.length + acc, 0) + guess.length;
   const timesGuessed = guesses.length + 1;
+  console.log("CHECKING GUESS FOR DATE", usersDate);
 
   const data = await api.puzzle.check({
     guess,
     lettersUsed,
     timesGuessed,
-    usersDate: format(usersDate, "MM-dd-yyyy"),
+    usersDate,
     length,
     hardMode,
     puzzleId,

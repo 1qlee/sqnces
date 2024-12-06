@@ -389,7 +389,7 @@ export default function Keyboard({
             hardMode: gameState.settings.hardMode,
             length: wordData.length,
             puzzleId: gameState.puzzle.id,
-            usersDate: new Date().toLocaleDateString(),
+            usersDate: generateDateString(new Date()),
           }),
           timeoutPromise,
         ]) as CheckedGuess;
