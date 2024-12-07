@@ -8,7 +8,7 @@
   font-size: 0.875rem;
   box-shadow: var(--shadow-interactive);
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem;
 
   &:hover {
     cursor: pointer;
