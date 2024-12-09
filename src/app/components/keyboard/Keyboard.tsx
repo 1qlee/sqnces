@@ -228,13 +228,13 @@ export default function Keyboard({
     const textCategories = {
       excited: [
         "Hot damn, that was fast.",
-        "You got me. You boomed me. You're so good (x4).",
+        "You got me. You boomed me.",
         "Behold, the power of your brain.",
         "We got a word wiz over here!",
         "You made it look easy.",
         "I can be more difficult, I swear!",
         "Winner, winner, sequenced dinner!",
-        "Sequentastic!",
+        "Sequentastic! 🎉",
         "Are you a dictionary?!",
         "Here's a word for you: W-I-N-N-E-R.",
       ],
@@ -242,7 +242,7 @@ export default function Keyboard({
         "Nice job!",
         "Not too shabby!",
         "You did it! You really did it!",
-        "Bravo!",
+        "Bravo! 👏",
         "Ding ding ding!",
         "Great work there!",
         "You got it!",
@@ -253,7 +253,7 @@ export default function Keyboard({
       negative: [
         "That almost went south...",
         "That was intense!",
-        "WHEW!",
+        "WHEW! 💦",
         "That was a close one.",
         "You literally almost lost.",
         "Living on the edge, huh?",
@@ -386,7 +386,7 @@ export default function Keyboard({
           checkGuess({
             guess: guessedWord,
             guesses: currentGame.guesses,
-            hardMode: gameState.settings.hardMode,
+            hardMode: currentGame.hardMode,
             length: wordData.length,
             puzzleId: gameState.puzzle.id,
             usersDate: generateDateString(new Date()),

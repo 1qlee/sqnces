@@ -1,5 +1,3 @@
-"use client"
-
 import { ChartBar } from "@phosphor-icons/react";
 import Toggle from "../toggle/Toggle";
 import type { Dispatch, SetStateAction } from "react";

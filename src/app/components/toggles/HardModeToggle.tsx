@@ -1,21 +1,23 @@
-"use client";
-
 import useGameState from "~/app/hooks/useGameState";
 import flexStyles from "../styles/Flex.module.css";
 
 import Toggle from "../toggle/Toggle";
 import toast from "react-hot-toast";
-import type { WordLength } from "../game/Game.types";
+import type { Game, WordLength } from "../game/Game.types";
 
-export default function HardModeToggle() {
+type HardModeToggleProps = {
+  game: Game;
+}
+
+export default function HardModeToggle({ game }: HardModeToggleProps) {
   const [gameState, setGameState] = useGameState();
-  const isHardModeOn = gameState.settings.hardMode;
+  const isHardModeOn = game.hardMode;
   const currentGame = gameState.games[gameState.wordLength as WordLength];
 
   function handleToggle() {
     // if the game has already started in easy mode, don't allow the user to switch to hard mode
     if (!isHardModeOn && currentGame.guesses.length > 0) {
-      toast.error("You can't disable hard mode after you've already started the puzzle.");
+      toast.error("You can't enable hard mode after you've already started the puzzle.");
       return;
     }
 
@@ -28,10 +30,6 @@ export default function HardModeToggle() {
           hardMode: !isHardModeOn,
         }
       },
-      settings: {
-        ...gameState.settings,
-        hardMode: !isHardModeOn,
-      }
     });
   }
 

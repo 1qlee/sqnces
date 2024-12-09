@@ -1,5 +1,3 @@
-"use client";
-
 import { type Dispatch, memo, type SetStateAction, useRef, useEffect } from "react";
 import { useGameContext, useGameDispatch } from "~/app/contexts/GameProvider";
 

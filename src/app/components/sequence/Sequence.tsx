@@ -1,11 +1,16 @@
+import { Game } from "../game/Game.types";
 import styles from "./Sequence.module.css";
 import type { ClientWord } from "~/server/types/puzzle";
 
+import GuessTracker from "../guess-tracker/GuessTracker";
+
 type SequenceProps = {
+  currentGame: Game;
   wordData: ClientWord;
 }
 
 export default function Sequence({
+  currentGame,
   wordData,
 }: SequenceProps) {
   return (
@@ -20,6 +25,10 @@ export default function Sequence({
           </span>
         ))}
       </div>
+      <GuessTracker 
+        game={currentGame}
+        size="large"
+      />
     </div>
   )
 }

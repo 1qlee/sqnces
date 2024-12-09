@@ -29,13 +29,10 @@ const defaultGameState: GameState = {
     date: "",
     words: [],
   },
-  settings: {
-    hardMode: true,
-  }
 };
 
 function validateGameState(obj: GameState): boolean {
-  const gameStateKeys = ["games", "showHelp", "wordLength", "puzzle", "settings"];
+  const gameStateKeys = ["games", "showHelp", "wordLength", "puzzle"];
   const gameKeys = ["guesses", "status", "hardMode", "word"];
   let invalid = false;
 

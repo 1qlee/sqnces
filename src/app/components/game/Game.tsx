@@ -31,7 +31,6 @@ export default function Game() {
   useEffect(() => {
     async function fetchPuzzle() {
       try {
-        console.log("🚀 ~ fetchPuzzle ~ todaysDate:", todaysDate)
         const puzzleData = await getPuzzle(todaysDate);
         setGameState({
           ...gameState,
@@ -39,19 +38,19 @@ export default function Game() {
             6: {
               guesses: [],
               status: "notStarted",
-              hardMode: true,
+              hardMode: gameState.games[6].hardMode,
               word: "",
             },
             7: {
               guesses: [],
               status: "notStarted",
-              hardMode: true,
+              hardMode: gameState.games[7].hardMode,
               word: "",
             },
             8: {
               guesses: [],
               status: "notStarted",
-              hardMode: true,
+              hardMode: gameState.games[8].hardMode,
               word: "",
             },
           },
@@ -87,42 +86,42 @@ export default function Game() {
           loading={loading}
         />
       ) : (
-        <>
+        <GameProvider>
           <Nav
             disableGameModeSelect={disableGameModeSelect}
             setShowEndgameModal={setShowEndgameModal}
             setShowSettingsModal={setShowSettingsModal}
           />
-          <GameProvider>
-            <main
-              className={styles.game}
-            >
-              <InfoModal />
-              <Sequence
-                wordData={wordData}
-              />
-              <GuessArea
+          <main
+            className={styles.game}
+          >
+            <InfoModal />
+            <Sequence
+              currentGame={currentGame}
+              wordData={wordData}
+            />
+            <GuessArea
+              currentGame={currentGame}
+              wordData={wordData}
+              setDisableGameModeSelect={setDisableGameModeSelect}
+              setShowEndgameModal={setShowEndgameModal}
+            />
+            {showEndgameModal && (
+              <EndgameModal
                 currentGame={currentGame}
-                wordData={wordData}
-                setDisableGameModeSelect={setDisableGameModeSelect}
+                showEndgameModal={showEndgameModal}
                 setShowEndgameModal={setShowEndgameModal}
               />
-              {showEndgameModal && (
-                <EndgameModal
-                  currentGame={currentGame}
-                  showEndgameModal={showEndgameModal}
-                  setShowEndgameModal={setShowEndgameModal}
-                />
-              )}
-              {showSettingsModal && (
-                <SettingsModal
-                  showSettingsModal={showSettingsModal}
-                  setShowSettingsModal={setShowSettingsModal}
-                />
-              )}
-            </main>
-          </GameProvider>
-        </>
+            )}
+            {showSettingsModal && (
+              <SettingsModal
+                currentGame={currentGame}
+                showSettingsModal={showSettingsModal}
+                setShowSettingsModal={setShowSettingsModal}
+              />
+            )}
+          </main>
+        </GameProvider>
       )}
     </>
   )

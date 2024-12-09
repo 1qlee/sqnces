@@ -1,5 +1,3 @@
-"use client"
-
 import useGameState from "~/app/hooks/useGameState";
 import { Info } from "@phosphor-icons/react";
 import Toggle from "../toggle/Toggle";

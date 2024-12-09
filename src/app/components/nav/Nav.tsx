@@ -4,6 +4,7 @@ import EndgameToggle from "../toggles/EndgameToggle";
 import type { Dispatch, SetStateAction } from "react";
 import SettingsToggle from "../toggles/SettingsToggle";
 import GameModeSelect from "../game-mode-select/GameModeSelect";
+import { Game } from "../game/Game.types";
 
 type NavProps = {
   disableGameModeSelect: boolean;

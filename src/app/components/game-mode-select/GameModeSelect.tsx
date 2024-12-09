@@ -5,38 +5,13 @@ import {
   CaretDown,
   CaretUp,
 } from "@phosphor-icons/react";
-import styles from "./GameModeSelect.module.css";
 import selectStyles from "../select/Select.module.css";
-import type { Game, WordLength } from "../game/Game.types";
+import type { WordLength } from "../game/Game.types";
 import { useGameDispatch } from "~/app/contexts/GameProvider";
-import clsx from "clsx";
+import GuessTracker from "../guess-tracker/GuessTracker"
 
 type SelectProps = {
   disabled?: boolean;
-}
-
-const dummyGuesses = [
-  "", "", "", "", "", ""
-]
-
-function Ticker({ game }: { game: Game }) {
-  return (
-    <div className={styles.ticker}>
-      {dummyGuesses.map((_, i) => (
-        <span 
-          key={i} 
-          className={
-            clsx(
-              styles.tick, 
-              game.guesses[i] && styles.isFilled,
-              game?.word === game.guesses[i]?.word && styles.isCorrect,
-
-            )
-          }>
-        </span>
-      ))}
-    </div>
-  )
 }
 
 export default function GameModeSelect({
@@ -105,12 +80,12 @@ export default function GameModeSelect({
               <Select.ItemIndicator className="SelectItemIndicator">
                 <Check />
               </Select.ItemIndicator>
-              <Ticker 
+              <GuessTracker 
                 game={sixLetterGame}
               />
             </Select.Item>
             <Select.Item value="7" className={selectStyles.item}>
-              <Ticker
+              <GuessTracker
                 game={sevenLetterGame}
               />
               <Select.ItemText>7 Letters</Select.ItemText>
@@ -119,7 +94,7 @@ export default function GameModeSelect({
               </Select.ItemIndicator>
             </Select.Item>
             <Select.Item value="8" className={selectStyles.item}>
-              <Ticker
+              <GuessTracker
                 game={eightLetterGame}
               />
               <Select.ItemText>8 Letters</Select.ItemText>

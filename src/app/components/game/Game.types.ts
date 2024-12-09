@@ -8,10 +8,6 @@ export type Editing = {
 
 export type WordLength = 6 | 7 | 8;
 
-export type GameSettings = {
-  hardMode: boolean;
-}
-
 export type GameStatus = "won" | "lost" | "playing" | "notStarted";
 export type Puzzle = {
   id: number;
@@ -26,7 +22,6 @@ export type GameState = {
   wordLength: number;
   showHelp: boolean;
   puzzle: Puzzle;
-  settings: GameSettings;
 }
 
 export type Game = {

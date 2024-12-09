@@ -46,7 +46,7 @@ export default function MainMenu({
             [gameState.wordLength]: {
               ...currentGame,
               status: "playing",
-              hardMode: gameState.settings.hardMode,
+              hardMode: currentGame.hardMode,
               word: "",
             },
           },
@@ -150,6 +150,10 @@ export default function MainMenu({
               {!gameState.showHelp && (
                 <>
                   <div className={styles.settingsItem}>
+                    <p className={styles.subtext}>Game Mode</p>
+                    <GameModeSelect />
+                  </div>
+                  <div className={styles.settingsItem}>
                     <p className={styles.subtext}>
                       <span>Hard Mode</span>
                       <Popover.Root>
@@ -166,16 +170,14 @@ export default function MainMenu({
                             sideOffset={4}
                             className={popoverStyles.content}
                           >
-                            <p>If ON, out of bounds letters won't show additional clues like misplaced and incorrect letters.</p>
+                            <p>If ON, out of bounds letters won't show additional clues like misplaced and incorrect letters. Hard mode can be toggled for each game mode individually.</p>
                           </Popover.Content>
                         </Popover.Portal>
                       </Popover.Root>
                     </p>
-                    <HardModeToggle />
-                  </div>
-                  <div className={styles.settingsItem}>
-                    <p className={styles.subtext}>Game Mode</p>
-                    <GameModeSelect />
+                    <HardModeToggle 
+                      game={currentGame}
+                    />
                   </div>
                 </>
               )}

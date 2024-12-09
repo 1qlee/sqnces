@@ -7,13 +7,16 @@ import flexStyles from "../styles/Flex.module.css";
 import HardModeToggle from "../toggles/HardModeToggle";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { XCircle } from "@phosphor-icons/react";
+import type { Game } from "../game/Game.types";
 
 type SettingsModalProps = {
+  currentGame: Game;
   showSettingsModal: boolean;
   setShowSettingsModal: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SettingsModal({
+  currentGame,
   showSettingsModal,
   setShowSettingsModal,
 }: SettingsModalProps) {
@@ -46,7 +49,9 @@ export default function SettingsModal({
                 <p>Hard mode</p>
                 <small className={modalStyles.subtext}>If ON, out of bounds letters won't show additional clues like misplaced and incorrect letters.</small>
               </div>
-              <HardModeToggle />
+              <HardModeToggle 
+                game={currentGame}
+              />
             </div>
           </div>
           <VisuallyHidden.Root asChild>
